@@ -3,6 +3,22 @@ module Rules::RulesHelper
   # Don't drill into these types
   @@dont_drill_types = [:boolean, :datetime, :integer, :messaging_user, :string, :text]
   
+  def page_title title
+    "<h1>#{title}</h1>".html_safe
+  end
+
+  def icon i 
+    "fa #{i}"
+  end
+
+  def on_ready &block 
+    "<script>$(document).on_ready({ #{yield} });</script>".html_safe
+  end
+
+  def page_js &block 
+    "<script>#{yield}</script>".html_safe
+  end
+
   def drillable_rule_type?(check_type)
     !@@dont_drill_types.index(check_type)
   end

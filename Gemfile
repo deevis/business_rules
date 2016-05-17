@@ -7,8 +7,8 @@ gemspec
 
 # jquery-rails is used by the dummy application
 gem 'mongoid', github: 'mongoid/mongoid'
-gem 'mongoid-versioning', github: 'simi/mongoid-versioning'
-gem 'identity_cache', github: 'jdatti/identity_cache'
+gem 'mongoid-versioning', github: 'ream88/mongoid-versioning'
+# gem 'identity_cache', github: 'jdatti/identity_cache'
 
 group :development do
   gem 'guard-rspec', require: false

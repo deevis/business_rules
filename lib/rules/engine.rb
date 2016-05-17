@@ -1,4 +1,5 @@
 puts "Loading Rules::Engine"
+require "rules"
 require "mongoid"
 require "simple_form"
 require "kaminari"
@@ -27,6 +28,8 @@ module Rules
 
     config.generators.scaffold_controller = :scaffold_controller
 
+    config.autoload_paths << "#{::Rails.root}/app/rules"
+    
     rules_engine = self
 
     initializer "before_#{self.name.underscore}_initializers1", after: :prepend_helpers_path, before: :load_config_initializers do |app|

@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.summary     = "Business Rules"
   s.description = "Configurable Business Rules for any system, so long as it's Rails..."
 
-  s.files = Dir["{app,config,db,lib}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.md"]
+  s.files = Dir["{app,config,db,lib,vendor}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.md"]
 #  s.test_files = Dir["test/**/*"]
 
   #s.add_dependency "rails"

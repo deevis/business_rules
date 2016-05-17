@@ -92,4 +92,57 @@ module Rules::EventsHelper
 			end
 		end
 	end
+
+    # renders fancytree json structure https://github.com/mar10/fancytree/
+    def render_fancy_tree_json(permissionsList, selected_ids = [], hierarchy_break: ".")
+      nested_tree = as_nested_tree(permissionsList, hierarchy_break: hierarchy_break)
+      _render_fancy_tree_json(nested_tree, selected_ids)
+    end
+
+    def as_nested_tree(permissionsList, hierarchy_break: ".")
+      tree = {}
+      permissionsList.each do |perm|
+        insert_here = tree
+        if perm.class == String
+          parts = perm.split(hierarchy_break) rescue []
+          parts.each_with_index do |p, i|
+            key = nil
+            if (i == (parts.length-1))
+              p = parts.join(hierarchy_break)
+              key = p
+            end
+            insert_here = (insert_here[p] ||= {key:key, children:{}})
+            insert_here = insert_here[:children]
+          end
+        else
+          parts = perm.name.split(hierarchy_break) rescue []
+          parts.each_with_index do |p,i|
+            insert_here = (insert_here[p] ||= {key:perm.id, children:{}})
+            insert_here = insert_here[:children]
+          end
+        end
+      end
+      tree
+    end
+
+    def _render_fancy_tree_json(tree = {}, selected_ids = [])
+      body = ""
+      tree.keys.each_with_index do |k,i|
+        v  = tree[k]
+        id = v[:key]
+        selected = (selected_ids.index id.to_i) ? ",selected: true" : ""
+        if v[:children].keys.size == 0
+          # Leaf
+          body += "{title:'#{j k}', key:'#{j id.to_s}'#{selected} }"
+        else
+          # Folder
+          body += "{title:'#{j k}', key: '#{j id.to_s}'#{selected},folder: true, children: ["
+          body += _render_fancy_tree_json(v[:children], selected_ids)
+          body += "]}"
+        end
+        body += "," if i < (tree.keys.size - 1)
+      end
+      body.html_safe
+    end
+	
 end

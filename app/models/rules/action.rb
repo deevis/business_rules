@@ -7,7 +7,6 @@ class Rules::Action
   field :type, type: String								          # class name of handler
   field :context_mapping, type: Hash, default: {}		# Map of actionNeed => ruleContextField {"actor:=>user"=>"actor:=>user"}
   
-  # After changes to CMS, template contains only the non-cms default values set upon rule creation
   field :template, type: Hash, default: {} 			    # Map of templateName => templateValue { "email" => "hello {name}" }			
   
   field :active, type: Boolean, default: true
@@ -132,7 +131,6 @@ class Rules::Action
         needs_mappings[f.to_sym] = {type: :string}
       end
     end
-    needs_mappings[:cms_market_user] = {type: :user, optional: true} if template_names.present?
     needs_mappings
   end
 
