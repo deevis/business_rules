@@ -1,0 +1,85 @@
+-rule_actions = actions_queue
+-last_alert_populated = nil
+-add_script_tag ||= "true"
+-escape_modals ||= false
+
+-while action = rule_actions.shift do
+  -redirect_url = action[:redirect_url]
+  -if redirect_url.present? 
+    -if redirect_url.index("?")
+      -redirect_url = "#{redirect_url}&redirect_rule_id=#{action[:rule_id]}"
+    -else
+      -redirect_url = "#{redirect_url}?redirect_rule_id=#{action[:rule_id]}"
+
+  -config = { rule_id: action[:rule_id], action_id: action[:action_id], level: action[:rules_popup_level], options: action[:rules_popup_options], message: action[:rules_popup_message], title: action[:rules_popup_title], redirect_url: redirect_url }
+  -if config[:level].present? || config[:message].present? || config[:title].present?
+    -id = "rules_web_alert_modal_#{config[:action_id]}_#{Time.now.to_i}"
+    -if last_alert_populated.present?
+      -if add_script_tag == "true"
+        :javascript
+          function after_modal_#{last_alert_populated}() {
+            $("##{id}").modal("show");
+          }
+      -else
+        :plain
+          function after_modal_#{last_alert_populated}() {
+            $("##{id}").modal("show");
+          }
+
+    -content_for :web_alert_modals do
+      =modal id: id, has_header_close_button: false do
+        .panel{class: "panel-#{config[:level].presence || 'info'}"}
+          .panel-heading
+            .panel-title 
+              #{(config[:title].presence || config[:level].try(:titleize) || "Alert").html_safe}
+            .clearfix
+          .panel-body
+            #{config[:message].html_safe}
+          .panel-footer
+            -(config[:options]).split("-").reverse.each do |option|
+              -btn_class = case option 
+                -when "OK", "Yes"
+                  - "btn-success"
+                -when "Cancel", "No"
+                  - "btn-warning" 
+                -else
+                  - "btn-default"
+
+              %button.pull-right{class:"btn #{btn_class}", style:"margin-left:5px;", onclick:"$('##{id}').modal('hide');after_modal_#{id}();"}
+                =option
+            .clearfix
+    -if last_alert_populated.nil?
+      -content_for :web_alert_show_js do
+        -if add_script_tag == "true"
+          :javascript
+            $("##{id}").modal("show");
+        -else
+          $("##{id}").modal("show");
+
+    -last_alert_populated = id
+
+  -elsif config[:redirect_url].present?
+    -if add_script_tag == "true"
+      -if last_alert_populated.present?
+        :javascript
+          function after_modal_#{last_alert_populated}() {
+            window.location.href = "#{config[:redirect_url]}";
+          }
+      -else
+        :javascript
+          window.location.href = "#{config[:redirect_url]}";
+    -else
+      -if last_alert_populated.present?
+        :plain
+          function after_modal_#{last_alert_populated}() {
+            window.location.href = "#{config[:redirect_url]}";
+          }
+      -else
+        window.location.href = "#{config[:redirect_url]}";
+
+-if escape_modals
+  jQuery('body').append('#{ j yield(:web_alert_modals)}');
+-else 
+  =yield(:web_alert_modals)
+
+=yield(:web_alert_show_js)

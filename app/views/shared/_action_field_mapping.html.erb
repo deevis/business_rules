@@ -1,0 +1,43 @@
+<% mapping = action.lookup_context_mapping(field_name,field_type) %>
+<% need_config = action.needs[field_name.to_sym] %>
+<% if mapping %>
+	<% mapping_class = "action-context-mapped" %>
+<% elsif !need_config[:optional] && action.strict_mapping? %>
+	<% mapping_class = "context-droppable needs-mapping" %>
+<% else %>
+	<% mapping_class = "context-droppable optional-mapping" %>
+<% end %>
+<% show_type_mapping = !(need_config && ([:integer_select, :boolean, :select].index(need_config[:type]))) %>
+<div id="action_mapping_<%= action.id.to_s %>_<%= field_name.to_s.gsub(".", "__") %>" style="position:relative;" class="context <%= mapping_class %>" data-rule-id="<%= @rules_rule.id rescue "" %>" data-action-id="<%= action.id %>" data-fieldtype="<%= field_type %>" data-fieldname="<%= field_name %>">
+	<b><%= field_name.to_s %></b> 
+		<% if show_type_mapping %>
+			<% unless mapping %>
+				(<i><%= field_type %></i>)
+			<% end %>
+			<i class='<%= Rules.arrow_icon %>'></i>
+		<% end %>
+	<% if need_config && ([:integer_select, :boolean, :select].index(need_config[:type])) %>
+		<% value = mapping ? mapping[0] : nil %>
+		<%= render "shared/need_#{need_config[:type]}", value: value, action: action, field_name: field_name, field_type: field_type, need_config: need_config %>
+	<% elsif mapping %>
+		<% meta_lookup = Rules.instance_lookups[field_type] || {} %>
+		<% if mapping[1] == 'instance_lookup' %>
+			<% instance_lookup = action.instance_lookup(mapping[0]) %>
+	  	<% meta_config = meta_lookup[instance_lookup.class.name] || {} %>
+    	<% display_template = meta_config[:display] || "attributes.slice('id', 'name', 'first_name', 'last_name', 'title', 'email', 'description', 'content', 'status')" %>
+			<% instance_display = instance_lookup.instance_eval display_template %>
+			<span class="source-mapping"><b><%= instance_display %></b></span>
+		<% else %>
+			<span class="source-mapping"><%= "<b>#{mapping[0].to_s}</b>(<i>#{mapping[1]}</i>)".html_safe %></span>
+		<% end %>
+		<span class="delete-source-mapping" onclick="remove_action_mapping('<%= action.id %>','<%= field_name %>', '<%= field_type %>', '<%= mapping %>');"><i class="<%= Rules.delete_icon %>"></i></span>
+
+  <% else %>
+    <%= link_to lookup_class_rules_rules_path(action_id: action.id, 
+                                                    action_field: "#{field_name}:=>#{field_type}",
+                                                    lookup_type: field_type.to_s
+                                                    ), class: "rule-modal" do %>
+      <i class='btn btn-xs btn-primary <%= Rules.lookup_icon %>'></i>
+    <% end %>
+	<% end %>
+</div>

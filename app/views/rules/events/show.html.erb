@@ -1,0 +1,11 @@
+<% content_for :page_title do %>
+  Listing Rules for event
+<% end %>
+
+<% content_for :left_column do %>
+  <%= render "rules/events/sidebar" %>
+<% end %>
+
+  <%= @event[:name] %>
+  <%= @event[:description] %>
+  <%= render "rules/rules/rules"%>

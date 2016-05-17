@@ -1,0 +1,18 @@
+<% @title ||= "edit_rule".cms %>
+<% content_for :page_title do %>
+  <%= @title %>
+<% end %>
+
+<% if params[:event_id].presence %>
+  <% content_for :left_column do %>
+    <%= render "rules/events/sidebar" %>
+  <% end %>
+<% end %>
+
+<div class="rules-widget" style="width:420px;">
+  <h1><%= @title %></h1>
+  <%= render 'form' %>
+</div>
+
+<%= link_to 'Show', params[:event_id].presence ? rules_event_rule_path(@rules_rule, event_id: params[:event_id]) : rules_rule_path(@rules_rule) %> |
+<%= link_to 'Back', params[:event_id].presence ? rules_event_rules_path(event_id: params[:event_id]) : rules_rules_path %>

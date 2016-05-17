@@ -1,0 +1,21 @@
+<% @title ||= "create_new_rule".cms %>
+<% content_for :page_title do %>
+ <%= @title %>
+<% end %>
+<% if params[:event_id].presence %>
+    <% content_for :left_column do %>
+      <%= render "rules/events/sidebar" %>
+    <% end %>
+<% end %>
+
+<div class="rules-widget" style="width:420px;">
+  <h1>
+    <%= @title %>
+    <small><%= link_to "Import from YAML", import_rules_rules_path %></small>
+  </h1>
+  <%= render 'form' %>
+</div>
+
+
+
+<%= link_to 'Back', params[:event_id].presence ? rules_event_rules_path(event_id: params[:event_id]) : rules_rules_path %>

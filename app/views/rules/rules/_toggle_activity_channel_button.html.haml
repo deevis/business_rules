@@ -1,0 +1,5 @@
+.streaming-button-container
+  -if Rules.rule_activity_channel_enabled
+    =link_to "Streaming Enabled", toggle_activity_channel_enabled_rules_rules_path(enabled:"false"), class: "btn btn-success", remote: true
+  -else
+    =link_to "Streaming Disabled", toggle_activity_channel_enabled_rules_rules_path(enabled:"true"), class: "btn btn-warning", remote: true

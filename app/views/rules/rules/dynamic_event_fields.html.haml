@@ -1,0 +1,5 @@
+
+=simple_form_for :dynamic_event_fields, url: post_dynamic_event_fields_rules_rule_path(@rules_rule) do |f| 
+  =f.input :event_klazz, label: false, placeholder: "Class of DynamicEvent" 
+  =f.input :event_action, label: false, placeholder: "Action of DynamicEvent"
+  =f.submit

@@ -1,0 +1,46 @@
+  <div class="modal-dialog rules-widget">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+         <h4 class="modal-title">Find Instance of <%= params[:klazz] %></h4>
+      </div>
+
+      <div class="modal-body" style="max-height:600px;overflow:auto;">
+        <% if params[:klazz] == 'free_form' %>
+          <input type="text" id="free_form_value" value="" placeholder="type your custom value here" /><br/>
+          <a href="javascript:void():" class="btn btn-primary" onclick="add_action_mapping('<%= params[:action_id] %>', '<%= params[:action_field] %>', encodeURIComponent($('#free_form_value').val()) + ':=>free_form', 'free_form');">
+            Add Mapping
+          </a>
+
+        <% else %>
+          <div style="margin-bottom:20px;">
+            <%= simple_form_for :search, method: :get, url: lookup_class_instance_rules_rules_path(          action_id: params[:action_id], 
+                        action_field: params[:action_field],
+                        lookup_type: params[:lookup_type],
+                        klazz: params[:klazz], format: :js), remote:true do |f| %>
+              <% @search_fields.each do |field| %>
+                <input name="search[<%=field%>]" type="textbox" placeholder="<%=field%>" value="<%= params[:search][field] rescue ''%>"/>
+              <% end %>
+              <input type="submit" value="Filter"/>
+              <input type="reset" value="Reset"/>
+            <% end %>
+          </div>
+
+          <% @results.each do |result| %>
+            <div>
+                <a href="javascript:void():" onclick="add_action_mapping('<%= params[:action_id] %>', '<%= params[:action_field] %>', '<%= params[:klazz].underscore %>[<%= result.id %>]:=>instance_lookup','<%= params[:lookup_type] %>');">
+                  <%= result.instance_eval @display_template %>
+                </a>
+            </div>
+          <% end %>
+
+          <div>
+            <%= paginate @results, params: {format: :js},remote: true %>
+          </div>
+        <% end %>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>

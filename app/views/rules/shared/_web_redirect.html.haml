@@ -1,0 +1,9 @@
+-redirect_url = get_rules_redirect
+-add_script_tag ||= "true"
+
+-if redirect_url
+  -if add_script_tag == "true"
+    :javascript
+      window.location.href = "#{redirect_url}";
+  -else
+    window.location.href = "#{redirect_url}";

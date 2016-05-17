@@ -1,0 +1,104 @@
+<div class="rules-widget" style="width:100%;">
+
+	<% if rule.name %>
+		<div id="rule_title_<%= rule.id.to_s %>" class="title <%= "ready" if rule.ready? %>">
+			<%= rule.name.titleize %>
+			<span class="label label-info"><%=@rules_rule.category%></span>
+		</div>
+	<% else %>
+		<div class="title "><input type="text" name="rules_rule[name]" value="<%= rule.name.titleize %>"/></div>
+	<% end %>
+
+	<div class="body">
+		<% context = rule.context %>
+		<% if context %>
+			<div class="collapse-group">
+				<a class="collapse-context" data-toggle='collapse' data-target='#rule_context_<%= rule.id %>'>context</a>
+				<div id="rule_context_<%= rule.id %>" class="collapse in">
+					<% if context %>
+						<% context.each do |field, type| %>
+							<%= render 'rules/rules/rule_context_field', path: field, rule: rule, field: field, type: type %>
+						<% end %>
+					<% end %>
+				</div>
+			</div>
+		<% end %>
+
+		<%= simple_form_for @rules_rule do |f| %>
+			<% if @rules_rule.scheduled? %>
+				<div style="border:1px solid #ccc; padding-top:5px;">
+					<div class="col-md-3"><i class="ic-icon-clock"></i>&nbsp;<strong>Schedule:</strong></div>
+					<div class="col-md-5">
+						<input type="text" placeholder="when to run [cron,every]" name="rules_rule[timer_expression]" data-tooltip="eg: 'every: 2m'    or    'cron: * 23 * * * *'" value="<%= @rules_rule.timer_expression %>" />
+					</div>
+					<div class="col-md-4">
+						<i>every: 3h</i><br/><i>every: 2d</i><br/><i>cron: * 23 * * * *</i>
+					</div>
+					<div class="clearfix"></div>
+				</div>
+			<% end %>
+			
+			<div class="row" style="margin-bottom:-15px; margin-right:5px; margin-left:5px;">
+				<% unique_enabled = @rules_rule.unique_expression.present? %>
+				<div class="col-md-1">
+					<input type="checkbox" name="rules_rule[enable_unique]" value="1" <%= "checked" if unique_enabled %> onclick="toggle_unique_enabled(this);" />
+				</div>
+				<div class="col-md-9">
+					<div id="unique_expression_label" style="display:<%= unique_enabled ? 'none' : 'block' %>;">Click to fire only once per User (for example)...
+					</div>
+					<div id="unique_expression_div" style="display:<%= unique_enabled ? 'block' : 'none' %>;">
+						<input type="text" id="unique_expression" name="rules_rule[unique_expression]" value="<%= @rules_rule.unique_expression %>" placeholder='<%= "enter_unique_expression".cms %>   eg: "User_#{trigger.user.id}" '/>
+					</div>
+				</div>
+				<div class="col-md-1">
+					<%= link_to "#", onclick:"alert('If you only want a Rule to fire once per User.  Or once per User every Month.  Then this is for you!<br/><br/>eg: <b>Once per user</b>:<br/> &quot;User_&#35;{trigger.user.id}&quot; <br/><br/>eg: <b>Once per user per month</b>:<br/> &quot;User_&#35;{trigger.user.id}_&#35;{Time.now.strftime(&#39;%Y_%m&#39;)}&quot;<br/><br/>eg: <b>Once per user per day</b>:<br/> &quot;User_&#35;{trigger.user.id}_&#35;{Time.now.strftime(&#39;%D&#39;)}&quot;<br/><hr/><b>NOTE</b>:DOUBLE QUOTES AROUND EXPRESSION ARE REQUIRED');" do %>
+						<i class="ic-icon-question-circle"></i>
+					<% end %>
+				</div>					
+			</div>
+
+			<div class="text-area">
+				<div class="name">
+					<% if @rules_rule.scheduled? %>
+						selection logic<span style="margin-left:10px;font-size:0.5em;color:#eee;">return 1 or more triggers</span>
+					<% else %>
+						conditional criteria
+					<% end %>
+					<%= link_to "validate", "#", onclick: "validate_criteria();", class: "btn btn-info btn-xs" %>
+				</div>
+				<%= f.input :criteria, as: :text, placeholder: "enter rule criteria logic here...", input_html: { id:"criteria", class: "criteria logic-droppable" } %>
+				<input type="submit" class="action-links btn btn-mini btn-primary" value="save"/>
+				<div class="indicator-arrow"></div>
+			</div>
+		<% end %>
+	</div>
+</div>
+
+<%= render 'rules/rules/version_history', rule: @rules_rule %>
+
+<script type="text/javascript">
+	var last_unique_value = "<%= @rules_rule.unique_expression %>";
+	function toggle_unique_enabled(checkbox) {
+		if ( $(checkbox).prop("checked") == true ) {
+			$("#unique_expression_label").hide();
+			$("#unique_expression_div").show();
+			$("#unique_expression").val(last_unique_value);
+			$("#unique_expression").focus();
+		} else {
+			$("#unique_expression_label").show();
+			$("#unique_expression_div").hide();
+			last_unique_value = $("#unique_expression").val();
+			$("#unique_expression").val("");
+		}
+	}
+
+	function validate_criteria() {
+		var url = "<%= validate_criteria_rules_rule_path(rule) %>";
+		var criteria = $("#criteria").val();
+		console.log("Checking criteria: " + criteria);
+		$.ajax({
+			url: url, 
+			data: { criteria: criteria }
+		});
+	}
+</script>

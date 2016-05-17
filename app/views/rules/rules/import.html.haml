@@ -1,0 +1,20 @@
+-content_for :title, "import_rule".cms 
+
+.row
+  .col-md-6
+    %h2="import_new_rules".cms
+    =simple_form_for :import do |f|
+      =f.input :data, as: :text, label: false, placeholder: "paste_your_YAML_in_here".cms, input_html: { style: "height:500px;"}
+      =f.input_field :override_by_name, as: :boolean, value: "1"
+      %b Reimport Existing Rule(s)
+      %br
+      =f.submit
+  .col-md-6
+    %h2 
+      Examples
+      %small=link_to "export_all".cms, export_rules_rules_path
+    -Rules::Rule.where(_deleted: false).order("u_at DESC").limit(5).each do |r|
+      %div
+        =link_to r.name, r
+        %pre
+          = r.export.to_yaml

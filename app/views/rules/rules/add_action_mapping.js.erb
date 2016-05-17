@@ -1,0 +1,23 @@
+<% if @error %>
+	toastr.error("<%= j @error %>");
+<% else %>
+	toastr.success("Mapping added <%= @rule_field_name %> to <%= @action_field_name %>");
+	$("#action_mapping_<%= @action.id.to_s %>_<%= @action_field_name %>").replaceWith("<%= j render 'shared/action_field_mapping', 
+																					action: @action, 
+																					field_name: @action_field_name,
+																					field_type: @action_field_type %>"); 
+
+	<% unless @rule_field_type == "free_form" %>
+		$("#rule_field_<%= @action.rule.id.to_s %>_<%= @rule_field_name.to_s.gsub(".", "__") %>").addClass("used");
+  <% end %>
+  
+	<%= render 'ready_headers' %>
+  <%= render 'version_history_js' %>
+
+	$('.modal.in').modal('hide');
+	$('body').removeClass('modal-open');
+	$('.modal-backdrop').remove();
+	
+	rules = [<%= @rules_rule.joint_map.to_json.html_safe %>];
+	buildGraph();
+<% end %>

@@ -1,0 +1,2 @@
+module Rules::ActionsHelper
+end

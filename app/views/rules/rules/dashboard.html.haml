@@ -1,0 +1,220 @@
+-if Rules.rule_activity_channel.present?
+  = javascript_include_tag "private_pub"
+  = subscribe_to Rules.rule_activity_channel
+
+.row
+  .col-md-2
+    =render "toggle_activity_channel_button"
+  .col-md-10
+    #processors
+      %h4.no-processors-message No Processors Registered
+.row
+  .col-md-4
+    %h2 Real Time Events
+    #real-time-events-display
+
+  .col-md-4
+    %h2 Real Time Rules Running
+    #real-time-rules-display
+
+  .col-md-4
+    .panel.panel-info
+      .panel-heading
+        .panel-title Top Actions
+      .panel-body
+        %ul
+          -Rules::RulesActionAnalytics.order("count desc").limit(25).each do |raa|
+            %li
+              =link_to raa.action_name, rules_rules_path(event: raa.action_name)
+    .panel.panel-info
+      .panel-heading
+        .panel-title Top Events
+      .panel-body
+        %ul
+          -Rules::RulesEventAnalytics.order("count desc").limit(25).each do |rea|
+            %li
+              =link_to rea.event_name, rules_rules_path(event: rea.event_name)
+
+
+-if Rules.rule_activity_channel.present?
+  :javascript
+    var event_counts = {};
+
+    function rules_data(data, channel) {
+      console.log(data);
+      if (data.type == 'runner') {  
+        $(".no-processors-message").remove();
+        if ($("#processor_" + data.id).length == 0 ) {
+          $("#processors").append("<div class='processor pull-left' id='processor_" + data.id + "'></div>");
+        }
+        update_processor(data);
+      } else if (data.type == 'rule') {
+        if (data.status == 'starting') {
+          add_new_rule( data, '' );
+        } else if (data.status == 'error') {
+          if ($("#rcg_" + data.rule_context_guid).length > 0) { 
+            $("#rcg_" + data.rule_context_guid).toggleClass('error');
+            $("#rcg_" + data.rule_context_guid + " .duration").html( data.duration );
+          } else {
+            add_new_rule( data, 'error');
+          }
+          $("#rcg_" + data.rule_context_guid + " .errorMessage").html( data.error_message );
+          $("#rcg_" + data.rule_context_guid + " .error-stack-trace").html( data.error_stacktrace );
+          $("#rcg_" + data.rule_context_guid + " .error-stack-trace").show();
+        } else if (data.status == 'criteria_rejected') {
+            $("#rcg_" + data.rule_context_guid).toggleClass('criteria-rejected');
+            $("#rcg_" + data.rule_context_guid + " .error-stack-trace").html( data.criteria );
+            $("#rcg_" + data.rule_context_guid + " .error-stack-trace").show();
+        } else if (data.status == 'finished') {
+          $("#rcg_" + data.rule_context_guid).toggleClass('success');
+          $("#rcg_" + data.rule_context_guid + " .duration").html( data.duration + " seconds");
+        }
+      } else if (data.type == 'action' ) {
+        $("#rcg_" + data.rule_context_guid + " .actions").append("<div class='rt-action'>" + data.name + "</div>");
+      } else if (data.type == 'event' ) {
+        var data_name = data.name.replace(/::/g,"_");
+        var existing = $("#real-time-events-display .rt-event[data-name=" + data_name + "]");
+        if (existing.length > 0) {
+          event_counts[data_name]++;
+          existing.find("span").html("&nbsp;" + event_counts[data_name] + "&nbsp;"); 
+          existing.stop().css("background-color", "#FFFF00").animate({ backgroundColor: "#B0C4DE"}, 500);
+        } else {
+          $("#real-time-events-display").prepend("<div class='rt-event' data-name='" + data_name + "'><span class='badge'>&nbsp;1&nbsp;</span>" + data.name + "</div>");
+          event_counts[data_name] = 1
+        }
+        $("#real-time-events-display .rt-event").sortElements(function(a,b) {
+          //console.log("Sort comparing " + $(a).data('name') + " with " + $(b).data('name'));
+          return event_counts[ $(a).data("name")] < event_counts[ $(b).data("name")] ? 1 : -1;
+        });
+
+        if ($("#real-time-events-display").children() > 50) {
+          $("#real-time-events-display:last-child").fadeOut(200, function() { $(this).remove();});
+        }
+      }
+    }
+
+    function add_new_rule(data, success_class) {
+      $("#real-time-rules-display").prepend("<div id='rcg_" + data.rule_context_guid + "' class='rt-rule " + success_class + "'><h3><a href='/rules/rules/" + data.id + "' targer='_blank'>" + data.name + "</a></h3><div class='runner-id'>" + data.processor_id + "</div><div class='context-guid'>" + data.rule_context_guid + "</div><div class='clearfix'></div><div class='rt-event'>" + data.event + "</div><div class='actions'></div><div class='errorMessage'></div><div class='error-stack-trace'></div><div class='duration pull-right'></div><div class='timestamp pull-left'>" + data.server_time + "</div><div class='clearfix'></div></div>");
+      if ($("#real-time-rules-display").children() > 10) {
+        $("#real-time-rules-display:last-child").fadeOut(200, function() { $(this).remove();});
+      }
+
+    }
+
+    function update_processor(data) {
+      $("#processor_" + data.id).html("<div><div class='runner-id'>" + data.id + "</div>" +
+          "<div><div class='stat-label'>Threads:</div>" + data.active_threads + "/" + data.max_threads + "</div>" + 
+          "<div><div class='stat-label'>Events Processed:</div>" + data.jobs_run + "</div>" + 
+          "<div><div class='stat-label'>Queue Size:</div>" + data.queue_size + "</div></div>");
+    }
+
+    PrivatePub.subscribe('#{Rules.rule_activity_channel}', rules_data);
+
+-content_for :page_javascript do 
+  $('.btn').button();
+
+:css
+  h1, h2, h3, h4 {
+    color: black;
+    font-weight:500;
+  }
+
+  .processor {
+    padding:20px;
+  }
+
+  .error-message {
+    font-weight: 500;
+    font-style: italic;
+  }
+
+  .error-stack-trace {
+    width:100%;
+    max-height:100px;
+    overflow-y: auto; 
+    font-size:0.85em;
+    display:none;
+  }
+
+  .processor .stat-label {
+    margin-right:10px;
+    width: 120px;
+    font-weight:500;
+    font-size:1.05em;
+    display: inline-block;
+  }
+
+  .runner-id {
+    font-weight:600;
+    font-size:1.1em;
+  }
+
+  .rt-event {
+    font-weight: 600;
+    width: 350px;
+    border:1px solid lightslategray;
+    background-color: lightsteelblue;
+    border-radius: 3px;
+    padding:5px;
+    margin:3px;
+  }
+
+  .rt-event span {
+    padding:5px;
+    margin-right:5px;
+    font-size:1.15em;
+  }
+
+  .rt-rule {
+    border: 1px solid #888;
+    padding:5px;
+    background-color: #aaa;
+    margin-bottom:15px;
+  }
+
+  .rt-rule h3 a {
+    color: black;
+  }
+
+  .rt-rule .runner-id {
+    font-weight:500;
+    font-size:0.9em;
+    color:blue;
+    margin-left:10px;
+    float:left;
+    display:inline-block;
+  }
+
+  .rt-rule .context-guid {
+    font-weight:400;
+    font-size:0.8em;
+    margin-left:10px;
+    float:left;
+    display:inline-block;
+    color:#333;
+  }
+
+  .rt-rule.success {
+    background-color: yellowgreen;
+  }
+
+  .rt-rule.error {
+    background-color: lightcoral;
+  }
+
+  .rt-rule.criteria-rejected {
+    background-color: goldenrod;
+  }
+
+  .rt-rule .rt-event {
+    margin-left:30px;
+  }
+
+  .rt-action {
+    background-color: olivedrab;
+    color: white;
+    border-radius:5px;
+    border:1px solid olive;
+    padding:3px;
+    margin:2px;
+  }

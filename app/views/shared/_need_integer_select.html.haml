@@ -1,0 +1,7 @@
+-#render "shared/integer_need", action: action, field_name: field_name, need_config: need_config
+-min = need_config[:min] || 0
+-max = need_config[:max] || 1000
+-value ||=  need_config[:default] || ((min+max)/2)
+%input{type:"number", id: "#{action.id}_#{field_name}", name: field_name, min: min, max: max, value: value, style: "color:black;"}
+=link_to "Update", "javascript:void();", class:"btn btn-primary btn-xs", onclick:"add_action_mapping('#{action.id}', '#{field_name}:=>#{field_type}', encodeURIComponent($('##{action.id}_#{field_name}').val()) + ':=>free_form', 'free_form');"
+

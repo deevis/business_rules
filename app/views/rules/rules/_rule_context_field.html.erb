@@ -1,0 +1,10 @@
+<% path_id = "#{rule.id.to_s}_#{path.to_s.gsub('.','__')}" %>
+            <div id="rule_field_<%= path_id %>" class="context context-draggable <%= 'used' if rule.context_field_mapped?(path,type) %>" data-fieldtype="<%= type %>" data-fieldname="<%= path %>">
+              <% if drillable_rule_type? type %>
+                <%= link_to "+", lookup_sub_properties_rules_rules_path(rule_id: rule.id, div_id: path_id, path: path), remote: true, id: "expand_link_#{path_id}" %>
+                <%= link_to "-", "javascript:void();", onclick:"remove_sub_properties('#{path_id}');", class: "hidden", id: "collapse_link_#{path_id}" %>
+              <% else %>
+                &nbsp;&nbsp;
+              <% end %>
+              <b><%= field %></b> (<i><%= type %></i>)
+            </div>

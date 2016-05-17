@@ -1,0 +1,10 @@
+<% if @rules_rule.active %>
+  toastr.success("Rule Activated");
+<% else %>
+  toastr.error("Rule Inactivated");
+<% end %>
+<%= render 'version_history_js' %>
+
+$(".enable-disable-button-<%= @rules_rule._id %>").replaceWith("<%= j render 'toggle_active_button', btn_class_size: params[:btn_class_size] %>");
+
+$("#rules-sanity-check").replaceWith("<%= j render 'sanity_check' %>");

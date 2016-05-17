@@ -1,0 +1,21 @@
+<% show_arrow ||= false %>
+
+<% context = Rules::RulesConfig.event_config(event_name)[:context] %>
+<div class="rules-widget">
+	<div class="title ready" style="cursor:pointer;" onclick="window.location='<%= rules_rules_path(event: event_name) %>';"><%= event_name.split("::").last(2).join("::").titleize %></div>
+	<div class="action-links"><%= link_to "<i class='#{Rules.trash_icon}'></i>".html_safe, remove_event_rules_rule_path(@rules_rule, event: event_name), method: :delete, "data-confirm" => "Are you sure you want to remove this Event Trigger from this Rule?" %></div>
+	<div class="classname"><%= event_name %></div>
+	<% if context %>
+		<div class="collapse-group">
+			<a class="collapse-context" data-toggle='collapse' data-target='#provided_<%= event_name.gsub("::","_") %>'>context</a>
+			<div id="provided_<%= event_name.gsub("::","_") %>" class="collapse out">
+				<% context.each do |field, type| %>
+					<div class="context <%= 'unavailable' unless rule && rule.context[field] == type %>">
+						<b><%= field %></b> (<i><%= type %></i>)
+					</div>
+				<% end %>
+			</div>
+		</div>
+	<% end %>
+	<div class="indicator-arrow"></div>
+</div>

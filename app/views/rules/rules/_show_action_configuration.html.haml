@@ -1,0 +1,6 @@
+-action ||= @action
+.row
+	.col-md-6
+		=render "shared/rule", rule: @rules_rule
+	#rule-actions.col-md-6
+		=render "shared/action", action: action

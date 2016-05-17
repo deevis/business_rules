@@ -1,0 +1,11 @@
+	<% if @action.ready? %>
+		$("#action_title_<%= @action.id.to_s %>").addClass("ready");
+	<% else %>
+		$("#action_title_<%= @action.id.to_s %>").removeClass("ready");
+	<% end %>
+
+	<% if @rules_rule.ready? %>
+		$("#rule_title_<%= @rules_rule.id.to_s %>").addClass("ready");
+	<% else %>
+		$("#rule_title_<%= @rules_rule.id.to_s %>").removeClass("ready");
+	<% end %>

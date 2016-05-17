@@ -1,0 +1,12 @@
+$("#action-mapping-editor").html('<%= j render "show_action_configuration" %>');
+
+$("#action-mapping-editor .rule-modal").click(function(event) {
+	event.preventDefault();
+  show_lookup_modal($(this).attr("href"));
+});
+
+<% on_ready do %>
+	$( ".context-draggable" ).draggable( draggableConfiguration);
+	$( ".context-droppable" ).droppable( droppableConfiguration );
+	$( ".logic-droppable" ).droppable( logicDroppableConfiguration );
+<% end %>

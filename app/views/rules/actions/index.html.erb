@@ -1,0 +1,12 @@
+<h3>Rule Actions</h3>
+
+<div class="row">
+<% @actions.each_with_index do |a,idx| %>
+
+	<%= render 'shared/action', action: a %>
+
+	<% if idx % 3 == 2 %>
+		</div><div class="row">
+	<% end %>
+<% end %>
+</div>

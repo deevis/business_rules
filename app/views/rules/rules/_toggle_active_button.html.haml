@@ -1,0 +1,7 @@
+-rule ||= @rules_rule
+-btn_class_size ||= ""
+%span{class:"enable-disable-button-#{rule._id}"}
+	-if rule.active? 
+		=link_to "Active", toggle_active_rules_rule_path(rule, active: false, btn_class_size: btn_class_size), class: "btn btn-success #{btn_class_size}", "data-confirm" => "Are you sure you want to disable '#{rule.name}'?", remote: true
+	-else
+		=link_to "Inactive", toggle_active_rules_rule_path(rule, active: true, btn_class_size: btn_class_size), class: "btn btn-danger #{btn_class_size}", "data-confirm" => "Are you sure you want to enable '#{rule.name}'?", remote: true 

@@ -1,0 +1,166 @@
+:css
+  /* Hey - just ask Darren to remove these whenever the time is right */
+  #main.container {
+    max-width: 90%!important;
+  }
+  .rule-invalid td {
+    background-color: rgba(255, 100, 150, 0.3)!important;
+  }
+
+  tr.rule-invalid  {
+    border:2px solid rgba(255, 100, 150, 0.7)!important;  
+  }
+
+  .rule-deleted {
+    border:5px solid #ff3333!important;
+  }
+
+  h3 > small > a {
+    font-size:0.7em;
+    margin-left:10px;
+  }
+
+.col-md-6
+  #top-buttons
+    .pull-left
+      = link_to "Reload Rules Engine Configuration", reload_rules_engine_rules_rules_path, class: "btn btn-mini btn-primary", "data-confirm" => "This may take a moment - it may also cause threading race conditions until it is done in a smarter fashion, it will reload available Events and ActionHandlers.  That being said... ARE YOU SURE?", method: :get
+      = link_to "New Rule", new_rules_rule_path, class: "btn btn-mini btn-primary"
+      - if params[:deleted] == "true"
+        = link_to "Exclude Deleted", rules_rules_path, class: "btn btn-mini btn-info"
+      - else
+        = link_to "Include Deleted", rules_rules_path(deleted:"true"), class: "btn btn-mini btn-warning"
+      - if Rails.env.development?
+        = link_to "System Reset", fresh_start_rules_rules_path, class: "btn btn-mini btn-danger",
+        method: :get, "data-confirm" => "This will delete all rules permanently and reload them all from file YAML file definitions.  It is only available in Development environments."
+
+    .clearfix
+
+  %div{:style => "margin-top:20px;margin-bottom:10px;"}
+    - if params[:event].present?
+      %h3
+        Filtered by
+        %small
+          Rules with <b>#{params[:event]}</b> as a trigger
+          = link_to "Remove", rules_rules_path(category: params[:category], action_type: params[:action_type], q: params[:q])
+    - if params[:action_type].present?
+      %h3
+        Filtered by
+        %small
+          Rules that invoke <b>#{params[:action_type]}</b> when run
+          = link_to "Remove", rules_rules_path(category: params[:category], q: params[:q], event: params[:event])
+    - if params[:category].present?
+      %h3
+        Filtered by
+        %small
+          Rules belonging to <b>#{params[:category]}</b> Category
+          = link_to "Remove", rules_rules_path(action_type: params[:action_type], q: params[:q], event: params[:event]), style:"font-size:0.7em;margin-left:10px;"
+    - if params[:q].present?
+      %h3
+        Filtered by
+        %small
+          Rules with name, description, events or templates matching '<b>#{params[:q]}</b>'
+          = link_to "Remove", rules_rules_path(action_type: params[:action_type], category: params[:category], event: params[:event]), style:"font-size:0.7em;margin-left:10px;"
+
+    .btn-group.pull-left
+      %button.btn.btn-info.dropdown-toggle{type:"button", "data-toggle" => "dropdown"}
+        #{params[:category].presence || "Category Filter"}
+        %span.caret
+      %ul.dropdown-menu{role:"menu", style:"width:320px;"}
+        -Rules.rules_categories.sort.each do |r| 
+          %li
+            =link_to r, rules_rules_path(action_type: params[:action_type], q: params[:q], event: params[:event], category: r)
+
+    .search.pull-left{style:"margin-left: 10px;"}
+      .input-group.pull-left{style:"width:400px;"}
+        .input-group-addon=icon "search"
+        %input#search-text.form-control{placeholder: "Search rules for...", value: params[:q].presence}
+      %button.btn.btn-default.pull-left{onclick:"searchRules();"} Search
+      .clearfix
+
+    .clearfix
+
+.col-md-6
+  =render "sanity_check"
+      
+
+
+%table.table-striped.table-bordered
+  %tr
+    %th Active
+    %th Category
+    %th Name
+    %th Description
+    %th{:style => "min-width:250px;"} Events
+    %th Criteria
+    %th{:style => "min-width:250px;"} Actions
+    %th Modified
+  - @rules_rules.each do |r|
+    - row_class = r.ready? ? "" : "rule-invalid"
+    - row_class = r.rule_deleted? ? "rule-deleted" : row_class
+    %tr{:class => row_class, :style => "border-bottom:1px solid black;margin-top:10px;"}
+      %td
+        -unless r.ready?
+          .label.label-danger Invalid
+        = render "toggle_active_button", rule: r, btn_class_size: "btn-xs"
+        - unless r.definition_file.blank?
+          .label.plum{"data-toggle" => "popover", "data-html" => "true", "data-title" => r.definition_file} System          
+      %td= r.category
+      %td
+        %span{:style => "font-size:1.25em;"}
+          = link_to params[:event_id].presence ? rules_event_rule_path(r, event_id: params[:event_id]) : rules_rule_path(r) do
+            =highlight(r.name, params[:q])
+      %td{:style => "min-width:300px;"}
+        = highlight(r.description, params[:q])
+      %td
+        - r.events[0,10].each do |e|
+          = link_to e, rules_rules_path(event: e, category: params[:category], q: params[:q], action_type: params[:action_type])
+          %br/
+        - if r.events.count > 10
+          = (r.events.count - 10)
+          other event(s)
+      %td= highlight(r.criteria, params[:q])
+      %td{:style => "min-width:300px;"}
+        - r.actions.each do |a|
+          %div{:class => "title #{"ready" if a.ready?}"}
+            = link_to rules_rules_path(action_type: a.type, category: params[:category], q: params[:q], event: params[:event]) do
+              = a.display_name
+            -if params[:q].present?
+              -a.template.each do |name, body|
+                -if body =~ @q_regexp 
+                  (
+                  =link_to rules_rule_path(r, action_id: a.id.to_s), data: {toggle: "popover", html: "true", title: body} do
+                    %strong=name
+                  )
+      %td
+        = time_ago_in_words(r.u_at)
+        by #{r.updated_by.presence || 'System'}
+%br/
+
+-on_ready do
+  :plain
+    $('[data-toggle="popover"]').popover({trigger: 'hover'});
+    $("#search-text").keyup(function(event){
+      //console.log( event.keyCode);
+      if(event.keyCode == 13) {
+        setTimeout(searchRules, 50);
+      }
+    });
+
+
+:javascript
+  var searching = false;
+  function searchRules() {
+    if (searching) {
+      return;
+    }
+    searching = true;
+    var q = $("#search-text").val();
+    var url = '#{rules_rules_path(event: params[:event] || '', action_type: params[:action_type] || '', category: params[:category] || '')}';
+    window.open(url + '&q=' + q, "_self");
+  }
+
+:css
+  .popover {
+    max-width:800px;
+    width:auto;
+  }

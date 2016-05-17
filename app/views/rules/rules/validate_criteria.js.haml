@@ -1,0 +1,7 @@
+-msg = "Evaluated: <br/><br/><i>#{j @criteria}</i><br/><br/>"
+-if @errors.size > 0 
+  -msg="#{msg}<b style='font-size:1.5em;color:red;'>Errors Encountered!!!</b><br/>#{j @errors.join('<br/>')}"
+-else
+  -msg="#{msg}<b style='font-size:1.5em;color:darkgreen;'>Validation passed</b>"
+
+alert("#{msg.html_safe}");

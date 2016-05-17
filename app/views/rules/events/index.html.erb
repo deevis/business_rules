@@ -1,0 +1,72 @@
+<h3>Listing Events</h3>
+
+
+<!-- 
+:model_events=>
+  {"PyrCommunity"=>
+    {"Blog"=>
+      {:context=>
+        {"id"=>{:type=>:integer},
+         "title"=>{:type=>:string},
+         "author_id"=>{:type=>:integer},
+         "disqus_shortname"=>{:type=>:string},
+         "background_tile"=>{:type=>:boolean},
+         "background_blur"=>{:type=>:integer},
+         "footer"=>{:type=>:text},
+         "description"=>{:type=>:text},
+         "twitter"=>{:type=>:string},
+         "google_analytics"=>{:type=>:string},
+         "background_uid"=>{:type=>:string},
+         "logo_uid"=>{:type=>:string},
+         "created_at"=>{:type=>:datetime},
+         "updated_at"=>{:type=>:datetime}},
+       :actions=>[:create, :update, :delete]}
+      }
+    },
+   "PyrCore"=>
+    {"Lead"=>
+      {:context=>
+        {"id"=>{:type=>:integer},
+         "first_name"=>{:type=>:string},
+         "last_name"=>{:type=>:string},
+         "email"=>{:type=>:string},
+         "phone"=>{:type=>:string},
+         "lead_group"=>{:type=>:string},
+         "comments"=>{:type=>:text},
+         "user_id"=>{:type=>:integer},
+         "created_at"=>{:type=>:datetime},
+         "updated_at"=>{:type=>:datetime}},
+       :actions=>[:create, :update, :delete]}}}}
+
+--------------------------------------------------------------------------
+                          DynaTree equivalent below
+--------------------------------------------------------------------------
+
+  [
+    {title: "Model Events", isFolder: true, key: "model_events", 
+      children: [
+        {title: "PyrCommunity", isFolder: true, key: "model_events.pyr_community",
+          children: [
+            {title: "Blog", isFolder: true, key: "model_events.pyr_community.blog", 
+              children: [
+                {title: "Create", key: "model_events.pyr_community.blog.create" },
+                {title: "Update", key: "model_events.pyr_community.blog.update" },
+                {title: "Delete", key: "model_events.pyr_community.blog.delete" },
+              ]}
+          ]},
+      children: [
+        {title: "PyrCore", isFolder: true, key: "model_events.pyr_core",
+          children: [
+            {title: "Lead", isFolder: true, key: "model_events.pyr_core.lead", 
+              children: [
+                {title: "Create", key: "model_events.pyr_core.lead.create" },
+                {title: "Update", key: "model_events.pyr_core.lead.update" },
+                {title: "Delete", key: "model_events.pyr_core.lead.delete" },
+              ]}
+          ]}
+
+      ]}
+
+  ]
+-->
+    <%= render_tree @events_tree %>

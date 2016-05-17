@@ -1,0 +1,40 @@
+
+      <div class="modal-body" style="max-height:500px;overflow:auto;">
+          <% @classes.each do |klazz| %>
+            <div>
+                <% if params[:lookup_type] == "class_lookup" %>
+                  <% if params[:set_timer_event] == "true" %>
+                    <a href="<%= set_timer_event_class_rules_rule_path(id: params[:rule_id], klazz: klazz.underscore) %>">
+                      <%= klazz %>
+                    </a>
+                  <% else %>
+                    <a href="javascript:void():" onclick="add_action_mapping('<%= params[:action_id] %>', '<%= params[:action_field] %>', '<%= klazz.underscore %>:=><%= params[:lookup_type]%>','<%= params[:lookup_type] %>');">
+                      <%= klazz %>
+                    </a>
+                  <% end %>
+                <% else  %>
+                    <%= link_to klazz, "javascript:void(0);", onclick:"show_lookup_modal('#{lookup_class_instance_rules_rules_path(action_id: params[:action_id], 
+                                                                    action_field: params[:action_field],
+                                                                    lookup_type: params[:lookup_type],
+                                                                    klazz: klazz, format: :html)}');" %>
+                  <% end %>
+            </div>
+          <% end %>
+
+          <div>
+            <%= link_to "Free Form", "javascript:void(0);", onclick:"show_lookup_modal('#{lookup_class_instance_rules_rules_path(action_id: params[:action_id], 
+                                                          action_field: params[:action_field],
+                                                          lookup_type: params[:lookup_type],
+                                                          klazz: 'free_form', format: :html)}');" %>
+          </div>
+
+          <% @lambdas_predefined && @lambdas_predefined.each do |name, lambda| %>
+            <div style="margin-top:5px;">
+              <a href="javascript:void(0):" class="btn btn-primary" onclick="add_action_mapping('<%= params[:action_id] %>', '<%= params[:action_field] %>', '<%= name.to_s %>:=>lambda_lookup', 'lamda_lookup');">
+                <%= name.to_s.titleize %>
+              </a>
+            </div>
+          <% end %>
+
+      </div>
+

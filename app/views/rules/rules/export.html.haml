@@ -1,0 +1,6 @@
+-content_for :title, "Export Rules"
+%h1= "Showing #{@rules_rules.size} Rules in import/export format"
+-@rules_rules.each do |r|
+	%div
+		%pre
+			= r.export.to_yaml

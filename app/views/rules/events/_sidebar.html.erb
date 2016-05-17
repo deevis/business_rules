@@ -1,0 +1,8 @@
+<%events = Rules::RulesConfig.events%>
+<table>
+<% events.each do |event| %>
+  <tr>
+    <td><% if event[:name] == params[:event_id] %><b><% end %><%= link_to event[:name], rules_event_rules_path(event_id: event[:name]) %><% if event[:name] == params[:event_id] %></b><% end%></td>
+  </tr>
+<% end %>
+</table>

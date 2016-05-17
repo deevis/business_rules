@@ -1,0 +1,5 @@
+-if action.future_configuration?
+	=render "shared/future_configuration_field", action: action, :field => :run_at_expression
+	=render "shared/future_configuration_field", action: action, :field => :contingent_script
+	=render "shared/future_configuration_field", action: action, :field => :recurring_expression
+	=render "shared/future_configuration_field", action: action, :field => :unique_expression

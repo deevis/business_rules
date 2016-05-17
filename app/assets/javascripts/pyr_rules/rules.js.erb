@@ -1,0 +1,220 @@
+// Place all the behaviors and hooks related to the matching controller here.
+// All this logic will automatically be available in application.js.
+
+//= require d3/d3.js
+//= require d3/d3.layout.js
+//= require joint/joint.nojquery.js
+
+  var logicDroppableConfiguration = {
+      accept: ".context-draggable",
+      activeClass: "ui-state-hover",
+      hoverClass: "ui-state-active",
+      drop: function( event, ui ) {
+        console.log("Adding [" + ui.draggable.attr("data-fieldname") + 
+                    "] to textarea["+$(this).val()+"]");
+        $(this).val( $(this).val() + ui.draggable.attr("data-fieldname"));
+      }
+    };
+
+  var droppableConfiguration = {
+      accept: ".context-draggable",
+      activeClass: "ui-state-hover",
+      hoverClass: "ui-state-active",
+      drop: function( event, ui ) {
+        var rule_id = $(this).attr("data-rule-id");
+        var action_id = $(this).attr("data-action-id");
+        var field_type = ui.draggable.attr("data-fieldtype");
+        var rule_field = ui.draggable.attr("data-fieldname") + ":=>" + ui.draggable.attr("data-fieldtype");
+        var action_field = $(this).attr("data-fieldname") + ":=>" + $(this).attr("data-fieldtype");
+        add_action_mapping( action_id, action_field, rule_field, field_type );
+      }
+    };
+
+    var draggableConfiguration = {
+      cursor: "move",
+      cursorAt: { top: -2, left: -20 },
+      containment: $("#main-content").parent(),
+      helper: function( event ) {
+        return $( "<div style='color:black;'>" + $(this).html() + "</div>" );
+      }
+    };
+
+jQuery.fn.sortElements = (function(){
+    
+    var sort = [].sort;
+    
+    return function(comparator, getSortable) {
+        
+        getSortable = getSortable || function(){return this;};
+        
+        var placements = this.map(function(){
+            
+            var sortElement = getSortable.call(this),
+                parentNode = sortElement.parentNode,
+                
+                // Since the element itself will change position, we have
+                // to have some way of storing it's original position in
+                // the DOM. The easiest way is to have a 'flag' node:
+                nextSibling = parentNode.insertBefore(
+                    document.createTextNode(''),
+                    sortElement.nextSibling
+                );
+            
+            return function() {
+                
+                if (parentNode === this) {
+                    throw new Error(
+                        "You can't sort elements if any one is a descendant of another."
+                    );
+                }
+                
+                // Insert before flag:
+                parentNode.insertBefore(this, nextSibling);
+                // Remove flag:
+                parentNode.removeChild(nextSibling);
+                
+            };
+            
+        });
+       
+        return sort.call(this, comparator).each(function(i){
+            placements[i].call(getSortable.call(this));
+        });
+        
+    };
+    
+})();
+
+  $(function() {
+    $( ".context-draggable" ).draggable( draggableConfiguration);
+	  $( ".context-droppable" ).droppable( droppableConfiguration );
+    $( ".logic-droppable" ).droppable( logicDroppableConfiguration );
+
+    $( "#event_lookup_autocomplete" )
+      // don't navigate away from the field on tab when selecting an item
+      .bind( "keydown", function( event ) {
+        if ( event.keyCode === $.ui.keyCode.TAB &&
+            $( this ).data( "ui-autocomplete" ).menu.active ) {
+          event.preventDefault();
+        }
+      })
+      .autocomplete({
+        source: function( request, response ) {
+          $.getJSON( "/rules/rules/lookup_events.json", {
+            q: extractLast( request.term )
+          }, response );
+        },
+        search: function() {
+          // custom minLength
+          var q = extractLast( this.value );
+          if ( q.length < 2 ) {
+            return false;
+          }
+        },
+        focus: function() {
+          // prevent value inserted on focus
+          return false;
+        },
+        select: function( event, ui ) {
+          url = "/rules/rules/" + rule_id + "/add_event?event=" + ui.item.id;
+          window.location.replace(url);
+          return false;
+
+        }
+      });
+
+
+    $( "#action_lookup_autocomplete" )
+      // don't navigate away from the field on tab when selecting an item
+      .bind( "keydown", function( event ) {
+        if ( event.keyCode === $.ui.keyCode.TAB &&
+            $( this ).data( "ui-autocomplete" ).menu.active ) {
+          event.preventDefault();
+        }
+      })
+      .autocomplete({
+        source: function( request, response ) {
+          $.getJSON( "/rules/rules/lookup_actions.json", {
+            q: extractLast( request.term )
+          }, response );
+        },
+        search: function() {
+          // custom minLength
+          var q = extractLast( this.value );
+          if ( q.length < 2 ) {
+            return false;
+          }
+        },
+        focus: function() {
+          // prevent value inserted on focus
+          return false;
+        },
+        select: function( event, ui ) {
+          url = "/rules/rules/" + rule_id + "/add_action?action_class=" + ui.item.id;
+          window.location.replace(url);
+          return false;
+
+        }
+      });
+  });
+
+    function add_action_mapping(action_id, action_field, rule_field, field_type) {
+      console.log("add_action_mapping: " + action_field + "|" + rule_field + "|" + field_type);
+      var url = "/rules/rules/" + rule_id + "/add_action_mapping?action_id=" + action_id + 
+                "&rule_field=" + rule_field + "&action_field=" + action_field;
+      console.log("   - " + url);
+      if (field_type=="class_lookup" || (rule_field.indexOf(":=>instance_lookup") > 0) ) {
+          window.location = url;
+      } else {
+        $.ajax({
+          url: url
+        });
+      }
+    }
+
+    function remove_action_mapping(action_id, field_name, field_type, mapping) {
+      console.log("remove_action_mapping: " + field_name + "|" + field_type + "|" + mapping);
+      var url = "/rules/rules/" + rule_id + "/remove_action_mapping?action_id=" + 
+                  action_id + "&action_field=" + field_name +":=>" + field_type;
+      console.log("   - " + url);
+      if (field_type=="class_lookup" || (mapping.indexOf("instance_lookup") > 0) ) {
+          window.location = url;
+      } else {
+        $.ajax({
+          url: url,
+          type: 'delete'
+        });
+      }
+    }
+
+    function set_future_field(action_id, field) {
+      var value = encodeURIComponent($("#" + action_id + "_" + field).val());
+      console.log("set_future_field: " + action_id + "|" + field + "|" + value);
+      var url = "/rules/rules/" + rule_id + "/set_future_field?action_id=" + 
+                  action_id + "&field=" + field +"&value=" + value;
+      console.log("   - " + url);
+      $.ajax({
+        url: url
+      });
+    }
+
+    function remove_sub_properties(div_selector) {
+      $("#rule_field_" + div_selector).children(".context-draggable").remove();
+      $("#expand_link_" + div_selector).toggleClass("hidden");
+      $("#collapse_link_" + div_selector).toggleClass("hidden");
+    }
+
+    function toggleActive(value) {
+        $.ajax({
+          url:"/rules/rules/" + rule_id + "/toggle_active.js?active=" + value
+        });
+    }
+
+
+    function split( val ) {
+      return val.split( /,\s*/ );
+    }
+    function extractLast( term ) {
+      return split( term ).pop();
+    }
+

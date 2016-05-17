@@ -1,0 +1,29 @@
+  <div id="version-history">
+    <h3>version history</h3>
+
+    <div>
+      <% btn_class = rule.ready? ? "label-success" : "label-warning" %>
+      <% btn_class = "btn-danger" if rule.rule_deleted? || !rule.active %>
+      <div class="<%= btn_class %>" style="color:white;padding:5px;font-weight:bold;float:left;">Current</div>
+      <div style="float:left;margin-left:5px;">
+        <em><%= time_ago_in_words rule.u_at %></em> by <%= rule.updated_by.presence || 'unknown' %><br/>
+        <%= rule.updated_action.gsub(",",", ").gsub("  "," ").html_safe rescue '' %>
+      </div>
+      <div class="clearfix"></div>
+    </div>
+
+    <% rule.versions.reverse.each do |v| %>
+      <div>
+        <% btn_class = v[:was_valid] ? "btn-success" : "btn-warning" %>
+        <% btn_class = "btn-danger" if v[:deleted] || !v[:active] %>
+        <%= link_to "javascript:void();", onclick:"", class:"btn btn-sm #{btn_class}", style:"float:left;" do %>
+          <strong>v<%= v[:version] %></strong>
+        <% end %>
+        <div style="float:left;margin-left:5px;">
+          <em><%= time_ago_in_words v[:updated_at] %></em> by <%= v[:updated_by].presence || 'unknown' %><br/>
+          <%= v[:updated_action].gsub(",",", ").gsub("  "," ").html_safe rescue '' %>
+        </div>
+        <div class="clearfix"></div>
+      </div>
+    <% end %>
+  </div>

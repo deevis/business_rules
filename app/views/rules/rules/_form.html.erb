@@ -1,0 +1,35 @@
+<%
+  url = params[:event_id].presence ? rules_event_rules_path(event_id: params[:event_id]) : rules_rules_path
+  url = (params[:event_id].presence ? rules_event_rule_path(@rules_rule, event_id: params[:event_id]) : rules_rule_path(@rules_rule)) unless @rules_rule.new_record?
+%>
+
+  <%= simple_form_for( @rules_rule, url: url) do |f| %>
+    <% if @rules_rule.errors.any? %>
+      <div id="error_explanation">
+        <h2><%= pluralize(@rules_rule.errors.count, "error") %> prohibited this rules_rule from being saved:</h2>
+
+        <ul>
+        <% @rules_rule.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="field">
+      <%= f.input :name , label: false, placeholder: "Name" , input_html: {style: "width:400px;"} %>
+    </div>
+    <div class="field">
+      <%= f.input :description , as: :text, label: false, placeholder: "Enter a brief description" , input_html: {style: "width:400px;"} %>
+    </div>
+    <div class="field">
+      <%= f.input :category, as: :select, label: false, collection: Rules.rules_categories.sort %>
+    </div>
+    <div class="actions">
+      <%= f.button :submit, class: "btn btn-primary btn-sm" %>
+    </div>
+  <% end %>
+
+<% content_for :page_javascript do %>
+    $("#rules_rule_name").focus();
+<% end %>

@@ -1,0 +1,25 @@
+---
+  :name: New Followers Activity Stream
+  :description: When a User follows another User, post this action to the ActivityStream.
+  :definition_file: "/pyr/community/config/rules/new_followers_activity_stream.yaml"
+  :events:
+  - Rules::Test::C::create
+  :category: Uncategorized
+  :unique_expression: 
+  :criteria: 
+  :timer_expression: 
+  :start_date: 
+  :end_date: 
+  :actions:
+  - :title: Activity Feed
+    :type: Rules::Handlers::WebAlert
+    :context_mapping: !ruby/hash:BSON::Document
+      actor:=>user: actor:=>user
+      activity_item:=>object: trigger:=>follow
+    :future_configuration: !ruby/hash:BSON::Document
+      run_at_expression: Time.now + 1.day
+      unique_expression: ''
+      recurring_expression: ''
+      contingent_script: trigger != nil
+      priority: 0
+    :defer_processing: false

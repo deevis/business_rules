@@ -1,0 +1,72 @@
+- show_arrow ||= false
+- title_only = false unless defined? title_only
+- action_ordinal = ""
+- action_ordinal = 1 + @rules_rule.actions.index(action) if @rules_rule
+.rules-widget
+  %div{class: "title #{"ready" if action.ready?}", :id => "action_title_#{action.id.to_s}"}
+    %span.ordinal= action_ordinal
+    = action.type.split("::").last.titleize
+  - unless title_only
+    .body.action
+      -if @rules_rule
+        .action-links
+          -if action.scheduled?
+            %i{class: "ic-icon-fw ic-icon-lg #{Rules.clock_icon} future-#{action.future_configuration?}", title: "Scheduled to run at a later time"}
+          -if action.defer_processing?
+            %i{class: "ic-icon-fw ic-icon-lg #{action.handler_class.continuation_strategy.icon}", title: action.handler_class.continuation_strategy.title}
+          -if action.testable?
+            =link_to test_rule_rules_rule_path(@rules_rule, action_id: action.id) do
+              %i{class:"ic-icon-fw ic-icon-lg ic-icon-eye", title:"Preview this #{action.type.split('::').last.titleize}"}
+          .btn-group
+            %button.btn.btn-info.dropdown-toggle{"data-toggle" => "dropdown", type: "button"}
+              %i.ic-icon-ellipsis-v
+            %ul.dropdown-menu.dropdown-menu-right{role: "menu"}
+              -if action_ordinal > 1
+                %li
+                  =link_to move_action_upwards_rules_rule_path(@rules_rule, action_id: action.id ) do
+                    %i.ic-icon-chevron-up>
+                    Move Upwards
+              -if action_ordinal < @rules_rule.actions.size
+                %li
+                  =link_to move_action_downwards_rules_rule_path(@rules_rule, action_id: action.id ) do
+                    %i.ic-icon-chevron-down>
+                    Move Downwards
+              -if action.can_be_scheduled?
+                %li
+                  =link_to toggle_future_action_rules_rule_path(@rules_rule, action_id: action.id ), "data-confirm" => "#{action.future_configuration? ? 'Disable' : 'Enable'} future scheduling of Action?", method: :get do
+                    %i{class: "#{Rules.clock_icon} future-#{action.future_configuration?}"}
+                    -if action.future_configuration?
+                      Unschedule Action
+                    - else
+                      Schedule Action
+              -if action.can_defer_processing?
+                %li
+                  =link_to toggle_defer_processing_rules_rule_path(@rules_rule, action_id: action.id ), "data-confirm" => "#{action.defer_processing? ? 'Disable deferral of processing' : 'Defer processing of actions and then ' + action.handler_class.continuation_strategy.title}", method: :get do
+                    %i{class: "#{action.handler_class.continuation_strategy.icon}"}
+                    -if action.defer_processing?
+                      Remove Deferred Processing
+                    - else
+                      Defer Processing
+              %li
+                =link_to remove_action_rules_rule_path(@rules_rule, action_id: action.id ), "data-confirm" => "Are you sure you want to remove this Action from your Rule?", method: :delete do
+                  %i{class: Rules.trash_icon}>
+                  Delete Action
+      .classname= action.type
+      -needs = action.needs
+      -templates = action.template_names
+      -if @rules_rule
+        .collapse-group
+          %a.collapse-context{"data-target" => "#provided_#{action.id.to_s}", "data-toggle" => "collapse"} mapping
+          .collapse.in{:id => "provided_#{action.id.to_s}"}
+            =render 'shared/future_configuration', action: action
+            -if needs
+              - needs.each do |field, configuration|
+                =render 'shared/action_field_mapping', action: action, |
+                  field_name: field, field_type: configuration[:type]   |
+            -if templates
+              -templates.each do |name|
+                .text-area.collapse.in
+                  .name= name.to_s.titleize.downcase
+                  -value=action.template_body(name)
+                  .cms-value{style:"padding:8px;background:white;border:1px solid gray;"}
+                    =value

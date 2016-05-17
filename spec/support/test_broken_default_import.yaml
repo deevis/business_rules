@@ -1,0 +1,28 @@
+---
+  :name: Update Commission Payment Information
+  :description: Prompt distributors, at login, to update their commission payment information.
+  :definition_file: "/pyr/core/config/rules/commission_payments_login_prompt.yaml"
+  :events:
+  - PyrCore::LoginHistory::create
+  :category: Business
+  :unique_expression: '"User_#{trigger.user.id}"'
+  :criteria: trigger.user.consultant_id.present? && PyrCore::Payout::PayoutSupport::CommissionsPaymentSettings.value_set?(:commission_payments_login_prompt_settings)
+  :timer_expression:
+  :start_date:
+  :end_date:
+  :actions:
+  - :title:
+    :type: Rules::Handlers::WebAlert
+    :context_mapping: !ruby/hash:BSON::Document
+      level:=>select: info:=>free_form
+      options:=>select: OK:=>free_form
+      display_priority:=>select: normal:=>free_form
+    :template:
+      :title:
+        :default: !ruby/hash:BSON::Document
+          Global::English(en): "{'pyr_core.commission_payments_login_prompt.title'.cms}"
+        Global::English(en): "asdf"
+      :message:
+        :default: !ruby/hash:BSON::Document
+          Global::English(en): "{'pyr_core.commission_payments_login_prompt.description'.cms}"
+        Global::English(en): "qwerty"

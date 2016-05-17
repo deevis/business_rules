@@ -1,0 +1,13 @@
+$('#expand_link_<%= "#{@div_id}" %>').toggleClass("hidden");
+$('#collapse_link_<%= "#{@div_id}" %>').toggleClass("hidden");
+<% @ctx.each do |field, type| %>
+$('#rule_field_<%= "#{@div_id}" %>').append("<%= j render 'rules/rules/rule_context_field', rule: @rule, path: "#{@path}.#{field}", field: field, type: type %>");
+<% end %>
+
+$('<%= "#rule_field_#{@div_id}" %>').children(".context-draggable" ).draggable({
+  cursor: "move",
+  cursorAt: { top: -2, left: -20 },
+  containment: $("#main-content").parent(),
+  helper: function( event ) {
+    return $( "<div style='color:black;'>" + $(this).html() + "</div>" );
+  }});

@@ -1,0 +1,4 @@
+-value=action.future_configuration[field.to_s]
+.future-configuration-field
+	<input id="#{action.id}_#{field}" type="text" value="#{value}" placeholder="#{field.to_s.titleize}" title="#{field.to_s.titleize}"/>
+	<a class="btn btn-primary" onclick="set_future_field('#{action.id}', '#{field.to_s}');">Set</a>

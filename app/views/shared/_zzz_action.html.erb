@@ -1,0 +1,108 @@
+<% show_arrow ||= false %>
+<% title_only = false unless defined? title_only %>
+<% action_ordinal = "" %>
+<% action_ordinal = 1 + @rules_rule.actions.index(action) if @rules_rule %>
+<div class="rules-widget">
+	<div id="action_title_<%= action.id.to_s %>" class="title <%= "ready" if action.ready? %>">
+		<span class="ordinal"><%= action_ordinal %></span>
+		<%= action.type.split("::").last.titleize %>
+	</div>
+	<% unless title_only %>
+		<div class="body action">
+			<% if @rules_rule %>
+				<div class="action-links">
+					<% if action.scheduled? %>
+						<i title="Scheduled to run at a later time" class='ic-icon-fw ic-icon-lg <%= "#{Rules.clock_icon} future-#{action.future_configuration?}" %>'></i>
+					<% end %>
+					<% if action.defer_processing? %>
+						<i title='<%= "#{action.handler_class.continuation_strategy.title}" %>' class='ic-icon-fw ic-icon-lg <%= "#{action.handler_class.continuation_strategy.icon}" %>'></i>
+					<% end %>
+					<div class="btn-group">
+						<button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+							<i class="ic-icon-ellipsis-v"></i>
+						</button>
+						<ul class="dropdown-menu dropdown-menu-right" role="menu">
+							<% if action_ordinal > 1 %>
+								<li>
+									<%= link_to move_action_upwards_rules_rule_path(@rules_rule, action_id: action.id ) do %>
+										<i class="ic-icon-chevron-up"></i>Move Upwards
+									<% end %>
+								</li>
+							<% end %>
+							<% if action_ordinal < @rules_rule.actions.size %>
+								<li>
+									<%= link_to move_action_downwards_rules_rule_path(@rules_rule, action_id: action.id ) do %>
+										<i class="ic-icon-chevron-down"></i>Move Downwards
+									<% end %>
+								</li>
+							<% end %>
+							<li>
+								<%= link_to toggle_future_action_rules_rule_path(@rules_rule, action_id: action.id ), "data-confirm" => "#{action.future_configuration? ? 'Disable' : 'Enable'} future scheduling of Action?", method: :get do%>
+									<i class='<%= "#{Rules.clock_icon} future-#{action.future_configuration?}" %>'></i>
+										<% if action.future_configuration? %>
+											Unschedule Action
+										<% else %> 
+											Schedule Action
+										<% end %>
+								<% end %>
+							</li>
+							<% if action.can_defer_processing? %>
+								<li>
+									<%= link_to toggle_defer_processing_rules_rule_path(@rules_rule, action_id: action.id ), "data-confirm" => "#{action.defer_processing? ? 'Disable deferral of processing' : 'Defer processing of actions and then ' + action.handler_class.continuation_strategy.title}", method: :get do%>
+										<i class='<%= "#{action.handler_class.continuation_strategy.icon}" %>'></i>
+											<% if action.defer_processing? %>
+												Remove Deferred Processing
+											<% else %> 
+												Defer Processing
+											<% end %>
+
+									<% end %>							
+								</li>
+							<% end %>
+							<li>
+								<%= link_to remove_action_rules_rule_path(@rules_rule, action_id: action.id ), "data-confirm" => "Are you sure you want to remove this Action from your Rule?", method: :delete do %>
+									<i class='<%= Rules.trash_icon %>'></i>Delete Action
+								<% end %>
+							</li>
+						</ul>
+					</div>
+				</div>
+			<% end %>
+			<div class="classname"><%= action.type %></div>
+			<% needs = action.needs %>
+			<% templates = action.template_names %>
+			<% if @rules_rule %>
+				<div class="collapse-group">
+						<a class="collapse-context" data-toggle='collapse' data-target='#provided_<%= action.id.to_s %>'>mapping</a>
+						<div id="provided_<%= action.id.to_s %>" class="collapse in">
+							<%= render 'shared/future_configuration', action: action %>
+							<% if needs %>
+								<% needs.each do |field, configuration| %>
+									<%= render 'shared/action_field_mapping', action: action, 
+										field_name: field, field_type: configuration[:type] %>
+								<% end %>
+							<% end %>
+							<% if templates %>
+								<% templates.each do |name| %>
+									<div class="text-area collapse in">
+										<div class="name"><%= name.to_s.titleize.downcase %></div>
+										<%= simple_form_for @rules_rule do %>
+
+											<textarea name="rules_rule[action][<%= action.id.to_s %>][template][<%= name %>]"><%= action.template_body(name) %></textarea>
+											<input type="submit" class="action-links btn btn-mini btn-primary" value="save"/>
+										<% end %>
+									</div>
+								<% end %>
+							<% end %>
+
+							<% if action.cms_keys_exist? %>
+								<% cms_keys = action.cms_keys %>
+								<%= render "shared/action_cms_keys", cms_keys: cms_keys %>
+							<% end %>
+
+						</div>
+				</div>
+			<% end %>
+		</div>
+	<% end %>
+</div>

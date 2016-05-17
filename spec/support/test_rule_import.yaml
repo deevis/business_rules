@@ -1,0 +1,23 @@
+---
+:name: Darren Login Prompt
+:description: ''
+:events:
+- Rules::Test::C::create
+:category: Uncategorized
+:criteria: 5 > 3
+:timer_expression: 
+:start_date: 
+:end_date: 
+:actions:
+- :title: 
+  :type: Rules::Handlers::WebAlert
+  :context_mapping: !ruby/hash:BSON::Document
+    level:=>select: info:=>free_form
+    options:=>select: OK:=>free_form
+    display_priority:=>select: normal:=>free_form
+  :template:
+    :title:
+      :default: This should not be here - it is legacy crap - just making sure the tests still pass with legacy crap
+      Global::English(en): You logged in
+    :message:
+      Global::English(en): Have a webalert

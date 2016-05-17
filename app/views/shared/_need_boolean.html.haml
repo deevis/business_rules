@@ -1,0 +1,7 @@
+-#render "shared/integer_need", action: action, field_name: field_name, need_config: need_config
+-min = need_config[:min] || 0
+-max = need_config[:max] || 1000
+-value ||=  need_config[:default]
+-value = (value == "true") if value && value.class == String
+%input{type:"checkbox", id: "#{action.id}_#{field_name}", name: field_name, style: "color:black;", checked: value}
+=link_to "Update", "javascript:void();", class:"btn btn-primary btn-xs", onclick:"add_action_mapping('#{action.id}', '#{field_name}:=>#{field_type}', $('##{action.id}_#{field_name}').prop('checked') + ':=>free_form', 'free_form');"

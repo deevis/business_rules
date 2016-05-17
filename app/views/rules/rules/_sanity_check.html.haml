@@ -1,0 +1,32 @@
+-stats = Rules::RulesEngine.sanity_check
+#rules-sanity-check.row{style:"height:30px;"}
+  .col-md-3
+    Rules:
+    %b #{stats[:count]}
+    %br
+    Active Rules:
+    %b #{stats[:active]}
+    -if stats[:inactive] > 0
+      .alert.alert-warning{style:"padding:2px;margin-bottom:2px;"}
+        Inactive Rules:
+        %b #{stats[:inactive]}
+    -else
+      %br
+    -if stats[:deleted] > 0
+      Deleted Rules:
+      %b #{stats[:deleted]}
+  .col-md-3
+    Valid Rules:
+    %b #{stats[:valid]}
+    -if stats[:invalid] > 0
+      .alert.alert-danger{style:"padding:2px;margin-bottom:2px;"}
+        Invalid Rules:
+        %b #{stats[:invalid]}
+    -else
+      %br
+    Source Code:
+    %b #{stats[:yaml_in_source]}
+    -if stats[:no_yaml_in_source] > 0
+      .alert.alert-warning{style:"padding:2px;"}
+        Not in source:
+        %b #{stats[:no_yaml_in_source]}

@@ -1,0 +1,26 @@
+<% if @message %>
+	toastr.success("<%= j @message %>");
+<% end %>
+
+$("#action_mapping_<%= @action.id.to_s %>_<%= @action_field_name %>").
+		replaceWith("<%= j render 'shared/action_field_mapping', 
+			action: @action, 
+			field_name: @action_field_name,
+			field_type: @action_field_type %>");
+$(".context-droppable").not(".ui-droppable").droppable( droppableConfiguration );
+
+<% if @rule_field_name && !@rules_rule.context_field_mapped?(@rule_field_name,@rule_field_type) %>
+	$("#rule_field_<%= @action.rule.id.to_s %>_<%= @rule_field_name.to_s.gsub(".", "__") %>").removeClass("used");
+<% end %>
+
+$("#action_mapping_<%= @action.id.to_s %>_<%= @action_field_name %> .rule-modal").click(function(event) {
+  event.preventDefault();
+  show_lookup_modal($(this).attr("href"));
+});
+
+
+rules = [<%= @rules_rule.joint_map.to_json.html_safe %>];
+buildGraph();
+
+<%= render 'ready_headers' %>
+<%= render 'version_history_js' %>

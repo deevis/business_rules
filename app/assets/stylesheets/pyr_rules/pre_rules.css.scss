@@ -1,0 +1,444 @@
+@import "../imports/variables";
+@import "../joint/joint";
+
+$rules-widget-color-inverse-text: #fff;
+$rules-title-font-size: 24px;
+$rules-dark-gray: #C9C9C9;
+$rules-border: 3px solid #fff;
+
+/* Hey - just ask Darren to remove these whenever the time is right */
+#main.container {
+  max-width: 90%!important;
+}
+
+h2 {
+  border-bottom: $rules-border;
+  color: #aaa;
+  font-size: 24px;
+  font-weight: lighter;
+  margin-bottom: 0px;
+  padding: 15px 0;
+  text-align: center;
+}
+
+.label-success {
+  background-color: $color-success;
+}
+
+.label-warning {
+  background-color: $color-warning;
+}
+
+input[type='text'] {
+  margin-bottom: 15px;
+  padding: 5px;
+  width: 100%;
+}
+
+
+.affix-top {
+  position: static;
+}
+
+.affix {
+  position: fixed;
+  top: 0px;
+}
+
+#rules-manager {
+  border-collapse: collapse;
+  display: table;
+  width: 100%;
+
+  input[type=text], textarea {
+    border: 0;
+    color: #aaa;
+  }
+
+  input[type=submit] {
+    font-size: $rules-title-font-size;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    top: 0;
+    right: 0;
+  }
+
+  .row {
+    display: table-row;
+    margin: 0;
+
+    .col-md-4 {
+      display: table-cell;
+      background-color: #F4F4F4;
+      border-color: #fff;
+      border-width: 0 3px;
+      border-style: solid;
+      float: none;
+      padding: 0px;
+      width: 33%;
+
+      &:first-child {
+        .rules-widget {
+          background-color: $color-primary;
+
+          .context {
+            background-color: #fff;
+            color: #000;
+          }
+
+          .title {
+            background-color: $color-primary;
+            border-top: 0;
+            border-bottom: 0;
+          }
+        }
+      }
+
+      &:nth-child(2) {
+        h2 {
+          border-bottom: 0;
+        }
+
+        input {
+          line-height: 44px;
+        }
+      }
+
+      &:nth-child(3) .rules-column-container input {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+.rules-column-container {
+  padding: 10px;
+}
+
+.rule-column {
+  position:relative;
+}
+
+.rule-column #change-color-switch {
+  position:absolute;
+  right: 10px;  
+  top: 23px;
+  margin-top: 0;
+}
+
+.rule-widget-header {
+  position:relative;
+  margin-bottom:10px;
+  height:75px;
+  text-align:center;
+}
+
+.rule-widget-autocomplete {
+  position:absolute;
+  bottom:0px;
+  left:0px;
+  width:350px;
+}
+
+
+.rules-widget {
+  margin: 0 0 10px 0;
+  position: relative;
+  min-width: 250px;
+
+  .indicator-arrow {
+    position: absolute;
+    right: -22px;
+    top: 0;
+    z-index: 999;
+  }
+
+  .title {
+    background-color: $rules-dark-gray;
+    border-top: $rules-border;
+    border-bottom: $rules-border;
+    color: #fff;
+    margin: 0;
+    font-size: $rules-title-font-size;
+    padding: 5px 10px;
+
+    text {
+      max-width:440px;
+      margin:0 5 10;
+      width:100%;  
+    }
+
+    .ordinal {
+      margin: 0px 10px 0px 0px;
+      font-size: 0.75em;
+    }
+  }
+
+
+  .body {
+    padding: 5px 10px;
+  }
+
+  .criteria {
+    min-height:60px;
+    max-height:200px;
+    margin:0 5 10;
+    width:100%;  
+  }
+
+
+  .classname {
+    display: none;
+    color:white;
+    font-style:italic;  
+    padding-left: 5px;
+    position:absolute;
+    bottom:2px;
+    width:100%;
+  }
+
+  .collapse-group {
+    .in {
+      margin-top: 5px;
+    }
+
+    a {
+      color: $rules-widget-color-inverse-text;
+
+      &.collapse-context {
+        font-size: 16px;
+        position: absolute;
+        top: 13px;
+        right: 5px;
+      }
+    }
+  }
+
+  .body.action {
+    .collapse-group {
+      a {
+        &.collapse-context {
+          right: 70px;
+        }
+      }
+    }  
+  }
+
+  .action-links {
+    position: absolute;
+    top: 13px;
+    right: 5px;
+    width: 60px;
+    z-index: 100;
+
+
+    .btn-group {
+      top:0px;
+      float:right;
+    }
+
+    ul.dropdown-menu {
+      width: 250px;
+      z-index: 1000;
+    }
+
+    button {
+      margin-top: 3px;
+    }
+
+  }
+
+  .context {
+    background-color: $color-primary;
+    color: $rules-widget-color-inverse-text;
+    margin: 3px;
+    padding: 5px;
+
+    .context:not(.used) {
+      border: 0;
+    }
+
+    .source-mapping {
+      color: #fff;
+      padding: 2px;
+    }
+
+    &.ui-state-hover {
+      color: #000;
+
+      &.ui-state-active {
+        background-color: $color-primary;
+      }
+    }
+
+    &.ui-draggable {
+      cursor: default;
+    }
+  }
+
+  .used {
+    background-color: $color-success;
+
+    > .context:not(.used) {
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  .unavailable {
+    background-color:#888;
+    text-decoration:line-through;  
+  }
+
+  .needs-mapping {
+    background-color: $color-danger;
+  }
+
+  .optional-mapping {
+    background-color: $color-primary;
+  }
+
+  .action-context-mapped {
+    color: #fff;
+    background-color: $color-success;
+    padding: 5px 20px 5px 5px
+  }
+
+  .text-area {
+    position:relative;
+    background-color: #eee;
+    border-radius: 3px;
+    margin: 10px 5px 0px;
+
+    .name {
+      background-color: $rules-dark-gray;
+      color: $rules-widget-color-inverse-text;
+      font-size: $rules-title-font-size;
+      line-height: 44px;
+      padding-left: 5px;
+    }
+
+    textarea {
+      text-align: left;
+      width:100%;
+      padding:5px;
+      font-size:1.2em;
+      resize:vertical!important;
+    }
+  }
+}
+
+.ui-widget-content {
+  background-color:azure !important;
+}
+.ui-autocomplete {
+  z-index: 1150;
+}
+
+.ui-autocomplete-loading {
+  background: white url('/assets/rules/ui-anim_basic_16x16.gif') right center no-repeat;
+}
+
+.delete-source-mapping {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  color: $color-danger;
+  cursor: pointer;
+}
+
+.deleted-rule {
+  position: absolute;
+  left:0px;
+  right:0px;
+  top:0px;
+  margin:auto;
+  bottom:0px;
+  z-index: 300;
+  background-color:pink;
+  opacity:.6;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
+  filter:alpha(opacity=60);
+}
+
+.deleted-rule span {
+  font-size:25em;
+  font-weight:bold;
+  color:red;
+  text-align:center;
+  width:100%;
+  transform:rotate(45deg);
+}
+
+#version-history {
+  background-color: $rules-dark-gray;
+  border-top: $rules-border;
+
+  h3 {
+    color: $rules-widget-color-inverse-text;
+    font-size: $rules-title-font-size;
+    font-weight: lighter;
+    margin: 0;
+    padding: 15px 0 5px 0;
+    text-align: center;
+  }
+
+  & > div {
+    padding: 10px;
+  }
+
+  & > div:nth-child(2) {
+    border-bottom: $rules-border;
+  }
+}
+
+.rule-modal {
+  float: right;
+
+  .admin_layout & .btn-primary {
+    background-color: transparent;
+  }
+}
+
+.indicator-arrow {
+  border-top: 22px solid transparent;
+  border-bottom: 22px solid transparent;
+  border-left: 22px solid $color-primary;
+}
+
+#rules-graph {
+  border:1px solid black;
+}
+
+
+.future-true { 
+  color: green;
+}
+
+.future-false { 
+  color: gray;
+}
+
+.future-configuration-field {
+  margin: 1px;
+  padding: 1px;
+  width: 100%;
+
+  & input {
+    width:91%;
+  }
+
+  & a {
+    padding: 2px;
+    width: 8%;
+  }
+}
+
+#display-controls {
+  .add-event {
+    float:left;
+  }
+
+  .add-action {
+    float:right;
+  }
+}
