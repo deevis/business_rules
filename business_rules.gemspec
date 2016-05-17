@@ -34,6 +34,7 @@ Gem::Specification.new do |s|
   s.add_dependency "obscenity"   
   s.add_dependency "hashie"
   s.add_dependency "httparty"
+  s.add_dependency "identity_cache"
   s.add_dependency "resque"
   s.add_dependency "resque-status"
   s.add_dependency "resque-scheduler"
