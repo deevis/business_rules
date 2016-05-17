@@ -27,12 +27,23 @@ module Rules
         @triggers = []
         begin 
           puts "      \nUsing: #{event_hash[:klazz]}  #{event_hash[:id]}"
-          if event_hash[:type] == "ModelEvent"
-            klazz = event_hash[:klazz].constantize 
-            if klazz.respond_to? :fetch
-              @triggers << klazz.fetch(event_hash[:id].to_s)
+          if event_hash[:type] == "ModelEvent" || event_hash[:type] == "ApplicationEvent"
+            klazz = event_hash[:klazz].constantize if event_hash[:type] == "ModelEvent"
+            klazz ||= event_hash[:klazz].constantize.new.trigger_class 
+
+            if event_hash[:id].present?
+              if klazz.respond_to? :fetch
+                @triggers << klazz.fetch(event_hash[:id].to_s)
+              else
+                @triggers << klazz.find(event_hash[:id].to_s)
+              end
             else
-              @triggers << klazz.find(event_hash[:id].to_s)
+              # New feature - to prevent going to database, passing :id can be foregone IF
+              #               all data attributes of the object are passed in :data!
+              t = klazz.new(event_hash[:data].permit!)
+              # this is an existing object, so we need to clear ActiveRecord's @new_record flag - we know it's not new
+              t.instance_variable_set(:@new_record, false) if t.id.present?
+              @triggers << t
             end
             puts "      Loaded trigger (#{event_hash[:klazz]}[#{event_hash[:id]}]) for use with RuleContext\n"
           elsif event_hash[:type] == "ControllerEvent"

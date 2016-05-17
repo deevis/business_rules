@@ -47,6 +47,9 @@ Rails.application.routes.draw do
     end
 
     resources :events, :only => [:index, :show] do
+      collection do 
+        post :push_event
+      end
       resources :rules do
         resources :actions
       end

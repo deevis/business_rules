@@ -3,7 +3,7 @@ module Rules
   class EventConfigLoader
     @@events_dictionary ||= nil
     
-    SYSTEM_EVENTS = ["TimerEvent"]
+    SYSTEM_EVENTS = ["TimerEvent", "DynamicEvent"]
     CONTROLLER_CONTEXT = {"system" => :messaging_user, "actor" => :user, "user_agent" => :string, 
             "referrer" => :string, "original_url" => :string, "referrer" => :string, 
             "remote_ip" => :string, "xhr" => :boolean, "data" => :hash, "klazz" => :string, 
@@ -19,8 +19,12 @@ module Rules
     def self.events_list(refresh = false)
       Rules::EventConfigLoader.events_dictionary(refresh).map do |et,et_v| 
         et_v.map do |k,v| 
-          v[:actions].map do |a| 
-            "#{k}::#{a}"
+          if v[:actions].present?
+            v[:actions].map do |a| 
+              "#{k}::#{a}"
+            end
+          else 
+            k
           end
         end
       end.flatten
@@ -57,13 +61,36 @@ module Rules
       controller_events = add_controller_events
       controller_events["ApplicationController"] = {actions: ["*"], context:CONTROLLER_CONTEXT}
       @@events_dictionary = {
+        application_events: add_application_events,
         model_events: add_model_events({},Rules::ModelEventEmitter.registered_classes),
         controller_events: controller_events,
-        system_events: { "TimerEvent" => {actions: ["tick"], context: { trigger: "inferred"}},
-                          "DynamicEvent" => {actions: ["*"], context: { trigger: "data"}}}
+        system_events: add_system_events
       }
       puts "DEBUG[business_rules] Events Dictionary Built in #{Time.new - start_time} seconds\n\n" 
       @@events_dictionary
+    end
+
+
+    def self.add_application_events
+      h = {}
+      Rules::Events::ApplicationEventBase.subclasses.each do |sc| 
+        event_name = sc.name
+        cfg = { "system" => :messaging_user,
+         #       "actor" => :user, 
+                "klazz" => :string
+        }
+        cfg["trigger"] = sc.trigger_class.name.underscore if sc.trigger_class.present?
+        h[event_name] = { context: cfg, actions: ["raised"] }
+      end
+      h
+    end
+
+
+    def self.add_system_events 
+      h = {}
+      h["TimerEvent"] = {"actions" => ["tick"], "context" =>  { "trigger" => "inferred"}}
+      h["DynamicEvent"] = {"actions" => ["*"], "context" => { "trigger" => "data"}}
+      h
     end
 
     def self.add_controller_events

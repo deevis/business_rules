@@ -142,4 +142,78 @@ describe Rules::Rule do
 
   end
 
+  describe "lookup_path" do 
+    it "can reflect upon ModelEvents as triggers" do 
+      r = Rules::RulesConfig.add_rule(
+                {
+                  name:"Test Rule 35", 
+                  active: true,
+                  event_inclusion: /Rules::Rule::create/, 
+                  criteria: "",
+                  action_configs: [
+                      {
+                        title: "Test Echo Action", type: Rules::TestEchoHandler
+                      }
+                  ]
+                })
+      path = r.lookup_path("trigger") 
+
+      expect(path).to eq ( {   _id: :"bson::objectid",
+                             c_at: :time,
+                             u_at: :time,
+                             version: :integer,
+                             updated_by: :string,
+                             updated_action: :string,
+                             was_valid: :"mongoid::boolean",
+                             name: :string,
+                             synchronous: :"mongoid::boolean",
+                             definition_file: :string,
+                             description: :string,
+                             events: :array,
+                             category: :string,
+                             criteria: :string,
+                             active: :"mongoid::boolean",
+                             unique_expression: :string,
+                             _deleted: :"mongoid::boolean",
+                             start_date: :time,
+                             end_date: :time,
+                             timer: :hash,
+                             timer_expression: :string,
+                             event_inclusion_matcher: :regexp,
+                             event_exclusion_matcher: :regexp,
+                             actions_hashed: :string })
+
+    end
+
+    it "can reflect upon SystemEvent-triggers" do 
+      class TestEventTrigger < Rules::Events::ApplicationEventBase 
+        def trigger_class; Rules::FutureAction; end 
+      end
+
+      Rules::RulesEngine.reload_configuration
+
+      r = Rules::RulesConfig.add_rule(
+                {
+                  name:"Test Rule 35", 
+                  active: true,
+                  event_inclusion: /TestEventTrigger/, 
+                  criteria: "",
+                  action_configs: [
+                      {
+                        title: "Test Echo Action", type: Rules::TestEchoHandler
+                      }
+                  ]
+                })
+      path = r.lookup_path("trigger") 
+
+      expect(path).to eq ( {:id=>:integer, :run_at=>:datetime, :contingent_script=>:string, 
+                          :run_at_expression=>:string, :unique_expression=>:string, 
+                          :recurring_expression=>:string, :rule_id=>:string, :action_id=>:string, 
+                          :action_handler=>:string, :context_mapping=>:string, :template=>:string, 
+                          :event=>:text, :created_at=>:datetime, :updated_at=>:datetime, 
+                          :priority=>:integer, :unique_id=>:string, :processed_at=>:datetime } ) 
+
+    end
+
+  end
 end

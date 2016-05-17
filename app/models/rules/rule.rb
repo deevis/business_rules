@@ -564,7 +564,13 @@ module Rules
           else
             # We need to get all the possible path values from all the input events
             events.each do |event|
-              klazz = (event.split("::")[0...-1].join("::")).constantize    # Strip off the trailing action: create, update, delete, etc...
+              cfg = Rules::RulesConfig.event_config(event)
+              case cfg[:type]
+              when "ModelEvent", "ControllerEvent"
+                klazz = (event.split("::")[0...-1].join("::")).constantize    # Strip off the trailing action: create, update, delete, etc...
+              when "ApplicationEvent" 
+                klazz = cfg[:context]["trigger"].camelcase.constantize
+              end
               puts klazz
               sub_cols = lookup_path(path, klazz)
               puts sub_cols

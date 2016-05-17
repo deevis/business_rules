@@ -9,12 +9,18 @@ module Rules
 
     def self.event_config(event_name)
       cfg = events_config
-      ec = (cfg[:model_events][event_name] || cfg[:controller_events][event_name] || cfg[:system_events][event_name])
-      unless ec 
-        event_name = event_name.match(/(.*)::.*/)[1] rescue "EEEK" # 
-        ec = (cfg[:model_events][event_name] || cfg[:controller_events][event_name] || cfg[:system_events][event_name])
+      [:model_events, :controller_events, :system_events, :application_events].each do |type|
+        ec = cfg[type][event_name]
+        unless ec 
+          event_name_matched = event_name.match(/(.*)::.*/)[1] rescue "EEEK" # 
+          ec = cfg[type][event_name_matched]
+        end
+        if ec.present?
+          ec[:type] = type.to_s.singularize.camelcase
+          return ec
+        end
       end
-      ec
+      nil
     end
 
     def self.events

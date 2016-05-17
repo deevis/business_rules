@@ -2,31 +2,37 @@ module Rules
   module Events
     class ApplicationEventBase
 
-      class_attribute :trigger_class
-
-      # This is the type that will be used for determining the Context the Event will contribute to the Rule  
-      def self.set_trigger_class(klazz)
-        self.trigger_class = klazz
+      # subclassers should override
+      def trigger_class
+        nil 
       end
 
-      def initialize  
+      def self.trigger_class
+        self.new.trigger_class
       end
 
       def raise_event(trigger, extras = {})
-        return nil if Rules.disabled?
-        event_hash = build_event_hash(trigger, extras)
-        Rails.logger.info "#{self.class.name}.raise_event:: #{event_hash}"
-        Rules::RulesEngine.raise_event(event_hash)
-        return event_hash
+        raise_event!(trigger, extras)
       rescue => e
         Rails.logger.error "Unable to raise event for #{self} : #{e.message}"
-        return nil
+        nil
+      end
+
+      def raise_event!(trigger, extras = {})
+        return nil if Rules.disabled?
+        if trigger_class.present? && !(trigger_class === trigger)
+          raise "Cannot raise event with trigger of wrong type.  Got: [#{trigger.class}]   Expected: [#{trigger_class}]"
+        end
+        event_hash = build_event_hash(trigger, extras)
+        Rails.logger.info "#{self.class.name}.raise_event"
+        Rules::RulesEngine.raise_event(event_hash)
+        return event_hash
       end
 
       private
         def build_event_hash(trigger, extras={})
-            { processing_stack: Rules::Rule.processing_stack, type: self.class.name, 
-              action: "system", klazz: trigger.class.name, id: trigger.id, 
+            { processing_stack: Rules::Rule.processing_stack, type: "ApplicationEvent", 
+              action: "raised", klazz: self.class.name, id: trigger.id, 
                   user: Thread.current[:user] }.merge(extras)
         end
     end
