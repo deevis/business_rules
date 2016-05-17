@@ -5,7 +5,7 @@ module Rules
   @@queue_counter ||= 0
 
   mattr_accessor :table_name_prefix
-  @@table_name_prefix ||= "pyr_"
+  @@table_name_prefix ||= "rules_"
 
   mattr_accessor :trash_icon
   @@trash_icon ||= "ic-icon-trash"         #   icon-trash
@@ -170,7 +170,7 @@ module Rules
       Rules::RulesEngine.send(:include, Rules::Synchronous)
     elsif Rules.event_processing_strategy == :delayed_job
       # Create delayed_job records to be process the event payload
-      raise "If wishes were fishes...we do not yet have the :delayed_job strategy implemented for pyr_event_processing.  Try again later..."
+      raise "If wishes were fishes...we do not yet have the :delayed_job strategy implemented for rules_vent_processing.  Try again later..."
     elsif Rules.event_processing_strategy == :redis
       # Pump event payloads out to a Redis Queue for processing by worker processes
       raise "Please set redis_host and redis_port on Rules to use :redis event_processing_strategy" unless (Rules.redis_host && Rules.redis_port)

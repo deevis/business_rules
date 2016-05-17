@@ -1,6 +1,6 @@
 class CreateRulesDeferredActionChains < ActiveRecord::Migration
   def change
-    create_table :pyr_deferred_action_chains do |t|
+    create_table :rules_deferred_action_chains do |t|
       t.string :rule_id
       t.string :path 
       t.text :event
@@ -9,6 +9,6 @@ class CreateRulesDeferredActionChains < ActiveRecord::Migration
       t.timestamps
     end
 
-    add_index :pyr_deferred_action_chains, :rule_id    
+    add_index :rules_deferred_action_chains, :rule_id    
   end
 end

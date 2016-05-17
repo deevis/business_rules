@@ -1,9 +1,0 @@
-roles:
-  rules_admin:
-    permissions:
-    - "rules*"
-
-groups:
-  admin:
-    roles:
-    - rules_admin

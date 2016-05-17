@@ -1,6 +1,6 @@
 class CreateRulesFutureActions < ActiveRecord::Migration
   def change
-    create_table :pyr_future_actions do |t|
+    create_table :rules_future_actions do |t|
       t.datetime :run_at
       t.string :contingent_script
       t.string :run_at_expression

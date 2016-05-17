@@ -1,4 +1,4 @@
-    # create_table :pyr_deferred_action_chains do |t|
+    # create_table :rules_deferred_action_chains do |t|
     #   t.string :rule_id
     #   t.string :path 
     #   t.text :event

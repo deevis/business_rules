@@ -27,9 +27,9 @@ describe "Rules::Handlers::WebRedirect" do
 	it "won't redirect if url_restrictions is populated and matches" do 
 		action = Rules::Action.new({ type: Rules::Handlers::WebRedirect,  
 																		context_mapping: { "url:=>string" => '->{event[:wookie]}:=>free_form',
-																										"url_exceptions_regexp:=>string" => '/pyr_core/payout:=>free_form'}
+																										"url_exceptions_regexp:=>string" => '/my_app/payout:=>free_form'}
 																	})
-		h = W.new(action, {wookie: "cookie", original_url: "/pyr_core/payout" } )
+		h = W.new(action, {wookie: "cookie", original_url: "/my_app/payout" } )
 		result = h.handle
 		expect(result).to eq :abort_action_chain
 	end
@@ -37,7 +37,7 @@ describe "Rules::Handlers::WebRedirect" do
 	it "will redirect if url_restrictions is populated and doesn't match" do 
 		action = Rules::Action.new({ type: Rules::Handlers::WebRedirect,  
 																		context_mapping: { "url:=>string" => '/account?tab=commission_tab:=>free_form',
-																										"url_exceptions_regexp:=>string" => '/pyr_core/payout:=>free_form'}
+																										"url_exceptions_regexp:=>string" => '/my_app/payout:=>free_form'}
 																	})
 		action.rule = Rules::Rule.new({id: "asdf"})
 		h = W.new(action, {original_url: "/another_url/that_doesnt_match" })

@@ -1,6 +1,6 @@
 class CreateRulesActionChainSteps < ActiveRecord::Migration
   def change
-    create_table :pyr_action_chain_steps do |t|
+    create_table :rules_action_chain_steps do |t|
       t.integer :deferred_action_chain_id
       t.string :waiting_on_type
       t.integer :waiting_on_id
@@ -10,8 +10,8 @@ class CreateRulesActionChainSteps < ActiveRecord::Migration
       t.timestamps
     end
 
-    add_index :pyr_action_chain_steps, [:waiting_on_type, :waiting_on_id], name: "idx_pyr_action_chain_waiting_on"    
-    add_index :pyr_action_chain_steps, [:continuation_strategy]    
+    add_index :rules_action_chain_steps, [:waiting_on_type, :waiting_on_id], name: "idx_rules_action_chain_waiting_on"    
+    add_index :rules_action_chain_steps, [:continuation_strategy]    
     
   end
 end

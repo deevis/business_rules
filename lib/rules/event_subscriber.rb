@@ -8,7 +8,7 @@ module Rules
 			host, port = APP_CONFIG[:redis_server].split(":")
 			@redis = Redis.new(host: host, port: port)
 			begin
-			  @redis.subscribe( "pyr_events" ) do |on|
+			  @redis.subscribe( "rules_events" ) do |on|
 			    on.subscribe do |channel, subscriptions|
 			      puts "Subscribed to ##{channel} (#{subscriptions} subscriptions)"
 			    end
