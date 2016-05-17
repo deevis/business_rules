@@ -3,3 +3,7 @@ en:
   import_new_rules: Import New Rules 
   paste_your_YAML_in_here: Paste Your YAML In Here
   export_all: Export All
+  edit_rule: Edit Rule 
+  rules_engine: Rules Engine 
+  create_new_rule: Create New Rule
+  

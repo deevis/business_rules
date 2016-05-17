@@ -12,7 +12,7 @@ module Rules::RulesHelper
   end
 
   def on_ready &block 
-    "<script>$(document).on_ready({ #{yield} });</script>".html_safe
+    "<script>$(document).ready({ #{yield} });</script>".html_safe
   end
 
   def page_js &block 
