@@ -5,21 +5,24 @@ This project rocks and uses MIT-LICENSE.
 
 Gemfile
 --------------------------------------------------------------
+```
 gem 'business_rules', github: "deevis/business_rules", branch: "master"
 gem 'mongoid-versioning', github: 'ream88/mongoid-versioning'
-
+```
 
 
 application.js
 --------------------------------------------------------------
+```
 //= require jquery.fancytree
-
+```
 
 
 mongoid.yml
 --------------------------------------------------------------
-
-
+```
+# mongoid stuff
+```
 
 ```bundle install```
 
