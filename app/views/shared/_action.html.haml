@@ -19,17 +19,17 @@
               %i{class:"ic-icon-fw ic-icon-lg ic-icon-eye", title:"Preview this #{action.type.split('::').last.titleize}"}
           .btn-group
             %button.btn.btn-info.dropdown-toggle{"data-toggle" => "dropdown", type: "button"}
-              %i.ic-icon-ellipsis-v
+              %i.fa.fa-ellipsis-h
             %ul.dropdown-menu.dropdown-menu-right{role: "menu"}
               -if action_ordinal > 1
                 %li
                   =link_to move_action_upwards_rules_rule_path(@rules_rule, action_id: action.id ) do
-                    %i.ic-icon-chevron-up>
+                    %i.fa.fa-chevron-up>
                     Move Upwards
               -if action_ordinal < @rules_rule.actions.size
                 %li
                   =link_to move_action_downwards_rules_rule_path(@rules_rule, action_id: action.id ) do
-                    %i.ic-icon-chevron-down>
+                    %i.fa.fa-chevron-down>
                     Move Downwards
               -if action.can_be_scheduled?
                 %li

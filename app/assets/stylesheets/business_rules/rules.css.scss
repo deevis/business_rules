@@ -1,5 +1,7 @@
 @import "../imports/variables";
-@import "../joint/joint";
+@import "joint";
+@import "fancytree-win7";
+@import "toastr";
 
 $rules-widget-color-inverse-text: #fff;
 $rules-title-font-size: 24px;
@@ -7,8 +9,9 @@ $rules-dark-gray: #C9C9C9;
 $rules-border: 3px solid #fff;
 
 /* Hey - just ask Darren to remove these whenever the time is right */
-#main.container {
+.container.top {
   max-width: 90%!important;
+  width: 90%!important;
 }
 
 h2 {

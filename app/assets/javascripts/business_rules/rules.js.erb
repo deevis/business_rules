@@ -1,9 +1,11 @@
 // Place all the behaviors and hooks related to the matching controller here.
 // All this logic will automatically be available in application.js.
 
-//= require d3/d3.js
-//= require d3/d3.layout.js
-//= require joint/joint.nojquery.js
+//= require lodash
+//= require backbone
+//= require joint
+//= require jquery.fancytree
+//= require toastr
 
   var logicDroppableConfiguration = {
       accept: ".context-draggable",
@@ -160,7 +162,7 @@ jQuery.fn.sortElements = (function(){
 
     function add_action_mapping(action_id, action_field, rule_field, field_type) {
       console.log("add_action_mapping: " + action_field + "|" + rule_field + "|" + field_type);
-      var url = "/rules/rules/" + rule_id + "/add_action_mapping?action_id=" + action_id + 
+      var url = "/rules/rules/" + rule_id + "/add_action_mapping.js?action_id=" + action_id + 
                 "&rule_field=" + rule_field + "&action_field=" + action_field;
       console.log("   - " + url);
       if (field_type=="class_lookup" || (rule_field.indexOf(":=>instance_lookup") > 0) ) {
@@ -174,7 +176,7 @@ jQuery.fn.sortElements = (function(){
 
     function remove_action_mapping(action_id, field_name, field_type, mapping) {
       console.log("remove_action_mapping: " + field_name + "|" + field_type + "|" + mapping);
-      var url = "/rules/rules/" + rule_id + "/remove_action_mapping?action_id=" + 
+      var url = "/rules/rules/" + rule_id + "/remove_action_mapping.js?action_id=" + 
                   action_id + "&action_field=" + field_name +":=>" + field_type;
       console.log("   - " + url);
       if (field_type=="class_lookup" || (mapping.indexOf("instance_lookup") > 0) ) {
@@ -190,7 +192,7 @@ jQuery.fn.sortElements = (function(){
     function set_future_field(action_id, field) {
       var value = encodeURIComponent($("#" + action_id + "_" + field).val());
       console.log("set_future_field: " + action_id + "|" + field + "|" + value);
-      var url = "/rules/rules/" + rule_id + "/set_future_field?action_id=" + 
+      var url = "/rules/rules/" + rule_id + "/set_future_field.js?action_id=" + 
                   action_id + "&field=" + field +"&value=" + value;
       console.log("   - " + url);
       $.ajax({

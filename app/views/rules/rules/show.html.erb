@@ -46,7 +46,7 @@
 <div id="rules-manager">
   <div class="row">
     <div class="col-md-4">
-      <h2><%= "rules.rules.events_triggers".cms {"events (triggers)"} %></h2>
+      <h2><%= t "events_triggers" %></h2>
       
       <div class="rules-column-container">
         <input id="event_lookup_autocomplete" type="text" placeholder="add an event..."/>
@@ -66,7 +66,7 @@
       </div>
 
       <h2>
-        <%= "rules.rules.rules_configuration".cms {"rules configuration"} %>
+        <%= t "rules_configuration" %>
       </h2>
 
       <%= render 'shared/rule', rule: @rules_rule %>
@@ -74,7 +74,7 @@
 
     <div id="rule-actions" class="col-md-4">
       <div>
-        <h2><%= "rules.rules.actions".cms {"actions"} %></h2>
+        <h2><%= t "actions" %></h2>
 
         <div class="rules-column-container">
           <input id="action_lookup_autocomplete" type="text" placeholder="add an action..."/>

@@ -32,4 +32,7 @@ require 'rules/timer_events'
 require 'rules/versioning'
 require 'rules/web_actions_queue'
 
+require 'rules/synchronous'
+require 'rules/redis'
+
 require 'rules/extensions/active_support/notifications'

@@ -6,4 +6,8 @@ en:
   edit_rule: Edit Rule 
   rules_engine: Rules Engine 
   create_new_rule: Create New Rule
-  
+  events_triggers: Events (Triggers)
+  rules_configuration: Rules Configuration
+  actions: actions
+  events: events 
+  enter_unique_expression: Enter Unique Expression

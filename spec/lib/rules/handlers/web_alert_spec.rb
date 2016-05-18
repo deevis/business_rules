@@ -62,21 +62,6 @@ describe "Rules::Handlers::WebAlert" do
     Thread.current[:rules_popup_message].should eq nil
   end
 
-
-  describe "Actions using CMS-backed templates" do 
-    it "can access cms_market_user mapping" do 
-      action = Rules::Action.new({ type: Rules::Handlers::WebAlert,  
-                                      context_mapping: {  "level:=>select" => "success:=>free_form",
-                                                  "cms_market_user:=>user" => "wookie:=>free_form"},
-                                      template: {"title" => "My title", 
-                                               "message" => "My message"}
-                                    })
-
-      h = Rules::Handlers::WebAlert.new(action, {})
-      h.cms_market_user.should eq "wookie"
-    end
-  end
-
 end
 
 

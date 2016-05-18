@@ -8,19 +8,19 @@ module Rules
   @@table_name_prefix ||= "rules_"
 
   mattr_accessor :trash_icon
-  @@trash_icon ||= "ic-icon-trash"         #   icon-trash
+  @@trash_icon ||= "fa fa-trash"         #   icon-trash
 
   mattr_accessor :delete_icon
-  @@delete_icon ||= "ic-icon-times-circle"       # icon-remove
+  @@delete_icon ||= "fa fa-times-circle"       # icon-remove
 
   mattr_accessor :arrow_icon
-  @@arrow_icon ||= "ic-icon-arrow-right"   # icon-arrow-right
+  @@arrow_icon ||= "fa fa-arrow-right"   # icon-arrow-right
 
   mattr_accessor :lookup_icon
-  @@lookup_icon ||= "ic-icon-search"       # icon-search
+  @@lookup_icon ||= "fa fa-search"       # icon-search
   
   mattr_accessor :clock_icon
-  @@clock_icon ||= "ic-icon-clock"       # icon-search
+  @@clock_icon ||= "fa fa-clock"       # icon-search
   
   mattr_accessor :rules_categories 
   @@rules_categories ||= ["Uncategorized"]
