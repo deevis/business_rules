@@ -21,7 +21,10 @@ Gem::Specification.new do |s|
   # all of these gems are being used by parent app anyway, and we need and we are trying
   # to keep all the versions same for a given gem, so there should not be a version conflict issue as-well.
 
-  s.add_dependency "rails", ">= 4.1.1"
+  s.add_dependency "rails", ">= 4.2"
+  s.add_dependency "haml-rails"               # default generators
+  s.add_dependency "haml"                     # actual rendering activation
+  
   #s.add_dependency "protected_attributes"     # RAILS4_UPGRADE - Backwards Compat
   s.add_dependency "rails-observers"          # RAILS4_UPGRADE - Backwards Compat
   s.add_dependency "jquery-rails"

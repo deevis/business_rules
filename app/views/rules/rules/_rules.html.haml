@@ -136,16 +136,6 @@
         by #{r.updated_by.presence || 'System'}
 %br/
 
--on_ready do
-  :plain
-    $('[data-toggle="popover"]').popover({trigger: 'hover'});
-    $("#search-text").keyup(function(event){
-      //console.log( event.keyCode);
-      if(event.keyCode == 13) {
-        setTimeout(searchRules, 50);
-      }
-    });
-
 
 :javascript
   var searching = false;
@@ -158,6 +148,16 @@
     var url = '#{rules_rules_path(event: params[:event] || '', action_type: params[:action_type] || '', category: params[:category] || '')}';
     window.open(url + '&q=' + q, "_self");
   }
+
+  $(document).ready( function() {
+    $('[data-toggle="popover"]').popover({trigger: 'hover'});
+    $("#search-text").keyup(function(event){
+      //console.log( event.keyCode);
+      if(event.keyCode == 13) {
+        setTimeout(searchRules, 50);
+      }
+    });
+  });
 
 :css
   .popover {

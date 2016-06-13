@@ -1,4 +1,5 @@
 require "rules/engine"
+require "haml"
 
 module Rules
 
