@@ -27,27 +27,31 @@
           }
 
     -content_for :web_alert_modals do
-      =modal id: id, has_header_close_button: false do
-        .panel{class: "panel-#{config[:level].presence || 'info'}"}
-          .panel-heading
-            .panel-title 
-              #{(config[:title].presence || config[:level].try(:titleize) || "Alert").html_safe}
-            .clearfix
-          .panel-body
-            #{config[:message].html_safe}
-          .panel-footer
-            -(config[:options]).split("-").reverse.each do |option|
-              -btn_class = case option 
-                -when "OK", "Yes"
-                  - "btn-success"
-                -when "Cancel", "No"
-                  - "btn-warning" 
-                -else
-                  - "btn-default"
+      .modal.fade{id: id, :role => "dialog", :tabindex => "-1"}
+        .modal-dialog.large{:role => "document"}
+          .modal-content
+            .modal-body
 
-              %button.pull-right{class:"btn #{btn_class}", style:"margin-left:5px;", onclick:"$('##{id}').modal('hide');after_modal_#{id}();"}
-                =option
-            .clearfix
+              .panel{class: "panel-#{config[:level].presence || 'info'}"}
+                .panel-heading
+                  .panel-title 
+                    #{(config[:title].presence || config[:level].try(:titleize) || "Alert").html_safe}
+                  .clearfix
+                .panel-body
+                  #{config[:message].html_safe}
+                .panel-footer
+                  -(config[:options]).split("-").reverse.each do |option|
+                    -btn_class = case option 
+                      -when "OK", "Yes"
+                        - "btn-success"
+                      -when "Cancel", "No"
+                        - "btn-warning" 
+                      -else
+                        - "btn-default"
+
+                    %button.pull-right{class:"btn #{btn_class}", style:"margin-left:5px;", onclick:"$('##{id}').modal('hide');after_modal_#{id}();"}
+                      =option
+                  .clearfix
     -if last_alert_populated.nil?
       -content_for :web_alert_show_js do
         -if add_script_tag == "true"
