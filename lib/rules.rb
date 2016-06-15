@@ -1,5 +1,9 @@
-require "rules/engine"
 require "haml"
+require "mongoid"
+require "simple_form"
+require "kaminari"
+require "hashie"
+require "identity_cache"
 
 module Rules
 
@@ -50,6 +54,9 @@ module Rules
   mattr_accessor :logging_level
   @@logging_level ||= :info
 
+  mattr_accessor :current_user
+  @@current_user ||= -> {Thread.current[:user]}
+  
   # The application using Rules can add their own events in here for use in Rules
   mattr_accessor :application_events
   @application_events ||= []
@@ -191,3 +198,7 @@ module Rules
   end
 
 end
+
+require "rules"
+require "rules/all"
+require "rules/engine"

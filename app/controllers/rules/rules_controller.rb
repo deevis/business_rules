@@ -565,14 +565,12 @@ class RulesController < ApplicationController
       @action_id = action_update.keys.first
       action = @rules_rule.actions.detect{|a| a.id.to_s == @action_id}
       puts "Updating Rule #{@rules_rule.name}- Action #{action.class}"
-      # DBH - this is all done through CMS now
-      #
-      # template_name = action_update.values.first[:template].keys.first
-      # template_value = action_update.values.first[:template].values.first
-      # puts "TemplateName[#{template_name}]  TemplateValue[#{template_value}]"
-      # action.set_template(template_name, template_value)
-      # @rules_rule.updated_action = "Updated template : #{template_name}"
-      # @rules_rule.save!
+      template_name = action_update.values.first[:template].keys.first
+      template_value = action_update.values.first[:template].values.first
+      puts "TemplateName[#{template_name}]  TemplateValue[#{template_value}]"
+      action.set_template(template_name, template_value)
+      @rules_rule.updated_action = "Updated template : #{template_name}"
+      @rules_rule.save!
     else
       params[:rules_rule][:updated_action] = "Updated rule logic"
     end

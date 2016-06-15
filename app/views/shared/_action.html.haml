@@ -67,6 +67,6 @@
               -templates.each do |name|
                 .text-area.collapse.in
                   .name= name.to_s.titleize.downcase
-                  -value=action.template_body(name)
-                  .cms-value{style:"padding:8px;background:white;border:1px solid gray;"}
-                    =value
+                  =simple_form_for @rules_rule do
+                    %textarea{:name => "rules_rule[action][#{action.id.to_s}][template][#{name}]"}= action.template_body(name)
+                    %input.action-links.btn.btn-mini.btn-primary{type: "submit", value: "save"}

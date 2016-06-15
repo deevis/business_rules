@@ -52,7 +52,7 @@ module Rules
 			def build_event_hash(event_type, class_name, action, extras={})
 					filtered_params = Rules.data_filter.filter params.dup
 					event_hash = { processing_stack: Rules::Rule.processing_stack, type: event_type, klazz: self.class.name, 
-													action: action, data: filtered_params, user: Thread.current[:user],
+													action: action, data: filtered_params, user: Rules.current_user.call,
 													xhr: request.xhr?, ip: request.remote_ip, user_agent: request.user_agent, 
 													referrer: request.referrer, original_url: request.original_url }.merge(extras)
 			end

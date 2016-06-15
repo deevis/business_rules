@@ -90,7 +90,7 @@ module Rules
 			def build_event_hash(event_type, class_name, action, extras={})
 					event_hash = { processing_stack: Rules::Rule.processing_stack, type: event_type, 
 													klazz: self.class.name, action: action, id: self.id, data: self, 
-													user: Thread.current[:user] }.merge(extras)
+													user: Rules.current_user.call }.merge(extras)
 			end
 
 	end

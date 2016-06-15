@@ -6,7 +6,7 @@ source "http://rubygems.org"
 gemspec
 
 # jquery-rails is used by the dummy application
-gem 'mongoid', github: 'mongoid/mongoid'
+gem 'mongoid', github: 'mongoid/mongoid', ref: "63ece9973709a837a1817824d202b367db3e3688"
 gem 'mongoid-versioning', github: 'ream88/mongoid-versioning'
 # gem 'identity_cache', github: 'jdatti/identity_cache'
 

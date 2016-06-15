@@ -1,17 +1,12 @@
 puts "Loading Rules::Engine"
+
 require "rules"
-require "mongoid"
-require "simple_form"
-require "kaminari"
-require "rules/all"
-require "hashie"
-require "identity_cache"
 
 module Rules
   class Engine < ::Rails::Engine
 
     config.generators do |g|
-
+      g.template_engine :haml
       g.test_framework :rspec
       # g.test_framework :rspec,
       #   fixtures: false,
