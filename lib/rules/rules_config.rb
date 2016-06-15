@@ -72,11 +72,11 @@ module Rules
       Rules::Rule.delete_all
     end
 
-    def self.import_rules
-      glob_path = "#{File.dirname(__FILE__)}/../../../**/rules/*.yaml"
+    def self.import_rules(overwrite = false)
+      glob_path = "#{Rails.root}/config/rules/*.yml"
       Dir.glob(glob_path).each do |filepath|
         puts "  #{filepath}"
-        r = Rules::Rule.import(YAML.load_file(filepath), overwrite: true)
+        r = Rules::Rule.import(YAML.load_file(filepath), overwrite: overwrite)
         if r && r.definition_file != filepath
           r.definition_file = filepath
           r.save!

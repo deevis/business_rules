@@ -12,6 +12,7 @@ load 'rails/tasks/engine.rake'
 Bundler::GemHelper.install_tasks
 
 load 'lib/tasks/redis_processor.rake'
+load 'lib/tasks/rules_tasks.rake'
 
 task :default => :spec
 
