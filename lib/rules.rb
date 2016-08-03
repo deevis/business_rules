@@ -93,6 +93,8 @@ module Rules
   mattr_accessor :after_filter_procs
   @@after_filter_procs ||= [] 
 
+  mattr_accessor :system_messaging_user
+  @@system_messaging_user ||= "noreply@rulesengine.com" 
 
 
 

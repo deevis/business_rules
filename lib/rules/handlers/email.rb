@@ -8,8 +8,10 @@ module Rules
       template :body
 
       def _handle
-        _to = sender 
-        _from = recipient
+        rules_sender = sender 
+        _from = (rules_sender == :system_messaging_user) ? Rules.system_messaging_user : rules_sender
+
+        _to = recipient
         _subject = eval_template :subject
         _body = eval_template :body
         email = RulesMailer.send_rules_action_email        to: _to, 

@@ -1,6 +1,8 @@
 module Rules
 class RulesController < ApplicationController
 
+  skip_before_action :verify_authenticity_token
+  
   include ActionController::StrongParameters
 
   # before_filter :admin_required    # If you include Rules, you want this controller SECURE!!!
