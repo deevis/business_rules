@@ -15,9 +15,6 @@ module Rules::RulesHelper
     "<script>$(document).ready({ #{yield} });</script>".html_safe
   end
 
-  def page_js &block 
-    "<script>#{yield}</script>".html_safe
-  end
 
   def drillable_rule_type?(check_type)
     !@@dont_drill_types.index(check_type)

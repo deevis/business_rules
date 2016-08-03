@@ -125,6 +125,16 @@ Rules.disallow_web_redirects_from = 'sign_out|heartbeat'
 Rules.rule_activity_channel_enabled = false
 Rules.activate_event_processing
 
+# http://stackoverflow.com/questions/31968777/clean-out-or-reset-test-database-with-rspec-and-mongoid-5-0-on-rails-4
+module Mongo
+  class Collection
+    class View
+      def remove_all
+        remove(0)
+      end
+    end
+  end
+end
 
 RSpec.configure do |config|
   config.before(:each) do
