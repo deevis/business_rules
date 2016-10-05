@@ -322,7 +322,9 @@ class Rules::Action
       #or eval works for sure.
       klass = action_handler.constantize rescue nil if action_handler.is_a? String  
       # Run the ActionHandler!!!
-      result = klass.new(self, event, rule_context, action_chain_results).handle if klass
+      result = Rules.rule_context_around.call(event) do
+        klass.new(self, event, rule_context, action_chain_results).handle if klass
+      end
       action_chain_results << result
       if self.defer_processing?
         return :defer_processing  

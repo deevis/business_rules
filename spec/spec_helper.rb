@@ -49,7 +49,7 @@ module Rules
 
       def attributes; {id: id}; end
       def changes;{};end
-      def self.after_save(x);end
+      def self.after_update(x);end
       def self.after_create(x);;end
       def self.before_destroy(x);end
       def self.find(id)

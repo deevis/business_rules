@@ -362,68 +362,75 @@ module Rules
     #
     # See RulesEngine.handle_event for more details on event hash
     #
-    # check_criteria will return false if the Rule should NOT fire
+    # check_criteria will return false if determined that the Rule should NOT fire
     #
-    # check_criteria will return a valid RuleContext if the rule should fire
+    # check_criteria will return a valid RuleContext if determined that the rule should fire
     #
     def check_criteria(rule_event, skip_criteria_check = false, extras = {})
-      unless skip_criteria_check
-        puts "...checking criteria..."
-        return false if events.blank? 
-        if rule_event[:type] == "TimerEvent"
-          timer_event = get_timer_event
-          return false unless timer_event
-          puts "Detected TimerEvent for rule: #{timer_event}"
-          return false unless run_timer?
+      Rules.rule_context_around.(rule_event) do
+        unless skip_criteria_check
+          rule_context = _check_criteria(rule_event, skip_criteria_check, extras)
+          return false unless rule_context
+        end
+        puts "...building rule context..."
+        # Check here for unique_rule_firing
+        return false if unique_firing_violated?(rule_context)
+        return rule_context if criteria.blank?  # Rule will fire...
+        # TODO: add rescue
+        result = eval(criteria, rule_context.get_binding) unless skip_criteria_check
+        if skip_criteria_check || result
+          puts "...criteria either passed or skipped[#{skip_criteria_check}]"
+          rule_context
+        else
+          nil
+        end
+      end
+    end
 
-          rule_event[:timer_event] = timer_event
-          klazz = get_timer_event_class 
-          if klazz
-            puts "Expecting results of type #{klazz} for TimerEvent selection logic: [#{criteria}]"
-            #results = klazz.constantize.where(criteria.presence || "id is not null")
-            results = begin 
-              Array(eval( criteria ))
-            rescue => e 
-              puts "  Encountered exception running selection logic: #{e.message}"
-              puts e.backtrace
-              []
-            end
-            puts "Got #{results.count} results in check_criteria for TimerEvent"
-            if results.count > 0
-              rc = Rules::Rule.rule_context(rule_event, extras.merge({multiple_triggers: results}))
-              return rc
-            else
-              puts "Returning false due to TimerEvent with criteria returning no results"
-              return false
-            end
+    def _check_criteria(rule_event, skip_criteria_check, extras)
+      puts "...checking criteria..."
+      return false if events.blank? 
+      if rule_event[:type] == "TimerEvent"
+        timer_event = get_timer_event
+        return false unless timer_event
+        puts "Detected TimerEvent for rule: #{timer_event}"
+        return false unless run_timer?
+
+        rule_event[:timer_event] = timer_event
+        klazz = get_timer_event_class 
+        if klazz
+          puts "Expecting results of type #{klazz} for TimerEvent selection logic: [#{criteria}]"
+          #results = klazz.constantize.where(criteria.presence || "id is not null")
+          results = begin 
+            Array(eval( criteria ))
+          rescue => e 
+            puts "  Encountered exception running selection logic: #{e.message}"
+            puts e.backtrace
+            []
+          end
+          puts "Got #{results.count} results in check_criteria for TimerEvent"
+          if results.count > 0
+            rc = Rules::Rule.rule_context(rule_event, extras.merge({multiple_triggers: results}))
+            return rc
           else
-            puts "Returning nil due to TimerEvent with no klazz match"
+            puts "Returning false due to TimerEvent with criteria returning no results"
             return false
           end
         else
-          # But if it's a ControllerEvent, do not check if we are mapped to ApplicationController::*
-          if rule_event[:type] != "ControllerEvent" || events.index("ApplicationController::*").nil?
-            # Make sure the right type of event fired
-            unless events.index("#{rule_event[:klazz]}::#{rule_event[:action]}")
-              puts "   returning false from check_criteria as #{events} do not include #{rule_event[:klazz]}::#{rule_event[:action]}"
-              return false
-            end
+          puts "Returning nil due to TimerEvent with no klazz match"
+          return false
+        end
+      else
+        # But if it's a ControllerEvent, do not check if we are mapped to ApplicationController::*
+        if rule_event[:type] != "ControllerEvent" || events.index("ApplicationController::*").nil?
+          # Make sure the right type of event fired
+          unless events.index("#{rule_event[:klazz]}::#{rule_event[:action]}")
+            puts "   returning false from check_criteria as #{events} do not include #{rule_event[:klazz]}::#{rule_event[:action]}"
+            return false
           end
         end
       end
-      puts "...building rule context..."
-      rule_context = Rules::Rule.rule_context(rule_event, extras)
-      # Check here for unique_rule_firing
-      return false if unique_firing_violated?(rule_context)
-      return rule_context if criteria.blank?  # Rule will fire...
-      # TODO: add rescue
-      result = eval(criteria, rule_context.get_binding) unless skip_criteria_check
-      if skip_criteria_check || result
-        puts "...criteria either passed or skipped[#{skip_criteria_check}]"
-        rule_context
-      else
-        nil
-      end
+      Rules::Rule.rule_context(rule_event, extras)
     end
 
     # Returns true if this rule has already fired for the unique_expression for the given rule_context

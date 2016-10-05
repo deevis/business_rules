@@ -12,7 +12,7 @@ end
 
 class Rules::TestEvent
 
-	def self.after_save(args);nil;end
+	def self.after_update(args);nil;end
 	def self.after_create(args);end
 	def self.before_destroy(args);end
 	def changes;{"field"=>["before","after"], "updated_at"=>[1.hour.ago,1.minute.ago]};end

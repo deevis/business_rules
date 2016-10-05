@@ -1,3 +1,18 @@
+# == Schema Information
+#
+# Table name: rules_action_chain_steps
+#
+#  id                       :integer          not null, primary key
+#  deferred_action_chain_id :integer
+#  waiting_on_type          :string
+#  waiting_on_id            :integer
+#  step_number              :integer
+#  continuation_strategy    :string
+#  continued_at             :datetime
+#  created_at               :datetime
+#  updated_at               :datetime
+#
+
 # t.integer :deferred_action_chain_id
 # t.string :waiting_on_type
 # t.integer :waiting_on_id

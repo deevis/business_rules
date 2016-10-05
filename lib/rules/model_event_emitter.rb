@@ -33,7 +33,7 @@ module Rules
 			#base.send :extend, ClassMethods
 			#unless ( File.basename($0) == "rake" && ARGV.include?("db:migrate") )
 			#end
-			base.after_save :raise_updated
+			base.after_update :raise_updated
 			base.after_create :raise_created
 			base.before_destroy :raise_destroyed
 			@@registered_classes << base if !registered_classes.index(base)
@@ -91,6 +91,7 @@ module Rules
 					event_hash = { processing_stack: Rules::Rule.processing_stack, type: event_type, 
 													klazz: self.class.name, action: action, id: self.id, data: self, 
 													user: Rules.current_user.call }.merge(extras)
+					Rules.event_extensions.(event_hash)
 			end
 
 	end

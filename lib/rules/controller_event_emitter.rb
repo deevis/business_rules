@@ -55,6 +55,7 @@ module Rules
 													action: action, data: filtered_params, user: Rules.current_user.call,
 													xhr: request.xhr?, ip: request.remote_ip, user_agent: request.user_agent, 
 													referrer: request.referrer, original_url: request.original_url }.merge(extras)
+					Rules.event_extensions.(event_hash)
 			end
 
 	end

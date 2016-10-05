@@ -1,3 +1,17 @@
+# == Schema Information
+#
+# Table name: rules_deferred_action_chains
+#
+#  id                   :integer          not null, primary key
+#  rule_id              :string
+#  path                 :string
+#  event                :text
+#  action_chain_results :text
+#  completed_date       :datetime
+#  created_at           :datetime
+#  updated_at           :datetime
+#
+
     # create_table :rules_deferred_action_chains do |t|
     #   t.string :rule_id
     #   t.string :path 

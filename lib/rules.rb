@@ -85,6 +85,12 @@ module Rules
   mattr_accessor :flush_rules_rule_analytics_every
   @@flush_rules_rule_analytics_every ||= 10000
 
+  mattr_accessor :event_extensions
+  @@event_extensions = ->(h) { h } 
+
+  mattr_accessor :rule_context_around 
+  @@rule_context_around = ->(event_hash, &block) { block.call if block } 
+
   # TODO: not implemented - These are run prior to each Rule evaluation
   mattr_accessor :before_filter_procs
   @@before_filter_procs ||= [] 

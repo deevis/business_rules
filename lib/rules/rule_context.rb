@@ -33,8 +33,10 @@ module Rules
 
             if event_hash[:id].present?
               if klazz.respond_to? :fetch
+                # if using IdentityCache
                 @triggers << klazz.fetch(event_hash[:id].to_s)
               else
+                # Unscope this badboy incase the application has a non-default scope that precludes access
                 @triggers << klazz.find(event_hash[:id].to_s)
               end
             else
