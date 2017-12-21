@@ -1,28 +1,33 @@
-class Rules::Action
-  include Mongoid::Document
+class Rules::Action < ActiveRecord::Base
   include Rules::ModelEventEmitter
 
 
-  field :title, type: String  
-  field :type, type: String								          # class name of handler
-  field :context_mapping, type: Hash, default: {}		# Map of actionNeed => ruleContextField {"actor:=>user"=>"actor:=>user"}
+  # field :title, type: String  
+  # field :type, type: String								          # class name of handler
+  # field :context_mapping, type: Hash, default: {}		# Map of actionNeed => ruleContextField {"actor:=>user"=>"actor:=>user"}
   
-  field :template, type: Hash, default: {} 			    # Map of templateName => templateValue { "email" => "hello {name}" }			
+  # field :template, type: Hash, default: {} 			    # Map of templateName => templateValue { "email" => "hello {name}" }			
   
-  field :active, type: Boolean, default: true
+  # field :active, type: Boolean, default: true
 
-  field :future_configuration, type: Hash, default: nil
+  # field :future_configuration, type: Hash, default: nil
 
-  field :defer_processing, type: Boolean, default: false
+  # field :defer_processing, type: Boolean, default: false
   
-  embedded_in :rule, inverse_of: :actions
+  # embedded_in :rule, inverse_of: :actions
+  belongs_to :rule 
+
+  serialize :context_mapping, Hash
+  serialize :template, Hash 
+  serialize :future_configuration, Hash 
+
 
   before_save :set_default_mappings, :context_mapping_sanity_check
   
   def export
     {
       title: title,
-      type: type,
+      action_type: action_type,
       context_mapping: context_mapping,
       template: template, 
       future_configuration: future_configuration, 
@@ -89,7 +94,7 @@ class Rules::Action
   end
 
   def display_name
-    "#{self.type.split("::").last.titleize}#{handler_class.display_name_details(self)}"
+    "#{self.action_type.split("::").last.titleize}#{handler_class.display_name_details(self)}"
   end
 
   # An action is ready if all of it's needs are mapped
@@ -104,7 +109,7 @@ class Rules::Action
 
   # returns true if this action should enforce all mappings exist in order to be ready
   def strict_mapping?
-    type != "Rules::Handlers::CreateModel"
+    action_type != "Rules::Handlers::CreateModel"
   end
 
 
@@ -112,7 +117,7 @@ class Rules::Action
     needs_mappings = (handler_class.configuration[:needs].dup rescue {}) || {}
     class_lookup_cols = {}
     needs_mappings.each do |field,field_configuration|
-      if field_configuration[:type] == :class_lookup
+      if field_configuration[:action_type] == :class_lookup
         klazz = self.lookup_context_mapping(field,:class_lookup)[0] rescue nil
         if klazz
           cols_to_add = Rules::Rule.get_columns(klazz.camelcase.constantize)
@@ -178,7 +183,7 @@ class Rules::Action
   end
 
   def handler_class
-    type.constantize
+    action_type.constantize
   end
 
   # What templates are defined for this Action's ActionHandler?
@@ -284,7 +289,7 @@ class Rules::Action
 
   def process_action(event, rule_context, action_chain_results = [])
     action_start = Time.now
-    action_handler = self.type
+    action_handler = self.action_type
     Rails.logger.info "\nRunning action: #{action_handler}"
     result = 0
     if !rule_context.running_future_action && self.future_configuration?
@@ -333,7 +338,7 @@ class Rules::Action
     Rails.logger.info " Finished action: #{action_handler}\n"
     return result
   rescue => e 
-    Rails.logger.error "ERROR: Running action #{self.type} for rule #{rule.name}: #{e.message}\n"
+    Rails.logger.error "ERROR: Running action #{self.action_type} for rule #{rule.name}: #{e.message}\n"
     Rails.logger.error e.backtrace.join("\n")
     return :error
   ensure 

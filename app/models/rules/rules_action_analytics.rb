@@ -9,7 +9,7 @@ module Rules
 
 		# track that the action has been encountered by the system
 		def self.track(action, rule_context)
-			action_name = action.type
+			action_name = action.action_type
 			return if Rules.disabled? || action_name.blank? || DISALLOW_TRACKING_FOR.index(action_name)
 			begin
 				# {"Rules::RulesActionAnalytics" => 7}		Item with id=3 has 7 views to update

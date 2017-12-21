@@ -65,8 +65,8 @@ namespace :rules do
       puts "\n\nEvents Processor connecting to #{Rules.redis_host}:#{Rules.redis_port}/#{Rules.redis_queue_name}\n\n"
       runner_id = "runner_#{SecureRandom.hex(4)}"
       start_time = Time.now
-      processing_queue = PyrCore::Cluster::RedisCluster.new   # Events come in on this queue via brpop
-      analytics_queue = PyrCore::Cluster::RedisCluster.new    # We perform introspection upon the queue with this connection
+      processing_queue = Redis.new   # Events come in on this queue via brpop
+      analytics_queue = Redis.new    # We perform introspection upon the queue with this connection
       last_private_pub = (Time.now - 10)
       puts "...listening..."
       while true do

@@ -34,7 +34,7 @@ module Rules
 					url = redirect_now[:redirect_url]
 					Rails.logger.info "Pro-actively redirecting from within before_filter: #{url}"
 					if !url.start_with? "http"
-						url = "#{PyrCore::AppSetting.server_url}/#{url}" 
+						url = "#{AppSetting.server_url}/#{url}" 
 						Rails.logger.info "Using fully qualified url: #{url}"
 					end
 					redirect_to url

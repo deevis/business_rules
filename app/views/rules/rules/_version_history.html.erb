@@ -6,13 +6,14 @@
       <% btn_class = "btn-danger" if rule.rule_deleted? || !rule.active %>
       <div class="<%= btn_class %>" style="color:white;padding:5px;font-weight:bold;float:left;">Current</div>
       <div style="float:left;margin-left:5px;">
-        <em><%= time_ago_in_words rule.u_at %></em> by <%= rule.updated_by.presence || 'unknown' %><br/>
+        <em><%= time_ago_in_words rule.updated_at %></em> by UNKNOWN<br/>
         <%= rule.updated_action.gsub(",",", ").gsub("  "," ").html_safe rescue '' %>
       </div>
       <div class="clearfix"></div>
     </div>
 
-    <% rule.versions.reverse.each do |v| %>
+
+    <% [].each do |v| %>  <!-- rule.versions.reverse -->
       <div>
         <% btn_class = v[:was_valid] ? "btn-success" : "btn-warning" %>
         <% btn_class = "btn-danger" if v[:deleted] || !v[:active] %>
@@ -26,4 +27,6 @@
         <div class="clearfix"></div>
       </div>
     <% end %>
-  </div>
+ 
+  TODO VERSIONS!!!
+ </div>

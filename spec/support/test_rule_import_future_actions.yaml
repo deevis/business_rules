@@ -1,7 +1,7 @@
 ---
   :name: New Followers Activity Stream
   :description: When a User follows another User, post this action to the ActivityStream.
-  :definition_file: "/pyr/community/config/rules/new_followers_activity_stream.yaml"
+  :definition_file: "/my_module/config/rules/new_followers_activity_stream.yaml"
   :events:
   - Rules::Test::C::create
   :category: Uncategorized

@@ -6,8 +6,8 @@ source "http://rubygems.org"
 gemspec
 
 # jquery-rails is used by the dummy application
-gem 'mongoid', github: 'mongoid/mongoid', ref: "63ece9973709a837a1817824d202b367db3e3688"
-gem 'mongoid-versioning', github: 'ream88/mongoid-versioning'
+# gem 'mongoid', github: 'mongoid/mongoid'  
+# gem 'mongoid-versioning', github: 'ream88/mongoid-versioning'
 # gem 'identity_cache', github: 'jdatti/identity_cache'
 
 group :development do
@@ -16,7 +16,7 @@ end
 
 # TravisCI wants rake in group test
 group :test do
-  gem 'database_cleaner', '~> 1.0.1'
+  gem 'database_cleaner'
   gem "rake"
   gem "pry"
   gem 'pry-byebug'

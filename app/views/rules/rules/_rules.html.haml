@@ -122,7 +122,7 @@
       %td{:style => "min-width:300px;"}
         - r.actions.each do |a|
           %div{:class => "title #{"ready" if a.ready?}"}
-            = link_to rules_rules_path(action_type: a.type, category: params[:category], q: params[:q], event: params[:event]) do
+            = link_to rules_rules_path(action_type: a.action_type, category: params[:category], q: params[:q], event: params[:event]) do
               = a.display_name
             -if params[:q].present?
               -a.template.each do |name, body|
@@ -132,8 +132,8 @@
                     %strong=name
                   )
       %td
-        = time_ago_in_words(r.u_at)
-        by #{r.updated_by.presence || 'System'}
+        = time_ago_in_words(r.updated_at)
+        -# by #{r.updated_by.presence || 'System'}
 %br/
 
 

@@ -13,7 +13,7 @@
     %h2 
       Examples
       %small=link_to t("export_all"), export_rules_rules_path
-    -Rules::Rule.where(_deleted: false).order("u_at DESC").limit(5).each do |r|
+    -Rules::Rule.where(_deleted: false).order("updated_at DESC").limit(5).each do |r|
       %div
         =link_to r.name, r
         %pre

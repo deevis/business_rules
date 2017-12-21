@@ -166,7 +166,7 @@ module Rules
     # Event => [Rule/ContinuationStrategy] lookup map
     def self.asynchronous_rules_lookup_map(reload = false)
       if @@async_rules_lookup_map == nil || reload
-        rules = Rules::Rule.where(:synchronous.ne => true, active: true).select{|r| r.ready?}
+        rules = Rules::Rule.where(active: true).where.not(synchronous: true).select{|r| r.ready?}
         @@async_rules_lookup_map = _event_keyed_map_of_rules(rules)
         # Add ContinuationStrategies into async realm
         Rules::Handlers::ContinuationStrategy.registered_strategies.each do |strat|

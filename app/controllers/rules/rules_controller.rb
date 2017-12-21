@@ -24,7 +24,7 @@ class RulesController < ApplicationController
         events_added << e 
       end
     end
-    @rules_rule.updated_action = "Added #{events_added.join(",")} as trigger(s)"
+    @rules_rule.updated_actions << "Added #{events_added.join(",")} as trigger(s)"
     if @rules_rule.save
       redirect_to :back, notice: "#{events_added.join(",")} is a trigger for this rule"
     else
@@ -36,7 +36,7 @@ class RulesController < ApplicationController
     @rules_rule = Rules::Rule.find(params[:id])
     event = params[:event].gsub("__","::") rescue nil
     @rules_rule.events.delete event
-    @rules_rule.updated_action = "Removed #{event} as a trigger"
+    @rules_rule.updated_actions << "Removed #{event} as a trigger"
     if @rules_rule.save
       redirect_to :back, notice: "#{event} is no longer a trigger for this rule"
     else
@@ -66,26 +66,26 @@ class RulesController < ApplicationController
 
   def notifications
     @notifications_by_category = Rules::Rule.where(_deleted: false).
-        where("actions.type" => /.*Notification/ ).each_with_object(Hash.new {|h,k| h[k] = [] } ) do |r,h| 
+        where("actions.action_type" => /.*Notification/ ).each_with_object(Hash.new {|h,k| h[k] = [] } ) do |r,h| 
       h[r.category] += r.actions.select {|a| a.type =~ /.*Notification/ }
     end
   end
   def add_action
     @rules_rule = Rules::Rule.find(params[:id])
-    action = params[:action_class].gsub("__","::") rescue nil
-    if action 
-      @action = Rules::Action.new(type: action)
+    action_type = params[:action_class].gsub("__","::") rescue nil
+    if action_type
+      @action = Rules::Action.new(action_type: action_type)
       @rules_rule.actions << @action
-      msg = "Added Action: #{action}"
-      @rules_rule.updated_action = msg
+      msg = "Added Action: #{action_type}"
+      @rules_rule.updated_actions << msg
     else       
       msg = "Please pass in action to add as :action_class parameter"
     end
-    if action && @rules_rule.save
+    if action_type && @rules_rule.save
       @action_id = @action.id
       _smart_redirect(notice: msg)
     else
-      redirect_to :back, error: "Could not add event: #{action}.  Suggest you check the logs and maybe this will help, too: #{@rules_rule.errors}"
+      redirect_to :back, error: "Could not add event: #{action_type}.  Suggest you check the logs and maybe this will help, too: #{@rules_rule.errors}"
     end
   end
 
@@ -134,7 +134,7 @@ class RulesController < ApplicationController
     @rules_rule = Rules::Rule.find(params[:id])
     active = params[:active]
     @rules_rule.active = (active == "true")
-    @rules_rule.updated_action = "Set active = #{@rules_rule.active}"
+    @rules_rule.updated_actions << "Set active = #{@rules_rule.active}"
     @rules_rule.save!
   end
 
@@ -151,7 +151,7 @@ class RulesController < ApplicationController
     action = @rules_rule.actions.detect{|a| a.id.to_s == action_id}
     action.delete if action
     msg = "Removed Action: #{action}"
-    @rules_rule.updated_action = msg
+    @rules_rule.updated_actions << msg
     if @rules_rule.save
       _smart_redirect(notice: "Action deleted")
     else
@@ -194,7 +194,7 @@ class RulesController < ApplicationController
                                         contingent_script: 'trigger != nil',
                                         priority: 0 }
     end
-    @rules_rule.updated_action = operation
+    @rules_rule.updated_actions << operation
     if @rules_rule.save
       _smart_redirect(notice: operation)
     else
@@ -214,7 +214,7 @@ class RulesController < ApplicationController
       operation = "Added deferred processing of action chain"
       action.defer_processing = true
     end
-    @rules_rule.updated_action = operation
+    @rules_rule.updated_actions << operation
     if @rules_rule.save
       _smart_redirect(notice: operation)
     else
@@ -231,7 +231,7 @@ class RulesController < ApplicationController
     if action.future_configuration[params[:field]] != params[:value]
       action.future_configuration[params[:field]] = params[:value]
       @operation = "Set future configuration #{params[:field]} to [#{params[:value]}]"
-      @rules_rule.updated_action = @operation
+      @rules_rule.updated_actions << @operation
       @rules_rule.save!
     else
       @operation = "Field mapping already set"
@@ -281,7 +281,7 @@ class RulesController < ApplicationController
     if @action_field_type == :class_lookup 
       klazz = @rule_field_type.constantize
       @action.context_mapping[action_field] = rule_field
-      @rules_rule.updated_action = "Added class lookup : #{rule_field}"
+      @rules_rule.updated_actions << "Added class lookup : #{rule_field}"
       @rules_rule.save!
     elsif @rule_field_type == "instance_lookup"
       # In this case, the rule field name will be <className_underscored>[id]
@@ -292,7 +292,7 @@ class RulesController < ApplicationController
       instance = @action.instance_lookup(@rule_field_name)
       if instance 
         @action.context_mapping[action_field] = rule_field
-        @rules_rule.updated_action = "Added class lookup : #{rule_field}"
+        @rules_rule.updated_actions << "Added class lookup : #{rule_field}"
         @rules_rule.save!
       else
         @error = "Unable to resolve instance specified by #{@rule_field_name}"
@@ -311,19 +311,19 @@ class RulesController < ApplicationController
           end
         end
         @action.context_mapping[action_field] = rule_field
-        @rules_rule.updated_action = "Added freeform action mapping : #{rule_field}"
+        @rules_rule.updated_actions << "Added freeform action mapping : #{rule_field}"
         @rules_rule.save!
       rescue => e
         @error = "Unable to update mapping: #{e.message}"
       end
     elsif @rule_field_type == "lambda_lookup"
         @action.context_mapping[action_field] = rule_field
-        @rules_rule.updated_action = "Added predefined action mapping : #{rule_field}"
+        @rules_rule.updated_actions << "Added predefined action mapping : #{rule_field}"
         @rules_rule.save!      
     else
       if Rules::Action.check_mapping_type?(@action_field_type, @rule_field_type)
         @action.context_mapping[action_field] = rule_field
-        @rules_rule.updated_action = "Added mapping : #{@rule_field_type} => #{action_field}"
+        @rules_rule.updated_actions << "Added mapping : #{@rule_field_type} => #{action_field}"
         @rules_rule.save!
       else
         @error = "Illegal field type mapping from #{@rule_field_type} to #{@action_field_type}"
@@ -349,7 +349,7 @@ class RulesController < ApplicationController
       @rule_field_name = mapped_from.split(":=>").first
       @rule_field_type = mapped_from.split(":=>").last
       @message = "Removed field mapping for #{@action_field_name}"
-      @rules_rule.updated_action = @message
+      @rules_rule.updated_actions << @message
       @rules_rule.save!
     else
       @message = "#{action_field} was not mapped"
@@ -432,8 +432,7 @@ class RulesController < ApplicationController
     @rules_rule = clone_this_one.clone 
     @rules_rule.name = "(Clone) #{@rules_rule.name}"
     @rules_rule.description = "(Clone) #{@rules_rule.description}"
-    @rules_rule.updated_by = Thread.current[:user].try(:username)
-    @rules_rule.updated_action = "Cloned from #{clone_this_one.id.to_s}" 
+    @rules_rule.updated_actions << "Cloned from #{clone_this_one.id.to_s}" 
     @rules_rule.was_valid = clone_this_one.ready?
     @rules_rule.active = false
     if @rules_rule.save
@@ -460,7 +459,7 @@ class RulesController < ApplicationController
     Rails.logger.info "Rules Filter event[#{fe}] action[#{fa}] category[#{fc}] q[#{fq}]"
     scope = Rules::Rule.unscoped
     scope = scope.where(events: params[:event]) if fe
-    scope = scope.where(:actions.elem_match => {type: params[:action_type]}) if fa
+    scope = scope.where(:actions.elem_match => {action_type: params[:action_type]}) if fa
     scope = scope.where(category: params[:category]) if fc
     if fq 
       @q_regexp = Regexp.new(fq, "i")
@@ -470,9 +469,11 @@ class RulesController < ApplicationController
                             {criteria: @q_regexp},
                             {:actions.elem_match => {"template.body" => @q_regexp}})
     end
-    scope = scope.order("u_at DESC")
+    scope = scope.order("updated_at DESC")
     @rules_rules = scope
-    @rules_rules = @rules_rules.ne(_deleted: true) unless params[:deleted] == "true"
+    @rules_rules = @rules_rules
+
+              #  .ne(_deleted: true) unless params[:deleted] == "true"
 
     respond_to do |format|
       format.html # index.html.erb
@@ -546,7 +547,7 @@ class RulesController < ApplicationController
     @rules_rule = Rules::Rule.new(sp)
 
     respond_to do |format|
-      @rules_rule.updated_action = "Rule created"
+      @rules_rule.updated_actions = ["Rule created"]
       if @rules_rule.save
         format.html { _smart_redirect(notice: 'Rule was successfully created.') }
         format.json { render json: @rules_rule, status: :created, location: @rules_rule }
@@ -571,10 +572,8 @@ class RulesController < ApplicationController
       template_value = action_update.values.first[:template].values.first
       puts "TemplateName[#{template_name}]  TemplateValue[#{template_value}]"
       action.set_template(template_name, template_value)
-      @rules_rule.updated_action = "Updated template : #{template_name}"
+      @rules_rule.updated_actions << "Updated template : #{template_name}"
       @rules_rule.save!
-    else
-      params[:rules_rule][:updated_action] = "Updated rule logic"
     end
 
     record_history_changes(:unique_expression)
@@ -594,7 +593,8 @@ class RulesController < ApplicationController
     b4 = @rules_rule.send(property).presence
     after = params[:rules_rule][property].presence
     if b4 != after
-      params[:rules_rule][:updated_action] += "<br/><br/>Changed unique expression from [#{b4}] to [#{after}]."
+      _index = @rules_rule.updated_actions.length - 1
+      @rules_rule.updated_actions[_index] += "\nChanged unique expression from [#{b4}] to [#{after}]."
     end      
 
   end
@@ -624,7 +624,7 @@ class RulesController < ApplicationController
     @rules_rule = Rules::Rule.find(params[:id])
     @rules_rule._deleted = false
     @rules_rule.active = false
-    @rules_rule.updated_action = "Undeleted"
+    @rules_rule.updated_actions << "Undeleted"
     @rules_rule.save!
     redirect_to rules_rule_path(@rules_rule)
   end
@@ -638,7 +638,7 @@ class RulesController < ApplicationController
     else
       @rules_rule._deleted = true
       @rules_rule.active = false
-      @rules_rule.updated_action = "Deleted"
+      @rules_rule.updated_actions << "Deleted"
       @rules_rule.save!
     end
 

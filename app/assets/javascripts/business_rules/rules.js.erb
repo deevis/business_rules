@@ -166,6 +166,7 @@ jQuery.fn.sortElements = (function(){
                 "&rule_field=" + rule_field + "&action_field=" + action_field;
       console.log("   - " + url);
       if (field_type=="class_lookup" || (rule_field.indexOf(":=>instance_lookup") > 0) ) {
+          url = url.replace("add_action_mapping.js", "add_action_mapping");
           window.location = url;
       } else {
         $.ajax({

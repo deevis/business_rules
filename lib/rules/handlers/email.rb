@@ -10,7 +10,6 @@ module Rules
       def _handle
         rules_sender = sender 
         _from = (rules_sender == :system_messaging_user) ? Rules.system_messaging_user : rules_sender
-
         _to = recipient
         _subject = eval_template :subject
         _body = eval_template :body

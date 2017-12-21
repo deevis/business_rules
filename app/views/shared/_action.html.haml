@@ -5,7 +5,7 @@
 .rules-widget
   %div{class: "title #{"ready" if action.ready?}", :id => "action_title_#{action.id.to_s}"}
     %span.ordinal= action_ordinal
-    = action.type.split("::").last.titleize
+    = action.action_type.split("::").last.titleize
   - unless title_only
     .body.action
       -if @rules_rule
@@ -16,7 +16,7 @@
             %i{class: "ic-icon-fw ic-icon-lg #{action.handler_class.continuation_strategy.icon}", title: action.handler_class.continuation_strategy.title}
           -if action.testable?
             =link_to test_rule_rules_rule_path(@rules_rule, action_id: action.id) do
-              %i{class:"ic-icon-fw ic-icon-lg ic-icon-eye", title:"Preview this #{action.type.split('::').last.titleize}"}
+              %i{class:"ic-icon-fw ic-icon-lg ic-icon-eye", title:"Preview this #{action.action_type.split('::').last.titleize}"}
           .btn-group
             %button.btn.btn-info.dropdown-toggle{"data-toggle" => "dropdown", type: "button"}
               %i.fa.fa-ellipsis-h
@@ -51,7 +51,7 @@
                 =link_to remove_action_rules_rule_path(@rules_rule, action_id: action.id ), "data-confirm" => "Are you sure you want to remove this Action from your Rule?", method: :delete do
                   %i{class: Rules.trash_icon}>
                   Delete Action
-      .classname= action.type
+      .classname= action.action_type
       -needs = action.needs
       -templates = action.template_names
       -if @rules_rule

@@ -24,7 +24,7 @@ module Rules
              (ac_extra_event && Rules::RulesEngine.asynchronous_rules_lookup_map[ac_extra_event])
             t = Time.now
             puts "Processing [#{event}] asynchronously"
-            PyrCore::Cluster.lpush Rules.redis_queue_name, event_hash
+            Redis.new.lpush Rules.redis_queue_name, event_hash
             puts "Pushed event to queue in #{Time.now - t} seconds"
           end
         rescue => e 

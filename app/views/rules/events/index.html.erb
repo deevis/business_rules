@@ -3,7 +3,7 @@
 
 <!-- 
 :model_events=>
-  {"PyrCommunity"=>
+  {"MyModule"=>
     {"Blog"=>
       {:context=>
         {"id"=>{:type=>:integer},
@@ -23,7 +23,7 @@
        :actions=>[:create, :update, :delete]}
       }
     },
-   "PyrCore"=>
+   "MyModule"=>
     {"Lead"=>
       {:context=>
         {"id"=>{:type=>:integer},
@@ -45,23 +45,23 @@
   [
     {title: "Model Events", isFolder: true, key: "model_events", 
       children: [
-        {title: "PyrCommunity", isFolder: true, key: "model_events.pyr_community",
+        {title: "MyModule", isFolder: true, key: "model_events.my_module",
           children: [
-            {title: "Blog", isFolder: true, key: "model_events.pyr_community.blog", 
+            {title: "Blog", isFolder: true, key: "model_events.my_module.blog", 
               children: [
-                {title: "Create", key: "model_events.pyr_community.blog.create" },
-                {title: "Update", key: "model_events.pyr_community.blog.update" },
-                {title: "Delete", key: "model_events.pyr_community.blog.delete" },
+                {title: "Create", key: "model_events.my_module.blog.create" },
+                {title: "Update", key: "model_events.my_module.blog.update" },
+                {title: "Delete", key: "model_events.my_module.blog.delete" },
               ]}
           ]},
       children: [
-        {title: "PyrCore", isFolder: true, key: "model_events.pyr_core",
+        {title: "MyModule", isFolder: true, key: "model_events.my_module",
           children: [
-            {title: "Lead", isFolder: true, key: "model_events.pyr_core.lead", 
+            {title: "Lead", isFolder: true, key: "model_events.my_module.lead", 
               children: [
-                {title: "Create", key: "model_events.pyr_core.lead.create" },
-                {title: "Update", key: "model_events.pyr_core.lead.update" },
-                {title: "Delete", key: "model_events.pyr_core.lead.delete" },
+                {title: "Create", key: "model_events.my_module.lead.create" },
+                {title: "Update", key: "model_events.my_module.lead.update" },
+                {title: "Delete", key: "model_events.my_module.lead.delete" },
               ]}
           ]}
 

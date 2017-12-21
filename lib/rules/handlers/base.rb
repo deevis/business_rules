@@ -16,11 +16,11 @@ require "active_support/core_ext"
         
         # @@action_configuration will be a Hash with classes as keys and needs and templates 
         #  {  
-        #    PyrCore::Handlers::Email=>
+        #    MyModule::Handlers::Email=>
         #      {:needs=>{:recipient=>:messaging_user, :sender=>:messaging_user}, :templates=>{:subject=>"", :body=>""}},
-        #    PyrCore::Handlers::ActivityStream=>
+        #    MyModule::Handlers::ActivityStream=>
         #      {:needs=>{:actor=>:user, :trigger=>:object}, :templates=>nil},
-        #    PyrCore::Handlers::Notification=>
+        #    MyModule::Handlers::Notification=>
         #      {:needs=>{:recipient=>:messaging_user, :trigger=>:object}, :templates=>nil}
         #  }
         @@action_configuration = nil
@@ -100,47 +100,10 @@ require "active_support/core_ext"
         end
 
         def set_default_market(user = nil)
-          Rails.logger.info "\n\n     set_default_market"
-          if user.present? && defined?(PyrCrm::MessagingUser) && !user.is_a?(PyrCrm::MessagingUser)
-            # if we have a string being passed in, for example, then we don't have a user that we can derive Market from...
-            Rails.logger.warn("Disregarding passed user of type #{user.class} for use as MarketProvider")
-            user = nil
-          end
-          if user.blank?
-            user = self.cms_market_user
-            Rails.logger.info("Used Action#cms_market_user") if user.present?
-          end
-
-          if defined?(::User) && user.blank? && trigger.present? 
-            if trigger.is_a?(::User)
-              user = trigger 
-              Rails.logger.info("Using Trigger as MarketProvider: User[#{user.id}]")
-            elsif trigger.respond_to?(:user) 
-              user = trigger.user
-              Rails.logger.info("Using trigger.user as MarketProvider: User[#{user.id}]")
-            end
-          end
-          if user.blank? && actor.present?
-            user = actor 
-            Rails.logger.info("Using the Actor as the MarketProvider: User[#{user.id}]")
-          end
-            
-          if user.present?
-            if defined?(::User) && !user.is_a?(::User) 
-              Rails.logger.warn("  user[#{user.class}] is not of type User...panicking a bit")
-              # If we know about Users but the user instance is NOT a user
-              if user.respond_to?(:user)
-                # then let's get the linked user record (think PyrTree::User and PyrCrm::Contact)
-                user = user.user 
-                Rails.logger.info("  sigh of relief, using the linked user method: User[#{user.id}]")
-              else 
-                # we don't know how to set the user here
-                Rails.logger.error("  panick state realized - unsetting user and Market will be Global")
-                user = nil 
-              end
-            end
-          end
         end
+
+        def clear_default_market
+        end 
 
 
         def self.display_name_details(action)
@@ -189,7 +152,7 @@ require "active_support/core_ext"
           @@action_configuration = {}
           puts "...scanning for Action Handlers!!!\n"
           #if Rails.env.development?
-              Dir["#{Rails.root}/../**/*/app/**/handlers/*.rb"].each do |p| 
+              Dir["#{Rails.root}/app/**/handlers/*.rb"].each do |p| 
                 puts "require #{p}" 
                 require_dependency p
               end
@@ -214,7 +177,7 @@ require "active_support/core_ext"
 
         # Returns a key-sorted map of simple action name keys with values being the full-blown class
         # {
-        #     "ActivityStream" => "PyrCore::Handlers::ActivityStream",
+        #     "ActivityStream" => "MyModule::Handlers::ActivityStream",
         #     "CreateModel"=>"Rules::Handlers::CreateModel",
         #     "WebRequestLogger"=>"Rules::Handlers::WebRequestLogger"
         # }

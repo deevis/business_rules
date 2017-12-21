@@ -27,12 +27,12 @@ class Rules::EventsController < ApplicationController
   #
   # eg:
   # 
-  #   curl -X POST -H "Content-Type: application/json" -d '{ "event": "PyrTree::User::update", 
+  #   curl -X POST -H "Content-Type: application/json" -d '{ "event": "User::update", 
   #      "data":{"id":1,"client_user_id":"region_manager","first_name":"Fred","last_name":"Thomas"}, 
   #      "changes":{"first_name": ["Fredward", "Fred"]}}' http://localhost:3000/rules/events/push_event.json
   #
-  #   {"success":true, "event":"PyrTree::User::update", "type":"ModelEvent",
-  #      "klazz":"PyrTree::User", "action":"update"}
+  #   {"success":true, "event":"User::update", "type":"ModelEvent",
+  #      "klazz":"User", "action":"update"}
   #
   def push_event
     event = params[:event] 

@@ -1,9 +1,10 @@
 require "haml"
-require "mongoid"
 require "simple_form"
 require "kaminari"
 require "hashie"
 require "identity_cache"
+require "paper_trail"
+require "paranoia"
 
 module Rules
 
@@ -55,7 +56,7 @@ module Rules
   @@logging_level ||= :info
 
   mattr_accessor :current_user
-  @@current_user ||= -> {Thread.current[:user]}
+  @@current_user ||= -> {Thread.current[:rules_user]}
   
   # The application using Rules can add their own events in here for use in Rules
   mattr_accessor :application_events
@@ -67,7 +68,7 @@ module Rules
 
   # Allow for mappings between different types of objects
   mattr_accessor :context_mapping_equivalencies
-  @@context_mapping_equivalencies ||= {}
+  @@context_mapping_equivalencies ||= { messaging_user: [:user] }
 
   # Set rule_activity_channel to have push notifications go to Rules admin screen
   mattr_accessor :rule_activity_channel

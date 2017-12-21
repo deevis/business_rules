@@ -21,18 +21,16 @@ Gem::Specification.new do |s|
   # all of these gems are being used by parent app anyway, and we need and we are trying
   # to keep all the versions same for a given gem, so there should not be a version conflict issue as-well.
 
-  s.add_dependency "rails", ">= 4.2"
+  s.add_dependency "rails"
   s.add_dependency "haml-rails"               # default generators
   s.add_dependency "haml"                     # actual rendering activation
   
   #s.add_dependency "protected_attributes"     # RAILS4_UPGRADE - Backwards Compat
-  s.add_dependency "rails-observers"          # RAILS4_UPGRADE - Backwards Compat
+  # s.add_dependency "rails-observers"          # RAILS4_UPGRADE - Backwards Compat
   s.add_dependency "jquery-rails"
   s.add_dependency "jquery-ui-rails"
-  s.add_dependency "mongoid"
-  s.add_dependency "mongoid-versioning"
   s.add_dependency "simple_form"
-  s.add_dependency "kaminari", ">=0.13.0"                 # Paging
+  s.add_dependency "kaminari"
   s.add_dependency "redis-rails"
   s.add_dependency "obscenity"   
   s.add_dependency "hashie"
@@ -41,10 +39,12 @@ Gem::Specification.new do |s|
   s.add_dependency "resque"
   s.add_dependency "resque-status"
   s.add_dependency "resque-scheduler"
+  s.add_dependency 'paranoia', '~> 2.2'
+  s.add_dependency 'paper_trail'
 
-  s.add_development_dependency "rspec", "~> 2.0"
-  s.add_development_dependency "rspec-rails", "~> 2.0"
-  s.add_development_dependency "rspec-expectations", "~> 2.14"
+  s.add_development_dependency "rspec"
+  s.add_development_dependency "rspec-rails"
+  s.add_development_dependency "rspec-expectations"
 #  s.add_development_dependency "mysql2"
   s.add_development_dependency "sqlite3"
   s.add_development_dependency "pry"

@@ -1,5 +1,5 @@
 # :model_events=>
-#   {"PyrCommunity"=>
+#   {"MyModule"=>
 #     {"Blog"=>
 #       {:context=>
 #         {"id"=>{:type=>:integer},
@@ -19,7 +19,7 @@
 #        :actions=>[:create, :update, :delete]}
 #       }
 #     },
-#    "PyrCore"=>
+#    "MyModule"=>
 #     {"Lead"=>
 #       {:context=>
 #         {"id"=>{:type=>:integer},
@@ -96,7 +96,7 @@ module Rules::EventsHelper
     # renders fancytree json structure https://github.com/mar10/fancytree/
     def render_fancy_tree_json(permissionsList, selected_ids = [], hierarchy_break: ".")
       nested_tree = as_nested_tree(permissionsList, hierarchy_break: hierarchy_break)
-      _render_fancy_tree_json(nested_tree, selected_ids)
+      _render_fancy_tree_json(nested_tree, selected_ids).html_safe
     end
 
     def as_nested_tree(permissionsList, hierarchy_break: ".")
@@ -142,7 +142,7 @@ module Rules::EventsHelper
         end
         body += "," if i < (tree.keys.size - 1)
       end
-      body.html_safe
+      body
     end
 	
 end

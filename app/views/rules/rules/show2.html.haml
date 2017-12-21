@@ -1,23 +1,22 @@
--content_for :rules_javascript do
-	:javascript
-		var rule_id = "#{@rules_rule.id}";
-		$(document).ready(function() {
-		  // Set the width of the rule actions column content before Bootstrap Affix makes it fixed
-		  var $rule_actions = $("#rule-actions > div");
-		  $rule_actions.width($rule_actions.width());
+:javascript
+	var rule_id = "#{@rules_rule.id}";
+	$(document).ready(function() {
+	  // Set the width of the rule actions column content before Bootstrap Affix makes it fixed
+	  var $rule_actions = $("#rule-actions > div");
+	  $rule_actions.width($rule_actions.width());
 
-		  // Affix the actions column
-		  if ($rule_actions.offset() !== undefined) {
-			  rule_actions_top = $rule_actions.offset().top - 20;
-			  $rule_actions.affix({
-			    offset: {
-			      top: function () {
-			        return rule_actions_top;
-			      }
-			    }
-			  });
-			}
-		}); 
+	  // Affix the actions column
+	  if ($rule_actions.offset() !== undefined) {
+		  rule_actions_top = $rule_actions.offset().top - 20;
+		  $rule_actions.affix({
+		    offset: {
+		      top: function () {
+		        return rule_actions_top;
+		      }
+		    }
+		  });
+		}
+	}); 
 
 =content_for :page_title do
 	Rules Manager - #{@rules_rule.name}
@@ -49,7 +48,7 @@
 		Quick Nav
 		%span.caret
 	%ul.dropdown-menu{role:"menu", style:"width:320px;"}
-		-Rules::Rule.where(deleted: false, active: true).order("u_at desc").limit(15).each do |r| 
+		-Rules::Rule.where(active: true).order("updated_at desc").limit(15).each do |r| 
 			%li
 				=link_to r.name[0,40], rules_rule_path(r)
 
@@ -132,90 +131,89 @@
 				%button{class:"btn btn-mini btn-primary", onclick:"addRuleEvents();"} Add Selected Events
 
 
--content_for :rules_javascript do
-	:javascript
-		function addRuleEvents() {
-			var events = tree_getSelectedNodes().toString();
-			window.location.href = "#{add_event_rules_rule_path(@rules_rule)}?event=" + encodeURIComponent(events);
-		}
+:javascript
+	function addRuleEvents() {
+		var events = tree_getSelectedNodes().toString();
+		window.location.href = "#{add_event_rules_rule_path(@rules_rule)}?event=" + encodeURIComponent(events);
+	}
 
-		$(document).ready( function(){
-			// Create the tree inside the <div id="events_tree"> element.
-			$("#lookup_event_modal #events_tree").fancytree({
-				extensions: ["filter"],
-				filter: {
-					        mode: "hide"
-				},
-				checkbox: true,
-				selectMode: 3,
-				source: [#{render_fancy_tree_json(Rules::RulesConfig.events.sort, [], hierarchy_break: "::")}]
-			});
-
-			$("#lookup_event_modal input.hideMode").change(function(e){
-				$("#lookup_event_modal #events_tree").fancytree("getTree").options.filter.mode = $(this).is(":checked") ? "hide" : "dimm";
-				$("#lookup_event_modal #events_tree").fancytree("getTree").clearFilter();
-				filter_tree($("#lookup_event_modal input[name=search]").val());
-			});
-
-			$("#lookup_event_modal input[name=search]").keyup(function(e){
-				var match = $(this).val();
-				if((e && e.which === $.ui.keyCode.ESCAPE) || $.trim(match) === ""){
-					reset_tree();
-					return;
-				}
-				filter_tree(match);
-			}).focus();
-			
-			#{'$("#lookup_event_modal").modal("show");' if @rules_rule.events.blank?}
+	$(document).ready( function(){
+		// Create the tree inside the <div id="events_tree"> element.
+		$("#lookup_event_modal #events_tree").fancytree({
+			extensions: ["filter"],
+			filter: {
+				        mode: "hide"
+			},
+			checkbox: true,
+			selectMode: 3,
+			source: [#{render_fancy_tree_json(Rules::RulesConfig.events.sort, [], hierarchy_break: "::").html_safe}]
 		});
 
-			function tree_getSelectedNodes() {
-				node = $('#events_tree').fancytree("getRootNode");
-				var id_list = [];
-				node.visit(function(c) {
-					if (c.isSelected()) {
-						id_list.push(c.key);
-					}
-				});
-				return id_list;
-			}
-
-			function setPermissionsFromTree() {
-				var selected_ids = tree_getSelectedNodes();
-				// TODO: Make the Ajax request
-			}
-
-			function tree_expandAll() {
-				$('#events_tree').fancytree("getRootNode").visit(function(node){
-					node.setExpanded(true);
-				});
-			}
-
-			function tree_collapseAll() {
-				$('#events_tree').fancytree("getRootNode").visit(function(node){
-					node.setExpanded(false);
-				});
-			}
-
-
-		function reset_tree() {
-			$("#lookup_event_modal input[name=search]").val("");
-			$("#lookup_event_modal span.matches").text("");
-			$("#lookup_event_modal button.btnResetSearch").attr("disabled", true);
-			$("#lookup_event_modal input.hideMode").attr("disabled", true);
-			$("#lookup_event_modal div.hideModeContainer").hide();
+		$("#lookup_event_modal input.hideMode").change(function(e){
+			$("#lookup_event_modal #events_tree").fancytree("getTree").options.filter.mode = $(this).is(":checked") ? "hide" : "dimm";
 			$("#lookup_event_modal #events_tree").fancytree("getTree").clearFilter();
+			filter_tree($("#lookup_event_modal input[name=search]").val());
+		});
+
+		$("#lookup_event_modal input[name=search]").keyup(function(e){
+			var match = $(this).val();
+			if((e && e.which === $.ui.keyCode.ESCAPE) || $.trim(match) === ""){
+				reset_tree();
+				return;
+			}
+			filter_tree(match);
+		}).focus();
+		
+		// #{'$("#lookup_event_modal").modal("show");'.html_safe if @rules_rule.events.blank?}
+	});
+
+		function tree_getSelectedNodes() {
+			node = $('#events_tree').fancytree("getRootNode");
+			var id_list = [];
+			node.visit(function(c) {
+				if (c.isSelected()) {
+					id_list.push(c.key);
+				}
+			});
+			return id_list;
 		}
 
-		function filter_tree(match) {
-			// Pass text as filter string (will be matched as substring in the node title)
-			var n = $("#lookup_event_modal #events_tree").fancytree("getTree").applyFilter(match);
-			$("#lookup_event_modal span.matches").text("");
-			$("#lookup_event_modal button.btnResetSearch").attr("disabled", false);
-			$("#lookup_event_modal input.hideMode").attr("disabled", false);
-			$("#lookup_event_modal div.hideModeContainer").show();
-			$("#lookup_event_modal span.matches").text("(" + n + " matches)");
+		function setPermissionsFromTree() {
+			var selected_ids = tree_getSelectedNodes();
+			// TODO: Make the Ajax request
 		}
+
+		function tree_expandAll() {
+			$('#events_tree').fancytree("getRootNode").visit(function(node){
+				node.setExpanded(true);
+			});
+		}
+
+		function tree_collapseAll() {
+			$('#events_tree').fancytree("getRootNode").visit(function(node){
+				node.setExpanded(false);
+			});
+		}
+
+
+	function reset_tree() {
+		$("#lookup_event_modal input[name=search]").val("");
+		$("#lookup_event_modal span.matches").text("");
+		$("#lookup_event_modal button.btnResetSearch").attr("disabled", true);
+		$("#lookup_event_modal input.hideMode").attr("disabled", true);
+		$("#lookup_event_modal div.hideModeContainer").hide();
+		$("#lookup_event_modal #events_tree").fancytree("getTree").clearFilter();
+	}
+
+	function filter_tree(match) {
+		// Pass text as filter string (will be matched as substring in the node title)
+		var n = $("#lookup_event_modal #events_tree").fancytree("getTree").applyFilter(match);
+		$("#lookup_event_modal span.matches").text("");
+		$("#lookup_event_modal button.btnResetSearch").attr("disabled", false);
+		$("#lookup_event_modal input.hideMode").attr("disabled", false);
+		$("#lookup_event_modal div.hideModeContainer").show();
+		$("#lookup_event_modal span.matches").text("(" + n + " matches)");
+	}
 
 #lookup_action_modal{class:"modal fade", tabindex:"-1", role:"dialog"}
 	.modal-dialog
@@ -237,267 +235,265 @@
 		width: 100%!important;
 	}
 
--content_for :rules_javascript do
-	:javascript
-		$(function() {
-			console.log("Adding rule-modal click handler");
-			$(".rule-modal").click(function(event) {
-				event.preventDefault();
-				show_lookup_modal($(this).attr("href"));
-			});
+:javascript
+	$(function() {
+		console.log("Adding rule-modal click handler");
+		$(".rule-modal").click(function(event) {
+			event.preventDefault();
+			show_lookup_modal($(this).attr("href"));
 		});
-		function show_lookup_modal(new_url) {
-			//http://stackoverflow.com/questions/12286332/twitter-bootstrap-remote-modal-shows-same-content-everytime?rq=1
-			console.log("show_lookup_modal('" + new_url + "');");
-			//$('#lookup_modal').modal('hide');
-			$('#lookup_modal').removeData("bs.modal");
-			$('#lookup_modal').modal({remote: new_url});
-			$('#lookup_modal').modal('show');
-		};
+	});
+	function show_lookup_modal(new_url) {
+		//http://stackoverflow.com/questions/12286332/twitter-bootstrap-remote-modal-shows-same-content-everytime?rq=1
+		console.log("show_lookup_modal('" + new_url + "');");
+		//$('#lookup_modal').modal('hide');
+		$('#lookup_modal').removeData("bs.modal");
+		$('#lookup_modal').modal({remote: new_url});
+		$('#lookup_modal').modal('show');
+	};
 
-		function show_yaml_modal() {
-			console.log("show_lookup_modal();");
-			$('#show_yaml_modal').removeData("bs.modal");
-			$('#show_yaml_modal').modal({remote: "#{show_yaml_rules_rule_path(@rules_rule)}" });
-			$('#show_yaml_modal').modal('show');
-		};
+	function show_yaml_modal() {
+		console.log("show_yaml_modal();");
+		$('#show_yaml_modal').removeData("bs.modal");
+		$('#show_yaml_modal').modal({remote: "#{show_yaml_rules_rule_path(@rules_rule)}" });
+		$('#show_yaml_modal').modal('show');
+	};
 
--content_for :rules_javascript do
-	:javascript
-		var rules = [#{@rules_rule.joint_map.to_json}];
-
-
-		// Example with an event-centric listing
-		// var rules = [{
-		//		 events: [ "PyrCommunity::Video::create"],
-		//		 id: "1", 
-		//		 name: "My Awesome Rule",
-		//		 criteria: "!trigger.blank?",
-		//		 actions: [	{name:"Notification", id:"1"}, 
-		//								 {name:"ActivityStream", id:"2"}, 
-		//								 {name:"WebRedirect", id:"3"}]
-		// },
-		// {
-		//		 events: [ "PyrCommunity::Video::create"],
-		//		 id: "2", 
-		//		 name: "My Other Rule",
-		//		 criteria: "!trigger.blank?",
-		//		 actions: [	{name:"WebRedirect", id:"1"}, 
-		//								 {name:"ActivityStream", id:"2"}
-		//						]
-		// }];
-
-		var graph = new joint.dia.Graph;
-		var paper = null;
-
-		function buildGraph() {
-			var elements = [];
-			
-			var event_elements = {};
-			var events_count = 0;
-			var actions_count = 0;
-			graph.clear();
-			for (var r in rules) {
-					for (var e in rules[r]['events']) {
-							var event_name = rules[r]['events'][e];
-							if (!(event_name in event_elements)) {
-									event_elements[event_name] = "placeholder";
-									events_count += 1;
-							}
-					}
-					actions_count += rules[r]['actions'].length;
-			}
-			var links = [];
-			var width = $("#display-graph").width();
-
-			graph.on('all', function(eventName, cell) {
-					console.log(arguments);
-			});
-
-			joint.shapes.custom = {};
-			joint.shapes.custom.ClickableTextBlock = joint.shapes.basic.Rect.extend({
-					// Note the `<a>` SVG element surrounding the rest of the markup.
-					markup: '<g class="rotatable"><g class="scalable"><rect/></g><a><text/></a></g>',
-					defaults: joint.util.deepSupplement({
-							type: 'custom.ClickableTextBlock'
-					}, joint.shapes.basic.Rect.prototype.defaults)
-			});
+:javascript
+	var rules = [#{@rules_rule.joint_map.to_json.html_safe}];
 
 
-			var graph_height = Math.max(200, Math.max( 100 + events_count * 100, Math.max(100 + actions_count * 100, 100 + rules.length * 100)));
-			console.log("Setting graph dimensions: " + width + ", " + graph_height );
-			if ( paper == null ) {
-				paper = new joint.dia.Paper({
-						el: $('#display-graph'),
-						width: width,
-						height: graph_height,
-						model: graph,
-						gridSize: 1
-				});
-			}
+	// Example with an event-centric listing
+	// var rules = [{
+	//		 events: [ "MyModule::Video::create"],
+	//		 id: "1", 
+	//		 name: "My Awesome Rule",
+	//		 criteria: "!trigger.blank?",
+	//		 actions: [	{name:"Notification", id:"1"}, 
+	//								 {name:"ActivityStream", id:"2"}, 
+	//								 {name:"WebRedirect", id:"3"}]
+	// },
+	// {
+	//		 events: [ "MyModule::Video::create"],
+	//		 id: "2", 
+	//		 name: "My Other Rule",
+	//		 criteria: "!trigger.blank?",
+	//		 actions: [	{name:"WebRedirect", id:"1"}, 
+	//								 {name:"ActivityStream", id:"2"}
+	//						]
+	// }];
 
-			console.log("Using graph_height " + graph_height);
-			$("#display-graph").css("height", graph_height );
+	var graph = new joint.dia.Graph;
+	var paper = null;
 
-			paper.on('cell:pointerdown', function(cellView, evt, x, y) {
-			    var toolRemove = $(evt.target).parents('.tool-remove')[0];
-			    // If `.tool-remove` was clicked.
-			    if (toolRemove) {
-			        var removeConfirm = cellView.model.attr('.removeConfirm');
-			        if (removeConfirm !== undefined) {
-			        	var removeUrl = cellView.model.attr(".removeUrl");
-			        	if (confirm(removeConfirm)) {
-			        		var tempLink = $('<a href="' + removeUrl + '" data-method="delete" />');
-			        		$.rails.handleMethod(tempLink);
-			        	}
-								// `interactive === false` prevents any action inside joint.dia.Link>>pointerdown().
-								cellView.options.interactive = false;
-								// Put `interactive === true` back in the next turn to make the link interactive again
-								// after the user releases the mouse.
-								_.defer(function() { cellView.options.interactive = true; });
-			        } else {
-				        if (!confirm('Shall I remove this link?')) {
-				            // `interactive === false` prevents any action inside joint.dia.Link>>pointerdown().
-				            cellView.options.interactive = false;
-				            // Put `interactive === true` back in the next turn to make the link interactive again
-				            // after the user releases the mouse.
-				            _.defer(function() { cellView.options.interactive = true; });
-				        }
-				      }
-			    } else {
-			    	if (cellView.model !== undefined ) {
-				    	var rulesType = cellView.model.attr(".rules-type");
-			    		if (rulesType == "action") {
-				    		var actionId = cellView.model.attr(".action-id");
-			    			showActionDetails(actionId);
-			    		}
-				    }
-			    }
-			});
-
-			var events_y = 50; // Math.max(30,(graph_height - Math.max(0, events_count - 1) * 60)/2);
-			var rule_y = 100; // Math.max(30, (graph_height - Math.max(0, rules.length - 1) * 100)/2);
-			var actions_y = 50; // Math.max(30,(graph_height - Math.max(0, actions_count - 1) * 100)/2);
-
-			for (var r in rules) {
-					var rule_config = rules[r];
-					var rule_color = (rule_config['ready']) ? "lightskyblue" : "red";
-					var link_stroke = (rule_config['synchronous']) ? null : '15 5';
-					var rule = new joint.shapes.basic.Path({
-							position: { x: (width/2) - 10, y: rule_y - 70 },
-							size: { width: 60, height: 60 },
-							attrs: {		
-													path: { fill: rule_color, d: 'M 30 0 L 60 30 30 60 0 30 z' },
-													'.rules-type': 'rule',
-													'.rule-id' : rule_config['id']
-											}
-					});
-					var ruleText = new joint.shapes.basic.Path({
-							position: { x: (width/2), y: rule_y - 15 },
-							size: { width: 60, height: 60 },
-							attrs: {		
-													text: { text: (rule_config['criteria'] != null) ? rule_config['criteria'] : "" }
-											}
-					});
-
-					//var criteriaText = new joint.shapes.basic.
-					rule_y += 150;
-					elements.push(rule);
-					elements.push(ruleText);
-					var events = rule_config['events']
-					// Add Events 
-					for (var i in events) {
-							var name = events[i];
-							if (event_elements[name] != "placeholder") {
-									console.log("re-using event element: " + name);
-									var event = event_elements[name];
-							} else {
-									console.log("adding event element: " + name);
-									var event = new joint.shapes.basic.Rect({
-											position: { x: (width/4) - 160, y: events_y },
-											size: { width: 230, height: 30 },
-											attrs: { 
-												rect: { fill: 'indigo' }, 
-												text: { text: name, fill: 'white', 'font-size' : 11, 'font-weight' : 'bold' },
-												'.rules-type': 'event',
-												'.rule-id' : rule_config['id'],
-												'.event-id' : name 
-											}
-									});
-									events_y += 50;
-									event_elements[name] = event;
-									elements.push(event);
-							}
-							var link = new joint.dia.Link({
-									source: { id: event.id },
-									target: { id: rule.id },
-									attrs: {		'.connection': { stroke: 'black', 'stroke-width': 2 , 'stroke-dasharray' : link_stroke },
-															'.marker-target': { fill: 'blue', d: 'M 10 0 L 0 5 L 10 10 z' },
-															'.removeConfirm': "Remove Event " + name,
-															'.removeUrl': "#{remove_event_rules_rule_path(@rules_rule)}?event=" + encodeURIComponent(name)
-													}
-							});
-							links.push(link);
-					}
-
-					// Add Actions
-					var sourceId = rule.id;
-					var actions = rule_config['actions'];
-					var arrowSymbolPath = 'M 10 0 L 0 5 L 10 10 z';
-					var deferredSymbolPath = 'M 10 0 V 10 M 0 5';
-					var targetSymbolPath = arrowSymbolPath;
-					for (var i in actions) {
-							var name = actions[i]['name'];
-							var id = actions[i]['id'];
-							var scheduled = actions[i]['scheduled'];
-							var deferredProcessing = actions[i]['defer_processing'];
-							var action_color = (actions[i]['ready']) ? (deferredProcessing ? "olivedrab" : (scheduled ? "limegreen" : "green")) : "red";
-							console.log(name);
-							var action = new joint.shapes.basic.Rect({
-									position: { x: (3*(width/4)-25), y: actions_y },
-									size: { width: 150, height: 30 },
-									attrs: {		rect: { fill: action_color}, 
-															text: { text: (parseInt(i)+1) + ": " + name, fill: 'white' },
-															'.rule-id' : rule_config['id'], 
-															'.rules-type': 'action',
-															'.action-id' : id,
-															'.deferred' : deferredProcessing,
-															'.scheduled' : scheduled
-													},
-							});
-							actions_y += 70;
-
-							var link = new joint.dia.Link({
-									source: { id: sourceId },
-									target: { id: action.id },
-									attrs: {		'.connection': { stroke: action_color, 'stroke-width':2, 'stroke-dasharray' : link_stroke },
-															'.marker-target': { fill: action_color, d: targetSymbolPath },
-															'.removeConfirm': "Remove Action " + (parseInt(i)+1) + " : " + name,
-															'.removeUrl': "#{remove_action_rules_rule_path(@rules_rule)}?action_id=" + id
-													}
-							});
-							elements.push(action);
-							links.push(link);
-							sourceId = action.id;
-							targetSymbolPath = (deferredProcessing) ? deferredSymbolPath : arrowSymbolPath;
-					}
-			}
-
-			graph.addCells(elements);
-			graph.addCells(links);
-
-			for (var i in elements) {
-				var model = elements[i];
-				if (model.attr(".scheduled")) {
-					V(paper.findViewByModel(model).el).addClass("scheduled");
+	function buildGraph() {
+		var elements = [];
+		
+		var event_elements = {};
+		var events_count = 0;
+		var actions_count = 0;
+		graph.clear();
+		for (var r in rules) {
+				for (var e in rules[r]['events']) {
+						var event_name = rules[r]['events'][e];
+						if (!(event_name in event_elements)) {
+								event_elements[event_name] = "placeholder";
+								events_count += 1;
+						}
 				}
+				actions_count += rules[r]['actions'].length;
+		}
+		var links = [];
+		var width = $("#display-graph").width();
+
+		graph.on('all', function(eventName, cell) {
+				console.log(arguments);
+		});
+
+		joint.shapes.custom = {};
+		joint.shapes.custom.ClickableTextBlock = joint.shapes.basic.Rect.extend({
+				// Note the `<a>` SVG element surrounding the rest of the markup.
+				markup: '<g class="rotatable"><g class="scalable"><rect/></g><a><text/></a></g>',
+				defaults: joint.util.deepSupplement({
+						type: 'custom.ClickableTextBlock'
+				}, joint.shapes.basic.Rect.prototype.defaults)
+		});
+
+
+		var graph_height = Math.max(200, Math.max( 100 + events_count * 100, Math.max(100 + actions_count * 100, 100 + rules.length * 100)));
+		console.log("Setting graph dimensions: " + width + ", " + graph_height );
+		if ( paper == null ) {
+			paper = new joint.dia.Paper({
+					el: $('#display-graph'),
+					width: width,
+					height: graph_height,
+					model: graph,
+					gridSize: 1
+			});
+		}
+
+		console.log("Using graph_height " + graph_height);
+		$("#display-graph").css("height", graph_height );
+
+		paper.on('cell:pointerdown', function(cellView, evt, x, y) {
+		    var toolRemove = $(evt.target).parents('.tool-remove')[0];
+		    // If `.tool-remove` was clicked.
+		    if (toolRemove) {
+		        var removeConfirm = cellView.model.attr('.removeConfirm');
+		        if (removeConfirm !== undefined) {
+		        	var removeUrl = cellView.model.attr(".removeUrl");
+		        	if (confirm(removeConfirm)) {
+		        		var tempLink = $('<a href="' + removeUrl + '" data-method="delete" />');
+		        		$.rails.handleMethod(tempLink);
+		        	}
+							// `interactive === false` prevents any action inside joint.dia.Link>>pointerdown().
+							cellView.options.interactive = false;
+							// Put `interactive === true` back in the next turn to make the link interactive again
+							// after the user releases the mouse.
+							_.defer(function() { cellView.options.interactive = true; });
+		        } else {
+			        if (!confirm('Shall I remove this link?')) {
+			            // `interactive === false` prevents any action inside joint.dia.Link>>pointerdown().
+			            cellView.options.interactive = false;
+			            // Put `interactive === true` back in the next turn to make the link interactive again
+			            // after the user releases the mouse.
+			            _.defer(function() { cellView.options.interactive = true; });
+			        }
+			      }
+		    } else {
+		    	if (cellView.model !== undefined ) {
+			    	var rulesType = cellView.model.attr(".rules-type");
+		    		if (rulesType == "action") {
+			    		var actionId = cellView.model.attr(".action-id");
+		    			showActionDetails(actionId);
+		    		}
+			    }
+		    }
+		});
+
+		var events_y = 50; // Math.max(30,(graph_height - Math.max(0, events_count - 1) * 60)/2);
+		var rule_y = 100; // Math.max(30, (graph_height - Math.max(0, rules.length - 1) * 100)/2);
+		var actions_y = 50; // Math.max(30,(graph_height - Math.max(0, actions_count - 1) * 100)/2);
+
+		for (var r in rules) {
+				var rule_config = rules[r];
+				var rule_color = (rule_config['ready']) ? "lightskyblue" : "red";
+				var link_stroke = (rule_config['synchronous']) ? null : '15 5';
+				var rule = new joint.shapes.basic.Path({
+						position: { x: (width/2) - 10, y: rule_y - 70 },
+						size: { width: 60, height: 60 },
+						attrs: {		
+												path: { fill: rule_color, d: 'M 30 0 L 60 30 30 60 0 30 z' },
+												'.rules-type': 'rule',
+												'.rule-id' : rule_config['id']
+										}
+				});
+				var ruleText = new joint.shapes.basic.Path({
+						position: { x: (width/2), y: rule_y - 15 },
+						size: { width: 60, height: 60 },
+						attrs: {		
+												text: { text: (rule_config['criteria'] != null) ? rule_config['criteria'] : "" }
+										}
+				});
+
+				//var criteriaText = new joint.shapes.basic.
+				rule_y += 150;
+				elements.push(rule);
+				elements.push(ruleText);
+				var events = rule_config['events']
+				// Add Events 
+				for (var i in events) {
+						var name = events[i];
+						if (event_elements[name] != "placeholder") {
+								console.log("re-using event element: " + name);
+								var event = event_elements[name];
+						} else {
+								console.log("adding event element: " + name);
+								var event = new joint.shapes.basic.Rect({
+										position: { x: (width/4) - 160, y: events_y },
+										size: { width: 230, height: 30 },
+										attrs: { 
+											rect: { fill: 'indigo' }, 
+											text: { text: name, fill: 'white', 'font-size' : 11, 'font-weight' : 'bold' },
+											'.rules-type': 'event',
+											'.rule-id' : rule_config['id'],
+											'.event-id' : name 
+										}
+								});
+								events_y += 50;
+								event_elements[name] = event;
+								elements.push(event);
+						}
+						var link = new joint.dia.Link({
+								source: { id: event.id },
+								target: { id: rule.id },
+								attrs: {		'.connection': { stroke: 'black', 'stroke-width': 2 , 'stroke-dasharray' : link_stroke },
+														'.marker-target': { fill: 'blue', d: 'M 10 0 L 0 5 L 10 10 z' },
+														'.removeConfirm': "Remove Event " + name,
+														'.removeUrl': "#{remove_event_rules_rule_path(@rules_rule)}?event=" + encodeURIComponent(name)
+												}
+						});
+						links.push(link);
+				}
+
+				// Add Actions
+				var sourceId = rule.id;
+				var actions = rule_config['actions'];
+				var arrowSymbolPath = 'M 10 0 L 0 5 L 10 10 z';
+				var deferredSymbolPath = 'M 10 0 V 10 M 0 5';
+				var targetSymbolPath = arrowSymbolPath;
+				for (var i in actions) {
+						var name = actions[i]['name'];
+						var id = actions[i]['id'];
+						var scheduled = actions[i]['scheduled'];
+						var deferredProcessing = actions[i]['defer_processing'];
+						var action_color = (actions[i]['ready']) ? (deferredProcessing ? "olivedrab" : (scheduled ? "limegreen" : "green")) : "red";
+						console.log(name);
+						var action = new joint.shapes.basic.Rect({
+								position: { x: (3*(width/4)-25), y: actions_y },
+								size: { width: 150, height: 30 },
+								attrs: {		rect: { fill: action_color}, 
+														text: { text: (parseInt(i)+1) + ": " + name, fill: 'white' },
+														'.rule-id' : rule_config['id'], 
+														'.rules-type': 'action',
+														'.action-id' : id,
+														'.deferred' : deferredProcessing,
+														'.scheduled' : scheduled
+												},
+						});
+						actions_y += 70;
+
+						var link = new joint.dia.Link({
+								source: { id: sourceId },
+								target: { id: action.id },
+								attrs: {		'.connection': { stroke: action_color, 'stroke-width':2, 'stroke-dasharray' : link_stroke },
+														'.marker-target': { fill: action_color, d: targetSymbolPath },
+														'.removeConfirm': "Remove Action " + (parseInt(i)+1) + " : " + name,
+														'.removeUrl': "#{remove_action_rules_rule_path(@rules_rule)}?action_id=" + id
+												}
+						});
+						elements.push(action);
+						links.push(link);
+						sourceId = action.id;
+						targetSymbolPath = (deferredProcessing) ? deferredSymbolPath : arrowSymbolPath;
+				}
+		}
+
+		graph.addCells(elements);
+		graph.addCells(links);
+
+		for (var i in elements) {
+			var model = elements[i];
+			if (model.attr(".scheduled")) {
+				V(paper.findViewByModel(model).el).addClass("scheduled");
 			}
 		}
+	}
 
 
-		function showActionDetails(id) {
-			console.log("showActionDetails: " + id);
-			$.get("#{show_action_configuration_rules_rule_path(@rules_rule)}?action_id=" + id);
-		}
+	function showActionDetails(id) {
+		console.log("showActionDetails: " + id);
+		$.get("#{show_action_configuration_rules_rule_path(@rules_rule)}?action_id=" + id);
+	}
 
-		buildGraph();
+	buildGraph();

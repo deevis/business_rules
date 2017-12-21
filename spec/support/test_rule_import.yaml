@@ -16,8 +16,4 @@
     options:=>select: OK:=>free_form
     display_priority:=>select: normal:=>free_form
   :template:
-    :title:
-      :default: This should not be here - it is legacy crap - just making sure the tests still pass with legacy crap
-      Global::English(en): You logged in
-    :message:
-      Global::English(en): Have a webalert
+    :title: "This should not be here - it is legacy crap - just making sure the tests still pass with legacy crap"

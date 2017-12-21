@@ -3,11 +3,12 @@ require 'resque'
 require 'resque-scheduler'
 
 module Rules
-  class Rule 
-    include Mongoid::Document
-    include Mongoid::Attributes::Dynamic
-    include Rules::Versioning
+  class Rule < ActiveRecord::Base
+    # include Rules::Versioning
     include Rules::ModelEventEmitter
+    acts_as_paranoid
+
+    has_paper_trail ignore: [:created_at, :updated_at]
 
     # If this is driven by a TimerEvent
     after_create :set_schedule
@@ -15,40 +16,45 @@ module Rules
     after_destroy :remove_schedule
 
     
-    field :name, type: String 
-    field :synchronous, type: Boolean, default: false # Should this run synchronously - must be true if any action handler is synchronous
-    field :definition_file, type: String
-    field :description, type: String
-    field :events, type: Array, default: []
-    field :category, type: String, default: "Uncategorized"
-    field :criteria, type: String
-    field :active, type: Boolean, default: true
-    field :unique_expression, type: String  # will be evaluated against RuleContext and used with 
-    # We will still have deleted in MongoDB as a dynamic field, but we're 
-    # removing it from Mongoid as they will be using the method for their internals...
-    #field :deleted, type: Boolean, default: false
-    field :_deleted, type: Boolean, default: false
+    # field :name, type: String 
+    # field :synchronous, type: Boolean, default: false # Should this run synchronously - must be true if any action handler is synchronous
+    # field :definition_file, type: String
+    # field :description, type: String
+    # field :events, type: Array, default: []
+    # field :category, type: String, default: "Uncategorized"
+    # field :criteria, type: String
+    # field :active, type: Boolean, default: true
+    # field :unique_expression, type: String  # will be evaluated against RuleContext and used with 
+    # # We will still have deleted in MongoDB as a dynamic field, but we're 
+    # # removing it from Mongoid as they will be using the method for their internals...
+    # #field :deleted, type: Boolean, default: false
+    # field :_deleted, type: Boolean, default: false
 
-    field :start_date, type: Time
-    field :end_date, type: Time
+    # field :start_date, type: Time
+    # field :end_date, type: Time
 
-    # If this is driven by a TimerEvent, then specify the schedule
-    field :timer, type: Hash, default: { next_fire: nil, last_fire: nil, expression: nil, recurring: false }
-    field :timer_expression, type: String 
+    # # If this is driven by a TimerEvent, then specify the schedule
+    # field :timer, type: Hash, default: { next_fire: nil, last_fire: nil, expression: nil, recurring: false }
+    # field :timer_expression, type: String 
 
-    # These can programatically be used to populate the events 
-    field :event_inclusion_matcher, type: Regexp
-    field :event_exclusion_matcher, type: Regexp
+    # # These can programatically be used to populate the events 
+    # field :event_inclusion_matcher, type: Regexp
+    # field :event_exclusion_matcher, type: Regexp
 
-    # HACK - embedded documents are not Versionable 
-    # http://stackoverflow.com/questions/4824677/mongoid-cant-make-versioning-work-with-embedded-document
-    # So....saving the actions hash here so it will get versioned...
-    field :actions_hashed, type: String
+    # # HACK - embedded documents are not Versionable 
+    # # http://stackoverflow.com/questions/4824677/mongoid-cant-make-versioning-work-with-embedded-document
+    # # So....saving the actions hash here so it will get versioned...
+    # field :actions_hashed, type: String
 
-    embeds_many :actions, inverse_of: :rule
+    # embeds_many :actions, inverse_of: :rule
+    
+    serialize :events, Array 
+    serialize :timer, Hash
+    serialize :update_actions, Array
+
+    has_many :actions
 
     before_save :set_synchronous, :context_mapping_sanity_check
-    before_save :temp_migrate_deleted
 
     accepts_nested_attributes_for :actions
 
@@ -66,8 +72,8 @@ module Rules
         unique_expression: unique_expression, 
         criteria: criteria,
         timer_expression: timer_expression,
-        start_date: start_date, 
-        end_date: end_date,
+        start_time: start_time, 
+        end_time: end_time,
         actions: actions.map{|a| a.export} 
       }
     end
@@ -104,7 +110,7 @@ module Rules
     end
 
     def rule_deleted?
-      return self["deleted"] || self._deleted
+      return false # TODO -DBH -Refactor from Mongo
     end
 
     def testable?
@@ -115,7 +121,7 @@ module Rules
 
     def testable_actions
       return [] unless actions
-      actions.collect{|a| a.type if a.testable?}.uniq.compact
+      actions.collect{|a| a.action_type if a.testable?}.uniq.compact
     end
 
     def run_timer?
@@ -614,7 +620,7 @@ module Rules
                 #
                 # This is awesome because if MessageRecipient, for example, has a belongs_to polymorphic property called: recipient, 
                 # and if there are 3 other classes that have a 
-                #        has_many :something, class_name: PyrCrm::MessageRecipient, as: :recipient
+                #        has_many :something, class_name: MyModule::MessageRecipient, as: :recipient
                 # it will find those 3 classes and intersect their respective columns to get the safely mapped column list.
                 #
                 ed = Rules::EventConfigLoader.events_dictionary
@@ -698,7 +704,7 @@ module Rules
         name: self.name,
         criteria: self.criteria, 
         actions: actions.map do |a| 
-          { name: a.type.split("::").last, id: a.id.to_s, active: a.active, ready: a.ready?, 
+          { name: a.action_type.split("::").last, id: a.id.to_s, active: a.active, ready: a.ready?, 
             defer_processing: a.defer_processing?, scheduled: a.scheduled? }
         end 
       }
@@ -801,12 +807,15 @@ module Rules
         required_synchronous = false
         actions.each do |a|
           if a.synchronous?
-            puts "--- Marking Rule[#{self.name}] as Synchronous cuz #{a.type} requires synchronous processing"
+            puts "--- Marking Rule[#{self.name}] as Synchronous cuz #{a.action_type} requires synchronous processing"
             required_synchronous = true 
           end
         end
         puts "--- Marking Rule[#{self.id} #{self.name}].synchronous = #{required_synchronous} while system processing is set to [#{Rules.event_processing_strategy}]"
         self.synchronous = required_synchronous 
+        self.events ||= [] 
+        self.updated_actions ||= [] 
+        self.timer ||= {} 
         true # don't accidentally return false - it will halt the saving procedure
       end
 
@@ -817,12 +826,6 @@ module Rules
         return true # don't accidentally return false - it will halt the saving procedure
       end
 
-      def temp_migrate_deleted
-        if (previously_deleted = self["deleted"])
-          self["deleted"] = nil
-          self._deleted = true 
-        end
-      end
   end
 end
 
