@@ -4,8 +4,8 @@ class CreateRulesFutureActions < ActiveRecord::Migration
     create_table :rules_rules do |t|
       t.string :name
       t.string :description
-      t.string :category
-      t.string :criteria, default: "Uncategorized"
+      t.string :category, default: "Uncategorized"
+      t.string :criteria
       t.string :definition_file
       t.json :events
       t.boolean :synchronous, default: false

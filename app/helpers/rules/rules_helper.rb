@@ -8,7 +8,7 @@ module Rules::RulesHelper
   end
 
   def icon i 
-    "fa #{i}"
+    "<div class='fa fa-#{i}'></div>".html_safe
   end
 
   def on_ready &block 

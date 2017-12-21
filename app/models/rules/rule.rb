@@ -110,7 +110,7 @@ module Rules
     end
 
     def rule_deleted?
-      return false # TODO -DBH -Refactor from Mongo
+      return deleted_at.present?
     end
 
     def testable?

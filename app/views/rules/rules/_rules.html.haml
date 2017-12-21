@@ -72,7 +72,8 @@
 
     .search.pull-left{style:"margin-left: 10px;"}
       .input-group.pull-left{style:"width:400px;"}
-        .input-group-addon=icon "search"
+        .input-group-addon
+          =icon("search")
         %input#search-text.form-control{placeholder: "Search rules for...", value: params[:q].presence}
       %button.btn.btn-default.pull-left{onclick:"searchRules();"} Search
       .clearfix

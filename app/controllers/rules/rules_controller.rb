@@ -65,10 +65,12 @@ class RulesController < ApplicationController
   end
 
   def notifications
-    @notifications_by_category = Rules::Rule.where(_deleted: false).
-        where("actions.action_type" => /.*Notification/ ).each_with_object(Hash.new {|h,k| h[k] = [] } ) do |r,h| 
-      h[r.category] += r.actions.select {|a| a.type =~ /.*Notification/ }
+    h = Hash.new {|h,k| h[k] = [] }
+    @notifications_by_category = Rules::Rule.joins(:actions).
+      where('action_type like ?', '%Notification%').each do |r| 
+      h[r.category] += r.actions.select {|a| a.action_type =~ /.*Notification/ }
     end
+    h
   end
   def add_action
     @rules_rule = Rules::Rule.find(params[:id])
@@ -457,7 +459,7 @@ class RulesController < ApplicationController
     fc = params[:category].presence
     fq = params[:q].presence
     Rails.logger.info "Rules Filter event[#{fe}] action[#{fa}] category[#{fc}] q[#{fq}]"
-    scope = Rules::Rule.unscoped
+    scope = params[:deleted] == 'true' ? Rules::Rule.unscoped : Rules::Rule
     scope = scope.where(events: params[:event]) if fe
     scope = scope.where(:actions.elem_match => {action_type: params[:action_type]}) if fa
     scope = scope.where(category: params[:category]) if fc
@@ -543,7 +545,7 @@ class RulesController < ApplicationController
   # POST /rules/rules
   # POST /rules/rules.json
   def create
-    sp = params.require(:rules_rule).permit(:name, :description)
+    sp = params.require(:rules_rule).permit(:name, :description, :category)
     @rules_rule = Rules::Rule.new(sp)
 
     respond_to do |format|
@@ -633,14 +635,7 @@ class RulesController < ApplicationController
   # DELETE /rules/rules/1.json
   def destroy
     @rules_rule = Rules::Rule.find(params[:id])
-    if @rules_rule.events.length == 0 || params[:purge] == "true" 
-      @rules_rule.destroy
-    else
-      @rules_rule._deleted = true
-      @rules_rule.active = false
-      @rules_rule.updated_actions << "Deleted"
-      @rules_rule.save!
-    end
+    @rules_rule.destroy
 
     respond_to do |format|
       format.html { redirect_to (params[:event].presence ? rules_event_rules_url(event: params[:event]) : rules_rules_url) }
