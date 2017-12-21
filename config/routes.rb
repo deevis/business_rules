@@ -55,6 +55,23 @@ Rails.application.routes.draw do
       end
     end
     
+    resources :notifications do
+      collection do
+        get 'mark_seen', :defaults => { :format => 'js' }
+        get 'mark_all_seen'
+      end
+      member do
+        get 'toggle_dismissed', :defaults => { :format => 'js' }
+      end
+    end
+
+    resources :tasks do
+      collection do
+        get :calendar
+        get :priority
+      end
+    end
+
     # match "/events", to: "rules#events", as: "events"
   end
 end

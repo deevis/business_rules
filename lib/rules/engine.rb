@@ -17,8 +17,7 @@ module Rules
       #   request_specs: true
       # g.fixture_replacement :factory_girl, :dir => "spec/factories"
 
-      # g.orm :active_record
-      g.orm :mongoid 
+      g.orm :active_record
     end
 
     config.generators.scaffold_controller = :scaffold_controller

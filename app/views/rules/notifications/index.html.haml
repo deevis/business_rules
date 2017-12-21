@@ -1,0 +1,22 @@
+= content_for :page_title, "notifications"
+- notifications_suffix = " - current" if params[:filter_type].blank? 
+- notifications_suffix = " - #{params[:filter].demodulize.titleize.pluralize}" if params[:filter_type] == "type"
+- notifications_suffix = " - #{params[:filter].titleize}" if params[:filter_type] == "predefined" 
+
+.panel.panel-info
+  .panel-heading
+    .panel-title Notifications#{notifications_suffix}
+  .panel-body
+    =link_to "Mark All Seen", mark_all_seen_rules_notifications_path, class:"btn btn-default"
+    .notifications-list
+      = render "notifications_list"
+
+- content_for :rules_javascript do
+  :javascript
+    setTimeout(function() {
+      $(".unseen .fade-tag").hide('slow', function() {$(this).remove();});
+      $(".unseen .fade-tag").effect("highlight", {}); 
+    }, 2000);
+
+
+

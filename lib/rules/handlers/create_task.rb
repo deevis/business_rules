@@ -5,10 +5,12 @@ class Rules::Handlers::CreateTask < Rules::Handlers::CreateModel
   set_continuation_strategy Rules::Handlers::TaskCompletedStrategy
 
   needs :owner, :user                 # CreateModel base class will automatically map this to user property of UserTask
-  needs :regarding, :object, optional: true     # This should really be optional once optional comes into existence
+  needs :regarding, :object, optional: true     
 
   needs :actionable_url, :string, optional: true
   
+  needs :due_in, :select, default: "1 day", values: ["1 day", "2 days", "3 days", "1 week", "2 weeks", "1 month", "30 days", "60 days", "90 days"]
+
   # optional :
 
   template :title
@@ -25,7 +27,8 @@ class Rules::Handlers::CreateTask < Rules::Handlers::CreateModel
     #m.source = "system"
     m.title = eval_template(:title)
     m.description = eval_template(:description)
-    m.due_date = 1.day.from_now                   # TODO: make this configurable
+    period = eval( due_in.gsub(' ', '.'))
+    m.due_date = period.from_now                   
   end
 
 end

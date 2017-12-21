@@ -283,6 +283,7 @@ class RulesController < ApplicationController
     if @action_field_type == :class_lookup 
       klazz = @rule_field_type.constantize
       @action.context_mapping[action_field] = rule_field
+      @action.save!
       @rules_rule.updated_actions << "Added class lookup : #{rule_field}"
       @rules_rule.save!
     elsif @rule_field_type == "instance_lookup"
@@ -294,6 +295,7 @@ class RulesController < ApplicationController
       instance = @action.instance_lookup(@rule_field_name)
       if instance 
         @action.context_mapping[action_field] = rule_field
+        @action.save!
         @rules_rule.updated_actions << "Added class lookup : #{rule_field}"
         @rules_rule.save!
       else
@@ -313,6 +315,7 @@ class RulesController < ApplicationController
           end
         end
         @action.context_mapping[action_field] = rule_field
+        @action.save!
         @rules_rule.updated_actions << "Added freeform action mapping : #{rule_field}"
         @rules_rule.save!
       rescue => e
@@ -320,11 +323,13 @@ class RulesController < ApplicationController
       end
     elsif @rule_field_type == "lambda_lookup"
         @action.context_mapping[action_field] = rule_field
+        @action.save!
         @rules_rule.updated_actions << "Added predefined action mapping : #{rule_field}"
         @rules_rule.save!      
     else
       if Rules::Action.check_mapping_type?(@action_field_type, @rule_field_type)
         @action.context_mapping[action_field] = rule_field
+        @action.save!
         @rules_rule.updated_actions << "Added mapping : #{@rule_field_type} => #{action_field}"
         @rules_rule.save!
       else
@@ -348,6 +353,7 @@ class RulesController < ApplicationController
     mapped_from = @action.context_mapping[action_field] 
     if mapped_from
       @action.context_mapping[action_field] = nil
+      @action.save!
       @rule_field_name = mapped_from.split(":=>").first
       @rule_field_type = mapped_from.split(":=>").last
       @message = "Removed field mapping for #{@action_field_name}"

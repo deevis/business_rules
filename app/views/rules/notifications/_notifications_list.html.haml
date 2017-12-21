@@ -1,0 +1,16 @@
+-if @notifications.blank?
+  .alert.alert-warning You Don't Have Any Notifications
+.empty-priority.hide
+  .alert.alert-info You don't have any notifications with this priority
+
+-@notifications.each do |n|
+  %div.notification{data: {id: n.id, type: n.try(:class).try(:to_s)}}
+    .category=n.category
+    .message=n.message
+    .when
+      =time_ago_in_words(n.created_at)
+      Ago
+  -n.mark_seen
+
+.pull-right
+  = paginate @notifications

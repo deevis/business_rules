@@ -21,6 +21,24 @@ module Rules
     belongs_to :user 
     belongs_to :item, polymorphic: true
 
+    def mark_seen
+      unless self.seen
+        self.seen ||= Time.now
+        self.save
+      end
+    end
+
+
+    def self.priority_map
+      {
+        "10" => :low,
+        "30" => :medium,
+        "50" => :high,
+        "70" => :urgent,
+        "90" => :critical,
+      }
+    end
+
     def broadcast_external
       # TODO: determine mechanism by which to externally alert a user of their notification
     end

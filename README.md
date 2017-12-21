@@ -93,12 +93,18 @@ require 'rules/middleware/redirect_rule'
 Rules.activate_event_processing #unless Rails.env == "test"
 Rails.configuration.middleware.use "Rules::Middleware::RedirectRule"
 
+# Add tasks, notifications to your User object
+User.class_eval do |klazz|
+  klazz.has_many :tasks, class_name: "Rules::Task"
+  klazz.has_many :notifications, class_name: "Rules::Notification"
+end
+
 ```
 
 app/controllers/application_controller.rb
 ----------------------------------------------------------------------
 ```
-  around_filter :rules_user
+  around_action :rules_user
 
   private
     def rules_user

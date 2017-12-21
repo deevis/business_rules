@@ -256,7 +256,7 @@ class Rules::Action < ActiveRecord::Base
       Rails.logger.info "...Considering mapping for #{action_field}(#{configuration[:type]})"
       if configuration[:default]
         Rails.logger.info "......added [#{configuration[:default]}:=>free_form]"
-        context_mapping["#{action_field}:=>#{configuration[:type]}"] = "#{configuration[:default]}:=>free_form"
+        context_mapping["#{action_field}:=>#{configuration[:type]}"] ||= "#{configuration[:default]}:=>free_form"
       else
         if rule_context
           rule_context.keys.each do |rule_field|

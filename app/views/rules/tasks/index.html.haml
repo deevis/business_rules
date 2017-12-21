@@ -1,0 +1,29 @@
+%div{style:"float: right;"}
+  = link_to "Add Task", new_rules_task_path
+  %br
+
+%table.table.table-condensed.table-hover
+  %thead
+    %tr
+      %th Task Title
+      %th Description
+      %th Days To Complete
+      %th Status
+      %th
+  %tbody
+    -@tasks.each do |t|
+      %tr
+      %td= t.title
+      %td
+        -if t.description.length > 40
+          = t.description[0..40]
+        -else
+          = t.description
+      %td= t.due_date
+      %td
+      %td
+        = link_to "Show", t 
+        |
+        = link_to "Edit", edit_rules_task_path(t) 
+        |
+        = link_to "Delete", t, method: :delete, data: { confirm: "Are you sure you want to delete this task?" }
