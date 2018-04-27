@@ -1,3 +1,4 @@
+# This migration comes from rules_engine (originally 20150825022406)
 class CreateRulesUniqueRuleFirings < ActiveRecord::Migration[5.0]
   def change
     create_table :rules_unique_rule_firings do |t|

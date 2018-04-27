@@ -1,3 +1,4 @@
+# This migration comes from rules_engine (originally 20140824315457)
 class CreateRulesActionChainSteps < ActiveRecord::Migration[5.0]
   def change
     create_table :rules_action_chain_steps do |t|

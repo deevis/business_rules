@@ -21,9 +21,10 @@ Gem::Specification.new do |s|
   # all of these gems are being used by parent app anyway, and we need and we are trying
   # to keep all the versions same for a given gem, so there should not be a version conflict issue as-well.
 
-  s.add_dependency "rails"
+  s.add_dependency "rails", "~> 5.0"
   s.add_dependency "haml-rails"               # default generators
   s.add_dependency "haml"                     # actual rendering activation
+  s.add_dependency "mysql2"
   
   #s.add_dependency "protected_attributes"     # RAILS4_UPGRADE - Backwards Compat
   # s.add_dependency "rails-observers"          # RAILS4_UPGRADE - Backwards Compat
@@ -45,8 +46,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rspec"
   s.add_development_dependency "rspec-rails"
   s.add_development_dependency "rspec-expectations"
-#  s.add_development_dependency "mysql2"
-  s.add_development_dependency "sqlite3"
   s.add_development_dependency "pry"
   s.add_development_dependency "puma"
   s.add_development_dependency "better_errors"

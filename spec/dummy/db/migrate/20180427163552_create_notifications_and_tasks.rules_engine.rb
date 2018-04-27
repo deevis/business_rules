@@ -1,3 +1,4 @@
+# This migration comes from rules_engine (originally 20171220225799)
 class CreateNotificationsAndTasks < ActiveRecord::Migration[5.0]
   def change
     create_table :rules_notifications do |t|

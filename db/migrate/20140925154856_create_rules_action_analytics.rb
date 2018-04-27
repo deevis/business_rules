@@ -1,4 +1,4 @@
-class CreateRulesActionAnalytics < ActiveRecord::Migration
+class CreateRulesActionAnalytics < ActiveRecord::Migration[5.0]
   def change
   	create_table :rules_action_analytics do |t|
   		t.string :action_name

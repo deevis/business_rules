@@ -15,7 +15,7 @@ module Rules
         end
       end
 
-      @type_filters = current_user.notifications.select("item_type as type, count(*) as cnt")
+      @type_filters = @notifications.select("item_type as type, count(*) as cnt")
                                                 .where("item_type is not null")
                                                 .group("item_type")
                                                 .order("cnt DESC")

@@ -4,7 +4,9 @@
   .alert.alert-info You don't have any notifications with this priority
 
 -@notifications.each do |n|
-  %div.notification{data: {id: n.id, type: n.try(:class).try(:to_s)}}
+  %div.notification{class: "seen-#{n.seen?}", data: {id: n.id, type: n.try(:class).try(:to_s)}}
+    -if !n.dismissed?
+      =link_to "Dismiss", toggle_dismissed_rules_notification_path(n), remote: true
     .category=n.category
     .message=n.message
     .when

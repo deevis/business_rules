@@ -57,18 +57,22 @@ Rails.application.routes.draw do
     
     resources :notifications do
       collection do
-        get 'mark_seen', :defaults => { :format => 'js' }
-        get 'mark_all_seen'
+        get :mark_seen, defaults: { format: :js}
+        get :mark_all_seen
       end
       member do
-        get 'toggle_dismissed', :defaults => { :format => 'js' }
+        get :toggle_dismissed, defaults: { format: :js}
       end
     end
 
     resources :tasks do
       collection do
         get :calendar
+        get :completed_tasks
         get :priority
+      end
+      member do 
+        get :toggle_completion, defaults: { format: :js}
       end
     end
 

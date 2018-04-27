@@ -24,6 +24,43 @@ h2 {
   text-align: center;
 }
 
+.notification {
+  .category, .message, .when {
+    display: inline-block;
+  }
+  .category {
+    font-weight: 700;
+  }
+  .message {
+    font-size: 1.1em;
+  }
+  .when {
+    color: green;
+  }
+}
+
+.notification.seen-false {
+  background: yellow;
+}
+
+.task {
+  margin-bottom: 10px;
+  
+  .title, .description, .due-date, .delete-link {
+    display: inline-block;
+  }
+  .title {
+    font-weight: 700;
+  }
+  .description {
+    font-size: 1.1em;
+  }
+  .due-date {
+    color: green;
+  }
+}
+
+
 .label-success {
   background-color: $color-success;
 }

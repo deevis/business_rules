@@ -1,6 +1,6 @@
 # == Schema Information
 #
-# Table name: tasks
+# Table name: rules_tasks
 #
 #  id             :integer          not null, primary key
 #  user_id        :integer
@@ -13,7 +13,9 @@
 #  actionable_url :string(255)
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
+#  completed_at   :datetime
 #
+
 module Rules
   class Task < ActiveRecord::Base
     belongs_to :user 

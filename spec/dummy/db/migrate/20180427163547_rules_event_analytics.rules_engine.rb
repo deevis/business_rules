@@ -1,3 +1,4 @@
+# This migration comes from rules_engine (originally 20140924154856)
 class RulesEventAnalytics < ActiveRecord::Migration[5.0]
   def change
   	create_table :rules_event_analytics do |t|

@@ -1,3 +1,4 @@
+# This migration comes from rules_engine (originally 20140824215457)
 class CreateRulesDeferredActionChains < ActiveRecord::Migration[5.0]
   def change
     create_table :rules_deferred_action_chains do |t|

@@ -1,3 +1,4 @@
+# This migration comes from rules_engine (originally 20171220215752)
 # This migration creates the `versions` table, the only schema PT requires.
 # All other migrations PT provides are optional.
 class CreateVersions < ActiveRecord::Migration[5.0]

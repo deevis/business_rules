@@ -21,6 +21,8 @@ module Rules
     belongs_to :user 
     belongs_to :item, polymorphic: true
 
+    default_scope -> {where(dismissed: nil)}
+
     def mark_seen
       unless self.seen
         self.seen ||= Time.now
@@ -28,7 +30,14 @@ module Rules
       end
     end
 
+    def seen?
+      !!self.seen.present?
+    end
 
+    def dismissed?
+      !!self.dismissed.present?
+    end
+    
     def self.priority_map
       {
         "10" => :low,

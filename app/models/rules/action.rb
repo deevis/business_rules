@@ -1,3 +1,21 @@
+# == Schema Information
+#
+# Table name: rules_actions
+#
+#  id                   :integer          not null, primary key
+#  title                :string(255)
+#  action_type          :string(255)
+#  ordering             :integer
+#  rule_id              :integer
+#  context_mapping      :json
+#  template             :json
+#  future_configuration :json
+#  active               :boolean          default(TRUE)
+#  defer_processing     :boolean          default(FALSE)
+#  created_at           :datetime         not null
+#  updated_at           :datetime         not null
+#
+
 class Rules::Action < ActiveRecord::Base
   include Rules::ModelEventEmitter
 

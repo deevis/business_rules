@@ -4,23 +4,22 @@
 #
 #  id                   :integer          not null, primary key
 #  run_at               :datetime
-#  contingent_script    :string
-#  run_at_expression    :string
-#  unique_expression    :string
-#  recurring_expression :string
-#  rule_id              :string
-#  action_id            :string
-#  action_handler       :string
+#  contingent_script    :string(255)
+#  run_at_expression    :string(255)
+#  unique_expression    :string(255)
+#  recurring_expression :string(255)
+#  rule_id              :string(255)
+#  action_id            :string(255)
+#  action_handler       :string(255)
 #  context_mapping      :string(2000)
 #  template             :string(6000)
-#  event                :text
-#  created_at           :datetime
-#  updated_at           :datetime
+#  event                :text(65535)
+#  created_at           :datetime         not null
+#  updated_at           :datetime         not null
 #  priority             :integer          default(0)
-#  unique_id            :string
+#  unique_id            :string(255)
 #  processed_at         :datetime
 #
-
 
 # t.datetime :run_at                # when SHOULD this run
 # t.datetime :processed_at          # when DID this run?

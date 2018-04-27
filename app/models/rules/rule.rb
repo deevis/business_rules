@@ -1,3 +1,29 @@
+# == Schema Information
+#
+# Table name: rules_rules
+#
+#  id                      :integer          not null, primary key
+#  name                    :string(255)
+#  description             :string(255)
+#  category                :string(255)      default("Uncategorized")
+#  criteria                :string(255)
+#  definition_file         :string(255)
+#  events                  :json
+#  synchronous             :boolean          default(FALSE)
+#  active                  :boolean          default(TRUE)
+#  unique_expression       :string(255)
+#  start_time              :datetime
+#  end_time                :datetime
+#  timer                   :json
+#  timer_expression        :string(255)
+#  event_inclusion_matcher :string(255)
+#  event_exclusion_matcher :string(255)
+#  updated_actions         :json
+#  deleted_at              :datetime
+#  created_at              :datetime         not null
+#  updated_at              :datetime         not null
+#
+
 require 'rules/action'
 require 'resque'
 require 'resque-scheduler'

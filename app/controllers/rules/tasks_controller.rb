@@ -179,7 +179,7 @@ module Rules
 
     #simple toggle for mobile api
     def toggle_completion
-      @task = Rules::Task.find_by(id: params[:id])
+      @task = Rules::Task.find_by(user_id: current_user, id: params[:id])
       if @task.completed?
         @task.completed_at = nil
       elsif !@task.completed?
@@ -188,6 +188,7 @@ module Rules
       @task.save
 
       respond_to do |format|
+        format.js
         format.json {render status: 200}
       end
     end

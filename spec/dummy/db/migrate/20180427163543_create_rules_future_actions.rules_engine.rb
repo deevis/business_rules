@@ -1,3 +1,4 @@
+# This migration comes from rules_engine (originally 20140616215457)
 class CreateRulesFutureActions < ActiveRecord::Migration[5.0]
   def change
 
