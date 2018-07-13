@@ -3,7 +3,6 @@ require "simple_form"
 require "kaminari"
 require "hashie"
 require "identity_cache"
-require "paper_trail"
 require "paranoia"
 
 module Rules

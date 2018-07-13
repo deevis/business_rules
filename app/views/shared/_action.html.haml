@@ -57,7 +57,7 @@
       -if @rules_rule
         .collapse-group
           %a.collapse-context{"data-target" => "#provided_#{action.id.to_s}", "data-toggle" => "collapse"} mapping
-          .collapse.in{:id => "provided_#{action.id.to_s}"}
+          .collapse.out{:id => "provided_#{action.id.to_s}"}
             =render 'shared/future_configuration', action: action
             -if needs
               - needs.each do |field, configuration|

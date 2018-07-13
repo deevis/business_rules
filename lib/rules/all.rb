@@ -1,3 +1,4 @@
+require 'rules'
 require 'rules/events/application_event_base'
 require 'rules/handlers/base'
 require 'rules/handlers/continuation_strategy'

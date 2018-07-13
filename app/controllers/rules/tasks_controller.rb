@@ -129,7 +129,7 @@ module Rules
       respond_to do |format|
         if @task.save
           @updated_task = @task
-          format.html { redirect_to :back }
+          format.html { redirect_back fallback_location: root_path }
           format.json { render location: @task, status: :ok }
         else
           format.html {render  "edit" }
@@ -216,7 +216,7 @@ module Rules
         @updated_task = @task
       end
       respond_to do |format|
-       format.html { redirect_to :back }
+       format.html { redirect_back fallback_location: root_path }
         #this should be needed, mobile api is using toggle_completion
         format.json { render status: 200 }
       end

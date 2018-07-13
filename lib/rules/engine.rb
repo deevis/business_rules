@@ -1,9 +1,12 @@
 puts "Loading Rules::Engine"
 
 require "rules"
+require "paper_trail"
 
 module Rules
   class Engine < ::Rails::Engine
+   
+    config.assets.paths << File.expand_path("../../vendor/assets/javascripts", __FILE__)
 
     config.generators do |g|
       g.template_engine :haml
@@ -22,8 +25,6 @@ module Rules
 
     config.generators.scaffold_controller = :scaffold_controller
 
-    config.autoload_paths << "#{::Rails.root}/app/rules"
-    
     rules_engine = self
 
     initializer "before_#{self.name.underscore}_initializers1", after: :prepend_helpers_path, before: :load_config_initializers do |app|
@@ -36,6 +37,12 @@ module Rules
       puts "\n\n\nAfter eager_load - loading RulesEngine configuration\n\n\n"
       RulesEngine._reload_configuration  # Only load configuration for our selves, not for the entire cluster necessarily...
     end
+
+    # initializer :append_migrations do |app|
+    #   unless app.root.to_s.match root.to_s
+    #     app.config.paths["db/migrate"] += config.paths["db/migrate"].expanded
+    #   end
+    # end
 
 
     config.to_prepare do |action_dispatcher|

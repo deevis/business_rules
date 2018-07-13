@@ -19,6 +19,21 @@ Command Line
 
 ```rails server```
 
+config/application.rb
+--------------------------------------------------------------
+```
+  require 'rules/engine'
+```
+
+```
+    config.autoload_paths += %W(#{Rules::Engine.root}/lib/)
+```
+
+routes.rb
+--------------------------------------------------------------
+```
+  mount Rules::Engine => '/rules' 
+```
 
 application.js
 --------------------------------------------------------------

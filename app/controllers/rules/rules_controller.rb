@@ -26,9 +26,9 @@ class RulesController < ApplicationController
     end
     @rules_rule.updated_actions << "Added #{events_added.join(",")} as trigger(s)"
     if @rules_rule.save
-      redirect_to :back, notice: "#{events_added.join(",")} is a trigger for this rule"
+      redirect_back fallback_location: rules_rules_path, notice: "#{events_added.join(",")} is a trigger for this rule"
     else
-      redirect_to :back, error: "Could not add event: #{event}.  Suggest you check the logs and maybe this will help, too: #{@rules_rule.errors}"
+      redirect_back fallback_location: rules_rules_path, error: "Could not add event: #{event}.  Suggest you check the logs and maybe this will help, too: #{@rules_rule.errors}"
     end
   end
 
@@ -38,9 +38,9 @@ class RulesController < ApplicationController
     @rules_rule.events.delete event
     @rules_rule.updated_actions << "Removed #{event} as a trigger"
     if @rules_rule.save
-      redirect_to :back, notice: "#{event} is no longer a trigger for this rule"
+      redirect_back fallback_location: rules_rules_path, notice: "#{event} is no longer a trigger for this rule"
     else
-      redirect_to :back, error: "Could not remove event: #{event}.  Suggest you check the logs and maybe this will help, too: #{@rules_rule.errors}"
+      redirect_back fallback_location: rules_rules_path, error: "Could not remove event: #{event}.  Suggest you check the logs and maybe this will help, too: #{@rules_rule.errors}"
     end
   end
 
@@ -87,7 +87,7 @@ class RulesController < ApplicationController
       @action_id = @action.id
       _smart_redirect(notice: msg)
     else
-      redirect_to :back, error: "Could not add event: #{action_type}.  Suggest you check the logs and maybe this will help, too: #{@rules_rule.errors}"
+      redirect_back fallback_location: rules_rules_path, error: "Could not add event: #{action_type}.  Suggest you check the logs and maybe this will help, too: #{@rules_rule.errors}"
     end
   end
 
@@ -119,7 +119,7 @@ class RulesController < ApplicationController
     end
     msg = "Import processed <br/><br/>  Imported: #{imported} <br/>  Noop: #{noop} <br/>  Failed: #{failed}"
     Rails.logger.info msg
-    redirect_to :back, notice: msg
+    redirect_back fallback_location: rules_rules_path, notice: msg
   end
 
   def show_yaml
@@ -144,7 +144,7 @@ class RulesController < ApplicationController
     raise "Offlimits in Production - find another way" unless Rails.env.development?
     Rules::RulesConfig.delete_rules
     Rules::RulesConfig.import_rules
-    redirect_to :back, notice: "Rules reloaded - you still have to manually Reload Configuration"
+    redirect_back fallback_location: rules_rules_path, notice: "Rules reloaded - you still have to manually Reload Configuration"
   end
 
   def remove_action
@@ -157,7 +157,7 @@ class RulesController < ApplicationController
     if @rules_rule.save
       _smart_redirect(notice: "Action deleted")
     else
-      redirect_to :back, error: "Could not remove action.  Suggest you check the logs and maybe this will help, too: #{@rules_rule.errors}"
+      redirect_back fallback_location: rules_rules_path, error: "Could not remove action.  Suggest you check the logs and maybe this will help, too: #{@rules_rule.errors}"
     end
   end
 
@@ -200,7 +200,7 @@ class RulesController < ApplicationController
     if @rules_rule.save
       _smart_redirect(notice: operation)
     else
-      redirect_to :back, error: "Could not change Future Scheduling of Action.  Suggest you check the logs and maybe this will help, too: #{@rules_rule.errors}"
+      redirect_back fallback_location: rules_rules_path, error: "Could not change Future Scheduling of Action.  Suggest you check the logs and maybe this will help, too: #{@rules_rule.errors}"
     end
   end
 
@@ -220,7 +220,7 @@ class RulesController < ApplicationController
     if @rules_rule.save
       _smart_redirect(notice: operation)
     else
-      redirect_to :back, error: "Could not toggle deferred processing of action chain.  Suggest you check the logs and maybe this will help, too: #{@rules_rule.errors}"
+      redirect_back fallback_location: rules_rules_path, error: "Could not toggle deferred processing of action chain.  Suggest you check the logs and maybe this will help, too: #{@rules_rule.errors}"
     end
   end
 
@@ -454,7 +454,7 @@ class RulesController < ApplicationController
   def reload_rules_engine
     c = Rules::RulesEngine.reload_configuration
     notice = "Rules configuration is being reloaded across the cluster, far and wide."
-    redirect_to :back, notice: notice
+    redirect_to rules_rules_path, notice: notice
   end
 
   # GET /rules/rules
