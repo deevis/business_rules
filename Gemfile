@@ -1,8 +1,25 @@
+# This gemfile isn't used by business_rules the gem, but rather shows what a client application
+# that uses business_rules might need/want to have in its supporting cast
+#
+# This gemfile is used to run the rails application found in spec/dummy
+#
 source "http://rubygems.org"
 
 # Declare your gem's dependencies in rules.gemspec.
 # Bundler will treat runtime dependencies like base dependencies, and
 # development dependencies will be added by default to the :development group.
+gem 'mysql2', '< 0.5'
+
+gem 'sass-rails'
+gem 'jquery-rails'
+gem 'jquery-ui-rails'
+
+gem 'bootstrap-sass'
+gem 'bootswatch-rails'
+gem 'font-awesome-rails'
+
+gem 'devise'
+
 gemspec
 
 # jquery-rails is used by the dummy application
