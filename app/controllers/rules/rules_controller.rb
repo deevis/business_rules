@@ -466,9 +466,9 @@ class RulesController < ApplicationController
     fq = params[:q].presence
     Rails.logger.info "Rules Filter event[#{fe}] action[#{fa}] category[#{fc}] q[#{fq}]"
     scope = params[:deleted] == 'true' ? Rules::Rule.unscoped : Rules::Rule
-    scope = scope.where(events: params[:event]) if fe
-    scope = scope.where(:actions.elem_match => {action_type: params[:action_type]}) if fa
-    scope = scope.where(category: params[:category]) if fc
+    scope = scope.where("json_contains(events, '#{fe.to_json}')") if fe
+    scope = scope.joins(:actions).where(rules_actions: {action_type: fa}) if fa
+    scope = scope.where(category: fc) if fc
     if fq 
       @q_regexp = Regexp.new(fq, "i")
       scope = scope.any_of( {events: @q_regexp},

@@ -6,58 +6,58 @@
 	  $rule_actions.width($rule_actions.width());
 
 	  // Affix the actions column
-	  if ($rule_actions.offset() !== undefined) {
-		  rule_actions_top = $rule_actions.offset().top - 20;
-		  $rule_actions.affix({
-		    offset: {
-		      top: function () {
-		        return rule_actions_top;
-		      }
-		    }
-		  });
-		}
+	 //  if ($rule_actions.offset() !== undefined) {
+		//   rule_actions_top = $rule_actions.offset().top - 20;
+		//   $rule_actions.affix({
+		//     offset: {
+		//       top: function () {
+		//         return rule_actions_top;
+		//       }
+		//     }
+		//   });
+		// }
 	}); 
 
 =content_for :page_title do
 	Rules Manager - #{@rules_rule.name}
 
-= link_to "Rules Listing", rules_rules_path, class: "btn btn-mini btn-primary"
+= link_to "Rules Listing", rules_rules_path, class: "btn btn-sm btn-primary"
 
-= link_to "YAML", "#", class: "btn btn-mini btn-info pull-right", onclick:"show_yaml_modal();"
+= link_to "YAML", "#", class: "btn btn-sm btn-info pull-right", onclick:"show_yaml_modal();"
 
 -if @rules_rule.definition_file.present?
-	= link_to "Reload From Source", "#", class: "btn btn-mini btn-warning pull-right", "data-confirm"=>"Rule will be reloaded from source file located at:<br/><br/> #{@rules_rule.definition_file}<br/><br/>Continue?<br/><br/>COMING SOON - NOT IMPLEMENTED"
+	= link_to "Reload From Source", "#", class: "btn btn-sm btn-warning pull-right", "data-confirm"=>"Rule will be reloaded from source file located at:<br/><br/> #{@rules_rule.definition_file}<br/><br/>Continue?<br/><br/>COMING SOON - NOT IMPLEMENTED"
 -else
 	.pull-right
 		&nbsp;&nbsp;NO SOURCE&nbsp;&nbsp;
 
 -if @rules_rule.rule_deleted?
-	= link_to "Undelete Rule", undelete_rules_rule_path(@rules_rule), class: "btn btn-mini btn-warning pull-right", "data-confirm"=>"Rule will be undeleted, but will be inactive.  Continue?", method: :get
+	= link_to "Undelete Rule", undelete_rules_rule_path(@rules_rule), class: "btn btn-sm btn-warning pull-right", "data-confirm"=>"Rule will be undeleted, but will be inactive.  Continue?", method: :get
 -else
-	= link_to "Delete Rule", rules_rule_path(@rules_rule), method: :delete, class: "btn btn-mini btn-danger pull-right", "data-confirm"=>"Are you sure you want to delete this Rule?"
+	= link_to "Delete Rule", rules_rule_path(@rules_rule), method: :delete, class: "btn btn-sm btn-danger pull-right", "data-confirm"=>"Are you sure you want to delete this Rule?"
 
 = render "toggle_active_button"
 
-=link_to "Clone", clone_rules_rule_path(@rules_rule), class: "btn btn-mini btn-default", method: :get, "data-confirm" => "This will create a clone with the same Events, Triggers and Actions - be sure to adjust these prior to enabling the new Rule!"
+=link_to "Clone", clone_rules_rule_path(@rules_rule), class: "btn btn-sm btn-secondary", method: :get, "data-confirm" => "This will create a clone with the same Events, Triggers and Actions - be sure to adjust these prior to enabling the new Rule!"
 
-=link_to "Edit", edit_rules_rule_path(@rules_rule), class: "btn btn-mini btn-info"
+=link_to "Edit", edit_rules_rule_path(@rules_rule), class: "btn btn-sm btn-info"
 
 
 .btn-group
-	%button.btn.btn-info.dropdown-toggle{type:"button", "data-toggle" => "dropdown"}
+	%button.btn.btn-info.btn-sm.dropdown-toggle{type:"button", "data-toggle" => "dropdown"}
 		Quick Nav
 		%span.caret
 	%ul.dropdown-menu{role:"menu", style:"width:320px;"}
 		-Rules::Rule.where(active: true).order("updated_at desc").limit(15).each do |r| 
-			%li
+			.dropdown-item
 				=link_to r.name[0,40], rules_rule_path(r)
 
 
 
 -if @rules_rule.testable?
-	= link_to "Test Rule", test_rule_rules_rule_path(@rules_rule), class: "btn btn-mini btn-default", title: "You can test: #{@rules_rule.testable_actions.join(", ")}"
+	= link_to "Test Rule", test_rule_rules_rule_path(@rules_rule), class: "btn btn-sm btn-secondary", title: "You can test: #{@rules_rule.testable_actions.join(", ")}"
 
-= link_to "Reload Rules Engine Configuration", reload_rules_engine_rules_rules_path, class: "pull-right btn btn-mini btn-default", "data-confirm" => "This may take a moment - it may also cause threading race conditions until it is done in a smarter fashion, it will reload available Events and ActionHandlers.  That being said... ARE YOU SURE?", method: :get
+= link_to "Reload Rules Engine Configuration", reload_rules_engine_rules_rules_path, class: "pull-right btn btn-sm btn-secondary", "data-confirm" => "This may take a moment - it may also cause threading race conditions until it is done in a smarter fashion, it will reload available Events and ActionHandlers.  That being said... ARE YOU SURE?", method: :get
 
 
 #heads-up{style:"margin:20px 5px 0 5px;padding:5px 0 0 0;border:1px dashed gray;", class: "row"}
@@ -66,25 +66,25 @@
 			.add-event
 				- if @rules_rule.get_timer_event.blank?
 					-if @rules_rule.get_dynamic_event.blank?
-						=link_to "Add Event", "javascript:void(0);", class: "btn btn-mini btn-info pull-left", data: { target: "#lookup_event_modal", toggle: "modal"}
+						=link_to "Add Event", "javascript:void(0);", class: "btn btn-sm btn-info pull-left", data: { target: "#lookup_event_modal", toggle: "modal"}
 					-else
-						=link_to "Set DynamicEvent Details", dynamic_event_fields_rules_rule_path(@rules_rule, format: "html"), data: { toggle: "modal", target: "#dynamic_event_details"}, class: "btn btn-mini btn-info rule-modal pull-left"
+						=link_to "Set DynamicEvent Details", dynamic_event_fields_rules_rule_path(@rules_rule, format: "html"), data: { toggle: "modal", target: "#dynamic_event_details"}, class: "btn btn-sm btn-info rule-modal pull-left"
 				-else
 					=link_to "Set TimerEvent Type", lookup_class_rules_rules_path(          														rule_id: @rules_rule.id,
 												set_timer_event: "true", 
 												action_id: "no_action_for_you_two_weeks",
                         action_field: "timer_event",
-                        lookup_type: "class_lookup", format: :js), class: "btn btn-mini btn-info rule-modal pull-left"
+                        lookup_type: "class_lookup", format: :js), class: "btn btn-sm btn-info rule-modal pull-left"
 
 			.add-action
-				=link_to "Add Action", "javascript:void(0);", class: "btn btn-mini btn-info", data: { target: "#lookup_action_modal", toggle: "modal"}
+				=link_to "Add Action", "javascript:void(0);", class: "btn btn-sm btn-info", data: { target: "#lookup_action_modal", toggle: "modal"}
 			.clearfix
 		#display-graph{style:"border:1px solid black;height:1200px;word-wrap: break-word;"}
 	#action-mapping-editor{style:"display:inline-block;float:left;", class: "col-md-7"}
 		-if @rules_rule.actions.blank?
 			.jumbotron{style:"margin-top:30px;"}
 				.h3 Add an action to take when your Rule fires
-				=link_to "Add Action", "#", class: "btn btn-mini btn-info", data: { target: "#lookup_action_modal", toggle: "modal"}
+				=link_to "Add Action", "#", class: "btn btn-sm btn-info", data: { target: "#lookup_action_modal", toggle: "modal"}
 
 		-else
 			-action_to_render = @rules_rule.actions.detect{|a| a.id.to_s == params[:action_id]} || @rules_rule.actions.first
@@ -122,13 +122,13 @@
 						%label{for:"hideMode"}
 						%input{type:"checkbox",class:"hideMode",checked:"checked"} Hide unmatched nodes
 					%div
-						%button{class:"btn btn-xs btn-info", onclick:"tree_expandAll();return false;"} Expand All
-						%button{class:"btn btn-xs btn-info", onclick:"tree_collapseAll();return false;"} Collapse All
-						%button{class:"btn btn-xs btn-info", onclick:"alert(tree_getSelectedNodes().toString());return false;"} Selected
+						%button{class:"btn btn-sm btn-info", onclick:"tree_expandAll();return false;"} Expand All
+						%button{class:"btn btn-sm btn-info", onclick:"tree_collapseAll();return false;"} Collapse All
+						%button{class:"btn btn-sm btn-info", onclick:"alert(tree_getSelectedNodes().toString());return false;"} Selected
 				#events_tree{style:"overflow:auto;"}
 					%ul#treeData{style:"display: none;"}
 			.modal-footer
-				%button{class:"btn btn-mini btn-primary", onclick:"addRuleEvents();"} Add Selected Events
+				%button{class:"btn btn-sm btn-primary", onclick:"addRuleEvents();"} Add Selected Events
 
 
 :javascript
@@ -246,10 +246,10 @@
 	function show_lookup_modal(new_url) {
 		//http://stackoverflow.com/questions/12286332/twitter-bootstrap-remote-modal-shows-same-content-everytime?rq=1
 		console.log("show_lookup_modal('" + new_url + "');");
-		//$('#lookup_modal').modal('hide');
 		$('#lookup_modal').removeData("bs.modal");
-		$('#lookup_modal').modal({remote: new_url});
+		$('#lookup_modal .modal-content').load(new_url);
 		$('#lookup_modal').modal('show');
+
 	};
 
 	function show_yaml_modal() {

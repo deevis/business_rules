@@ -1,6 +1,6 @@
 class RulesEventAnalytics < ActiveRecord::Migration[5.0]
   def change
-  	create_table :rules_event_analytics do |t|
+  	create_table :rules_rules_event_analytics do |t|
   		t.string :event_name
   		t.integer :count, default: 0
   		t.datetime :since								# 'since' is how long it has been since count was reset to 0

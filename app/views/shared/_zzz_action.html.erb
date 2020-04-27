@@ -89,7 +89,7 @@
 										<%= simple_form_for @rules_rule do %>
 
 											<textarea name="rules_rule[action][<%= action.id.to_s %>][template][<%= name %>]"><%= action.template_body(name) %></textarea>
-											<input type="submit" class="action-links btn btn-mini btn-primary" value="save"/>
+											<input type="submit" class="action-links btn btn-sm btn-primary" value="save"/>
 										<% end %>
 									</div>
 								<% end %>

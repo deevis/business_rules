@@ -74,14 +74,16 @@ module Rules
 
     # embeds_many :actions, inverse_of: :rule
     
-    serialize :events, Array 
-    serialize :timer, Hash
-    serialize :update_actions, Array
+    # If we serialize, then they get stored in the database as YAML - barf
+    # serialize :events, Array 
+    # serialize :timer, Hash
+    # serialize :updated_actions, Array
 
     has_many :actions
 
     before_save :set_synchronous, :context_mapping_sanity_check
-
+    after_initialize :set_json_objects
+    
     accepts_nested_attributes_for :actions
 
     validates :name, presence: true
@@ -852,6 +854,11 @@ module Rules
         return true # don't accidentally return false - it will halt the saving procedure
       end
 
+      def set_json_objects
+        self.events ||= []
+        self.timer ||= {}
+        self.updated_actions ||= []
+      end        
   end
 end
 

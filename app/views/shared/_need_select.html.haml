@@ -6,7 +6,7 @@
   -values = (need_config[:values].class == Proc) ?  need_config[:values].call(action) : need_config[:values]
   -values.each do |v| 
     %option{value: v, selected: value == v}=v[0,30]
-=link_to "Update", "javascript:void();", class:"btn btn-primary btn-xs", onclick:"add_action_mapping('#{action.id}', '#{field_name}:=>#{field_type}', encodeURIComponent($('##{action.id}_#{field_name}').val()) + ':=>free_form', 'free_form');"
+=link_to "Update", "javascript:void();", class:"btn btn-primary btn-sm", onclick:"add_action_mapping('#{action.id}', '#{field_name}:=>#{field_type}', encodeURIComponent($('##{action.id}_#{field_name}').val()) + ':=>free_form', 'free_form');"
 -quick_add_url = (need_config[:quick_add_url].class == Proc) ?  need_config[:quick_add_url].call(self,action) : need_config[:quick_add_url]
 -if quick_add_url.present?
   =link_to "+", quick_add_url

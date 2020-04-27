@@ -7,7 +7,7 @@ require "rules/version"
 Gem::Specification.new do |s|
   s.name        = "business_rules"
   s.version     = Rules::VERSION
-  s.authors     = ["Darren H"]
+  s.authors     = ["Darren Hicks"]
   s.email       = ["darren.hicks@gmail.com"]
   s.homepage    = "http://buzztrends.net"
   s.summary     = "Business Rules"
@@ -53,6 +53,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency "meta_request"
   s.add_development_dependency "parallel_tests"
   s.add_development_dependency "simplecov"
-
+  s.add_development_dependency "rails-erd"
   s.add_development_dependency "factory_girl"
 end

@@ -18,21 +18,21 @@
             =link_to test_rule_rules_rule_path(@rules_rule, action_id: action.id) do
               %i{class:"ic-icon-fw ic-icon-lg ic-icon-eye", title:"Preview this #{action.action_type.split('::').last.titleize}"}
           .btn-group
-            %button.btn.btn-info.dropdown-toggle{"data-toggle" => "dropdown", type: "button"}
+            %button.btn.btn-info.btn-sm.dropdown-toggle{"data-toggle" => "dropdown", type: "button"}
               %i.fa.fa-ellipsis-h
-            %ul.dropdown-menu.dropdown-menu-right{role: "menu"}
+            .dropdown-menu.dropdown-menu-right{role: "menu"}
               -if action_ordinal > 1
-                %li
+                .dropdown-item
                   =link_to move_action_upwards_rules_rule_path(@rules_rule, action_id: action.id ) do
                     %i.fa.fa-chevron-up>
                     Move Upwards
               -if action_ordinal < @rules_rule.actions.size
-                %li
+                .dropdown-item
                   =link_to move_action_downwards_rules_rule_path(@rules_rule, action_id: action.id ) do
                     %i.fa.fa-chevron-down>
                     Move Downwards
               -if action.can_be_scheduled?
-                %li
+                .dropdown-item
                   =link_to toggle_future_action_rules_rule_path(@rules_rule, action_id: action.id ), "data-confirm" => "#{action.future_configuration? ? 'Disable' : 'Enable'} future scheduling of Action?", method: :get do
                     %i{class: "#{Rules.clock_icon} future-#{action.future_configuration?}"}
                     -if action.future_configuration?
@@ -40,14 +40,14 @@
                     - else
                       Schedule Action
               -if action.can_defer_processing?
-                %li
+                .dropdown-item
                   =link_to toggle_defer_processing_rules_rule_path(@rules_rule, action_id: action.id ), "data-confirm" => "#{action.defer_processing? ? 'Disable deferral of processing' : 'Defer processing of actions and then ' + action.handler_class.continuation_strategy.title}", method: :get do
                     %i{class: "#{action.handler_class.continuation_strategy.icon}"}
                     -if action.defer_processing?
                       Remove Deferred Processing
                     - else
                       Defer Processing
-              %li
+              .dropdown-item
                 =link_to remove_action_rules_rule_path(@rules_rule, action_id: action.id ), "data-confirm" => "Are you sure you want to remove this Action from your Rule?", method: :delete do
                   %i{class: Rules.trash_icon}>
                   Delete Action
@@ -57,7 +57,7 @@
       -if @rules_rule
         .collapse-group
           %a.collapse-context{"data-target" => "#provided_#{action.id.to_s}", "data-toggle" => "collapse"} mapping
-          .collapse.out{:id => "provided_#{action.id.to_s}"}
+          .collapse.show{:id => "provided_#{action.id.to_s}"}
             =render 'shared/future_configuration', action: action
             -if needs
               - needs.each do |field, configuration|
@@ -65,8 +65,8 @@
                   field_name: field, field_type: configuration[:type]   |
             -if templates
               -templates.each do |name|
-                .text-area.collapse.in
+                .text-area.collapse.show
                   .name= name.to_s.titleize.downcase
                   =simple_form_for @rules_rule do
                     %textarea{:name => "rules_rule[action][#{action.id.to_s}][template][#{name}]"}= action.template_body(name)
-                    %input.action-links.btn.btn-mini.btn-primary{type: "submit", value: "save"}
+                    %input.action-links.btn.btn-sm.btn-primary{type: "submit", value: "save"}

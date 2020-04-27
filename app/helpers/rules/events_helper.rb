@@ -62,7 +62,7 @@ module Rules::EventsHelper
 			body = content_tag :div, class: "collapse-group", style:"block:inline;margin-left:30px;padding:5px;" do
 				content_tag :div, id:"#{stack.join('_')}_context", class: "collapse", style: "block:inline;padding:5px;min-height:30px;" do
 					context = children.collect{|k,v| "<b>#{k}</b> (<i>#{v}</i>)"}.join("<br/>")
-					inner_body = "<a class='btn btn-mini' data-toggle='collapse' data-target='##{stack.join('_')}_context'>context</a>".html_safe
+					inner_body = "<a class='btn btn-sm' data-toggle='collapse' data-target='##{stack.join('_')}_context'>context</a>".html_safe
 					inner_body += "<div class='collapse-group'>#{context}</div>".html_safe
 					inner_body += "<div style='clear:both;'></div>".html_safe
 				end
@@ -71,7 +71,7 @@ module Rules::EventsHelper
 			stack.push key
 			body += content_tag :div, class: "collapse-group", style: "margin-left:30px;position:relative;" do
 						content_tag :div, id:"#{stack.join('_')}", class: "collapse", style: "padding:5px;min-height:30px;" do
-							inner_body = "<a class='btn btn-mini' data-toggle='collapse' data-target='##{stack.join('_')}'>+</a><span style='font-weight:bold;'>#{key.to_s.titleize}</span>"
+							inner_body = "<a class='btn btn-sm' data-toggle='collapse' data-target='##{stack.join('_')}'>+</a><span style='font-weight:bold;'>#{key.to_s.titleize}</span>"
 							children.each do |child_key, grandkids|
 								#inner_body += "&nbsp;" * stack.size
 								inner_body += _render_and_recurse(child_key, grandkids, stack) + "\n"

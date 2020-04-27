@@ -35,13 +35,15 @@ class Rules::Action < ActiveRecord::Base
   # embedded_in :rule, inverse_of: :actions
   belongs_to :rule 
 
-  serialize :context_mapping, Hash
-  serialize :template, Hash 
-  serialize :future_configuration, Hash 
+  # If we serialize, then they get stored in the database as YAML - barf
+  # serialize :context_mapping, Hash
+  # serialize :template, Hash 
+  # serialize :future_configuration, Hash 
 
 
   before_save :set_default_mappings, :context_mapping_sanity_check
-  
+  after_initialize :set_json_objects
+
   def export
     {
       title: title,
@@ -217,6 +219,7 @@ class Rules::Action < ActiveRecord::Base
   end
 
   def template_body(template_name)
+    self.template ||= {}
     body = template[template_name.to_s]                      # First try to read from Mongo Document template Hash
     body ||= template_configuration[template_name.to_sym]    # Not found, use the default configuration from the ActionHandler DSL
     body
@@ -381,5 +384,10 @@ class Rules::Action < ActiveRecord::Base
       end
     end
 
+    def set_json_objects
+      self.template ||= {}
+      self.context_mapping ||= {}
+      self.future_configuration ||= {}
+    end      
 
 end

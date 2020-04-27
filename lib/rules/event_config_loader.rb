@@ -17,6 +17,7 @@ module Rules
 
     # A simple list containing every Event known to the system...
     def self.events_list(refresh = false)
+      puts "DEBUG[events_list]"
       Rules::EventConfigLoader.events_dictionary(refresh).map do |et,et_v| 
         et_v.map do |k,v| 
           if v[:actions].present?
@@ -40,7 +41,14 @@ module Rules
       if Rules.active_record
         puts "Rules - Adding ModelEventEmitter to ActiveRecord::Base"
         ActiveRecord::Base.send :include, Rules::ModelEventEmitter
-        model_classes = ActiveRecord::Base.connection.tables.collect{|t| t.classify.constantize rescue nil }.compact
+        model_classes = ActiveRecord::Base.connection.tables.map do |t|
+          begin
+            t.classify.constantize
+          rescue Exception => e
+            Rails.logger.warn "Couldn't constantize: #{t.classify} : #{e.message}"
+            nil
+          end
+        end.compact
         model_classes.each do |mc| 
           puts "Rules::EventConfigLoader loading #{mc.to_s}" 
           mc.class_eval {}

@@ -181,6 +181,7 @@ module Rules
       puts "\n\n          Rule processing is disabled - returning now...\n\n"
       return
     end
+    puts "\n\nACTIVATING RulesEngine[#{Rules.event_processing_strategy}]"
     if Rules.event_processing_strategy == :synchronous
       # Call the rules engine directly with the event payload
       Rules::RulesEngine.send(:include, Rules::Synchronous)

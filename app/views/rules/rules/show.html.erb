@@ -21,15 +21,15 @@
   Rules Manager - <%= @rules_rule.name %>
 <% end %>
 
-  <%= link_to "Rules Listing", rules_rules_path, class: "btn btn-mini btn-primary" %>
+  <%= link_to "Rules Listing", rules_rules_path, class: "btn btn-sm btn-primary" %>
 
   <% if @rules_rule.deleted %>
-    <%= link_to "Undelete Rule", undelete_rules_rule_path(@rules_rule), class: "btn btn-mini btn-warning", "data-confirm"=>"Rule will be undeleted, but will be inactive.  Continue?", method: :get %>
+    <%= link_to "Undelete Rule", undelete_rules_rule_path(@rules_rule), class: "btn btn-sm btn-warning", "data-confirm"=>"Rule will be undeleted, but will be inactive.  Continue?", method: :get %>
   <% else %>
-    <%= link_to "Delete Rule", rules_rule_path(@rules_rule), method: :delete, class: "btn btn-mini btn-danger", "data-confirm"=>"Are you sure you want to delete this Rule?" %>
+    <%= link_to "Delete Rule", rules_rule_path(@rules_rule), method: :delete, class: "btn btn-sm btn-danger", "data-confirm"=>"Are you sure you want to delete this Rule?" %>
   <% end %>
 
-  <%= link_to "Reload Rules Engine Configuration", reload_rules_engine_rules_rules_path, class: "btn btn-mini btn-default", "data-confirm" => "This may take a moment - it may also cause threading race conditions until it is done in a smarter fashion, it will reload available Events and ActionHandlers.  That being said... ARE YOU SURE?", method: :get %>
+  <%= link_to "Reload Rules Engine Configuration", reload_rules_engine_rules_rules_path, class: "btn btn-sm btn-secondary", "data-confirm" => "This may take a moment - it may also cause threading race conditions until it is done in a smarter fashion, it will reload available Events and ActionHandlers.  That being said... ARE YOU SURE?", method: :get %>
 
 
 <% if @rules_rule.description %>

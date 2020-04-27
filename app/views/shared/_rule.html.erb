@@ -14,7 +14,7 @@
 		<% if context %>
 			<div class="collapse-group">
 				<a class="collapse-context" data-toggle='collapse' data-target='#rule_context_<%= rule.id %>'>context</a>
-				<div id="rule_context_<%= rule.id %>" class="collapse in">
+				<div id="rule_context_<%= rule.id %>" class="collapse show">
 					<% if context %>
 						<% context.each do |field, type| %>
 							<%= render 'rules/rules/rule_context_field', path: field, rule: rule, field: field, type: type %>
@@ -64,10 +64,10 @@
 					<% else %>
 						conditional criteria
 					<% end %>
-					<%= link_to "validate", "#", onclick: "validate_criteria();", class: "btn btn-info btn-xs" %>
+					<%= link_to "validate", "#", onclick: "validate_criteria();", class: "btn btn-info btn-sm" %>
 				</div>
 				<%= f.input :criteria, as: :text, placeholder: "enter rule criteria logic here...", input_html: { id:"criteria", class: "criteria logic-droppable" } %>
-				<input type="submit" class="action-links btn btn-mini btn-primary" value="save"/>
+				<input type="submit" class="action-links btn btn-sm btn-primary" value="save"/>
 				<div class="indicator-arrow"></div>
 			</div>
 		<% end %>

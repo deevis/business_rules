@@ -5,9 +5,10 @@
   <%= stylesheet_link_tag    "application", media: "all", "data-turbolinks-track" => true %>
   <%= javascript_include_tag "application", "data-turbolinks-track" => true %>
   <%= csrf_meta_tags %>
+  <%= content_for :rules_javascript %>
 </head>
 <body>
-
+<%= render 'rules/shared/web_actions' %>
 <%= yield %>
 
 </body>

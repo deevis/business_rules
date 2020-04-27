@@ -83,7 +83,6 @@ module Rules
       #   puts "Reloading rules: #{entry}"
       #   require_dependency "#{entry}"
       # end
-
       puts "--- Loaded lib/rules for #{self.class.name} \n"
     end
 

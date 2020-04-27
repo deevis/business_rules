@@ -29,6 +29,8 @@ gemspec
 
 group :development do
   gem 'guard-rspec', require: false
+  gem 'pry'
+  gem 'pry-byebug'
 end
 
 # TravisCI wants rake in group test

@@ -1,8 +1,9 @@
 class Rules::EventsController < ApplicationController
 
-  skip_before_filter :admin_required, :only => [:push_event]
-  skip_before_filter :login_required, :only => [:push_event]
-  skip_before_filter :check_page_access, :only => [:push_event]
+  # TODO - make these configurable by application including BusinessRules
+  # skip_before_action :admin_required, :only => [:push_event]
+  # skip_before_action :login_required, :only => [:push_event]
+  # skip_before_action :check_page_access, :only => [:push_event]
 
   def index
     @events_tree = Rules::RulesConfig.events_tree
