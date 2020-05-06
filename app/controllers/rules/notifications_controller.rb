@@ -47,6 +47,9 @@ module Rules
       end
     end
 
+    def show
+    end
+
     def mark_all_seen
       @notifications = current_user.notifications.where(seen: nil)
       @notifications.find_each { |n| n.mark_seen }

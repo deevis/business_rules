@@ -42,7 +42,8 @@ Gem::Specification.new do |s|
   s.add_dependency "resque-scheduler"
   s.add_dependency 'paranoia', '~> 2.2'
   s.add_dependency 'paper_trail'
-
+  s.add_dependency 'slack-notifier'
+  
   s.add_development_dependency "rspec"
   s.add_development_dependency "rspec-rails"
   s.add_development_dependency "rspec-expectations"

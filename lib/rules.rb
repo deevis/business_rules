@@ -71,7 +71,7 @@ module Rules
 
   # Set rule_activity_channel to have push notifications go to Rules admin screen
   mattr_accessor :rule_activity_channel
-  @@rule_activity_channel ||= nil
+  @@rule_activity_channel ||= "business_rules_activity"
 
   mattr_accessor :rule_activity_channel_enabled
   @@rule_activity_channel_enabled ||= false

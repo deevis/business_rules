@@ -2,11 +2,15 @@ puts "Loading Rules::Engine"
 
 require "rules"
 require "paper_trail"
+require "byebug"
 
 module Rules
   class Engine < ::Rails::Engine
-   
+    # TODO - it doesn't currently use isolate_namespace - should it?
+    # isolate_namespace Rules
     config.assets.paths << File.expand_path("../../vendor/assets/javascripts", __FILE__)
+    # config.assets.paths << File.expand_path("assets/javascripts", __FILE__)
+    
 
     config.generators do |g|
       g.template_engine :haml

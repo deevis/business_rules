@@ -1,7 +1,7 @@
 module Rules::RulesHelper
 
   # Don't drill into these types
-  @@dont_drill_types = [:boolean, :datetime, :integer, :messaging_user, :string, :text]
+  @@dont_drill_types = [:boolean, :datetime, :integer, :messaging_user, :string, :text, :float, :json]
   
   def page_title title
     "<h1>#{title}</h1>".html_safe

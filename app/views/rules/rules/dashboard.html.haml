@@ -1,6 +1,6 @@
 -if Rules.rule_activity_channel.present?
-  = javascript_include_tag "private_pub"
-  = subscribe_to Rules.rule_activity_channel
+  =content_for :rules_javascript do
+    = javascript_include_tag "business_rules/business_rules_activity_channel"
 
 .row
   .col-md-2
@@ -18,18 +18,18 @@
     #real-time-rules-display
 
   .col-md-4
-    .panel.panel-info
-      .panel-heading
-        .panel-title Top Actions
-      .panel-body
+    .card.text-white.bg-info
+      .card-header
+        .card-title Top Actions
+      .card-body
         %ul
           -Rules::RulesActionAnalytics.order("count desc").limit(25).each do |raa|
             %li
               =link_to raa.action_name, rules_rules_path(event: raa.action_name)
-    .panel.panel-info
-      .panel-heading
-        .panel-title Top Events
-      .panel-body
+    .card.text-white.bg-info
+      .card-header
+        .card-title Top Events
+      .card-body
         %ul
           -Rules::RulesEventAnalytics.order("count desc").limit(25).each do |rea|
             %li
@@ -40,7 +40,7 @@
   :javascript
     var event_counts = {};
 
-    function rules_data(data, channel) {
+    function rules_data(data) {
       console.log(data);
       if (data.type == 'runner') {  
         $(".no-processors-message").remove();
@@ -107,8 +107,6 @@
           "<div><div class='stat-label'>Events Processed:</div>" + data.jobs_run + "</div>" + 
           "<div><div class='stat-label'>Queue Size:</div>" + data.queue_size + "</div></div>");
     }
-
-    PrivatePub.subscribe('#{Rules.rule_activity_channel}', rules_data);
 
 -content_for :page_javascript do 
   $('.btn').button();

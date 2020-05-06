@@ -19,7 +19,8 @@
 module Rules
   class Task < ActiveRecord::Base
     belongs_to :user 
-    belongs_to :item, polymorphic: true
+    # item is what this task _pertains to_
+    belongs_to :item, polymorphic: true, optional: true
 
     scope :due_today, -> () {
       where({ due_date: Date.current, completed_at: nil })

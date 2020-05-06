@@ -1,0 +1,42 @@
+- task_scope = Rules::Task.where(user: current_user, completed_at: nil)
+- task_count = task_scope.count
+- task_list = task_scope.order("created_at DESC").limit(10)
+
+%li.nav-item.menu-link.dropdown.d-none.d-lg-flex
+  %a.text-primary.nav-link.dropdown-toggle{href: "#", id:"nav_task_dropdown",role:"button",data: {toggle:"dropdown"}}
+    Tasks
+    -if task_count > 0
+      %span.badge.badge-pill.badge-primary.text-white
+        =task_count 
+  %ul.dropdown-menu.dropdown-menu-right
+    -if task_list.length == 0
+      %li.nav-item.text-sm
+        You have no Tasks
+    -else
+      -task_list.each do |task|
+        %li.nav-item
+          - link_path = contextual_task_link(task)
+          %a.nav-link.small.text-dark{href: link_path, style: "color: rgba(0,0,0,1);"}
+            =task.title
+        .dropdown-divider
+
+- notification_scope = Rules::Notification.where(user: current_user, seen: nil)
+- notification_count = notification_scope.count
+- notification_list = notification_scope.order("created_at DESC").limit(10)
+
+%li.nav-item.menu-link.dropdown.d-none.d-lg-flex
+  %a.text-primary.nav-link.dropdown-toggle{href: "#", id:"nav_notification_dropdown",role:"button",data: {toggle:"dropdown"}}
+    Notifications
+    -if notification_count > 0
+      %span.badge.badge-pill.badge-primary.text-white
+        =notification_count 
+  %ul.dropdown-menu.dropdown-menu-right.invert.text-center
+    -if notification_list.length == 0
+      %li.nav-item.text-sm
+        You have no Notifications
+    -else
+      -notification_list.each do |notification|
+        %li.nav-item.text-sm
+          %a.nav-link.text-sm{href: polymorphic_path(notification)}
+            =notification.message
+        .dropdown-divider

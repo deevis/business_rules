@@ -59,7 +59,7 @@ namespace :rules do
     task :processor => :environment do
       RulesRunnerPool.config do |c|
         # Change this value to match the size of the DB pool
-        c.pool_size = APP_CONFIG[:database_pool_size]
+        c.pool_size = 5 # APP_CONFIG[:database_pool_size]
       end
       raise "Redis processor doesn't handle strategy [#{Rules.event_processing_strategy}]" unless Rules.event_processing_strategy == :redis
       puts "\n\nEvents Processor connecting to #{Rules.redis_host}:#{Rules.redis_port}/#{Rules.redis_queue_name}\n\n"

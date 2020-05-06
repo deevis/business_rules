@@ -19,7 +19,7 @@
 module Rules
   class Notification < ActiveRecord::Base
     belongs_to :user 
-    belongs_to :item, polymorphic: true
+    belongs_to :item, polymorphic: true, optional: true
 
     default_scope -> {where(dismissed: nil)}
 

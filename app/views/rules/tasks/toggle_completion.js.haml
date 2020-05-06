@@ -1,1 +1,1 @@
-$(".task[data-id=#{@task.id}]").hide();
+$(".task[data-id=#{@task.id}] .completed").html("#{j task_completed(@task)}");

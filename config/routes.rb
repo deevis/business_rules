@@ -1,5 +1,10 @@
+require 'resque/server'
+require 'resque-scheduler'
+require 'resque/scheduler/server'
+
 Rails.application.routes.draw do
   namespace :rules do
+    mount Resque::Server.new, :at => "/resque"
 
     resources :actions
 

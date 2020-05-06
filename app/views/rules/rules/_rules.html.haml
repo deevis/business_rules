@@ -66,9 +66,9 @@
         %button.btn.btn-info.btn-sm.dropdown-toggle{type:"button", "data-toggle" => "dropdown"}
           #{params[:category].presence || "Category Filter"}
           %span.caret
-        %ul.dropdown-menu{role:"menu", style:"width:320px;"}
+        .dropdown-menu{role:"menu", style:"width:320px;"}
           -Rules.rules_categories.sort.each do |r| 
-            %li
+            .dropdown-item
               =link_to r, rules_rules_path(action_type: params[:action_type], q: params[:q], event: params[:event], category: r)
 
       .search.pull-left{style:"margin-left: 10px;"}

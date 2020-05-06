@@ -1,0 +1,27 @@
+.task{data: {id: t.id}}
+  .row
+    .col-md-3
+      %table.table.table-sm.small
+        %tr
+          %th Assigned To
+          %td=t.user.email
+        %tr
+          %th Created At
+          %td=t.created_at
+        %tr
+          %th Date Due
+          %td=t.due_date
+        %tr
+          %th{colspan: 2}
+            .completed
+              =task_completed(t)
+    .col-md-9.text-left
+      .title
+        - link_path = contextual_task_link(t)
+        -if link_path
+          =link_to t.title, link_path
+        -else 
+          =t.title 
+      .align-middle.mt-2
+        = t.description
+    

@@ -3,6 +3,11 @@
 -add_script_tag ||= "true"
 -escape_modals ||= false
 
+-if params[:task_context_id].present? && current_user
+  - @contextual_task = current_user.tasks.find_by("rules_tasks.id" => params[:task_context_id])
+  - if @contextual_task
+    =render 'rules/shared/task_context', task: @contextual_task
+
 -while action = rule_actions.shift do
   -redirect_url = action[:redirect_url]
   -if redirect_url.present? 
@@ -32,14 +37,14 @@
           .modal-content
             .modal-body
 
-              .panel{class: "panel-#{config[:level].presence || 'info'}"}
-                .panel-heading
-                  .panel-title 
+              .card{class: "panel-#{config[:level].presence || 'info'}"}
+                .card-header
+                  .card-title 
                     #{(config[:title].presence || config[:level].try(:titleize) || "Alert").html_safe}
                   .clearfix
-                .panel-body
+                .card-body
                   #{config[:message].html_safe}
-                .panel-footer
+                .card-footer
                   -(config[:options]).split("-").reverse.each do |option|
                     -btn_class = case option 
                       -when "OK", "Yes"

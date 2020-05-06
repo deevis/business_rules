@@ -124,6 +124,7 @@ class RulesController < ApplicationController
 
   def show_yaml
     @rules_rule = Rules::Rule.find(params[:id])
+    render :show_yaml, layout: false
   end
 
   # This is to turn on and off the streaming of events and rule activity to Rules.rule_activity_channel
@@ -424,7 +425,7 @@ class RulesController < ApplicationController
   def set_timer_event_class
     @rules_rule = Rules::Rule.find(params[:id])
     klazz = params[:klazz].try(:camelcase)
-    @rules_rule.events = @rules_rule.events.map{|e| (e =~ /TimerEvent.*::tick/) ? "TimerEvent<#{klazz}>::tick"  : e }
+    @rules_rule.events = @rules_rule.events.map{|e| (e =~ /TimerEvent.*/) ? "TimerEvent<#{klazz}>::tick"  : e }
     @rules_rule.save!
     redirect_to @rules_rule
   end
@@ -470,12 +471,14 @@ class RulesController < ApplicationController
     scope = scope.joins(:actions).where(rules_actions: {action_type: fa}) if fa
     scope = scope.where(category: fc) if fc
     if fq 
-      @q_regexp = Regexp.new(fq, "i")
-      scope = scope.any_of( {events: @q_regexp},
-                            {description: @q_regexp}, 
-                            {name: @q_regexp}, 
-                            {criteria: @q_regexp},
-                            {:actions.elem_match => {"template.body" => @q_regexp}})
+      scope = scope.where("description like ?", "%#{fq}%")
+                .or(Rules::Rule.where("name like ?", "%#{fq}%"))
+                .or(Rules::Rule.where("criteria like ?", "%#{fq}%"))
+      # scope = scope.any_of( {events: @q_regexp},
+      #                       {description: @q_regexp}, 
+      #                       {name: @q_regexp}, 
+      #                       {criteria: @q_regexp},
+      #                       {:actions.elem_match => {"template.body" => @q_regexp}})
     end
     scope = scope.order("updated_at DESC")
     @rules_rules = scope

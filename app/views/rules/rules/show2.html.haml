@@ -23,7 +23,7 @@
 
 = link_to "Rules Listing", rules_rules_path, class: "btn btn-sm btn-primary"
 
-= link_to "YAML", "#", class: "btn btn-sm btn-info pull-right", onclick:"show_yaml_modal();"
+= link_to "YAML", "#", class: "btn btn-sm btn-info pull-right", onclick:"show_yaml_modal(); return false;"
 
 -if @rules_rule.definition_file.present?
 	= link_to "Reload From Source", "#", class: "btn btn-sm btn-warning pull-right", "data-confirm"=>"Rule will be reloaded from source file located at:<br/><br/> #{@rules_rule.definition_file}<br/><br/>Continue?<br/><br/>COMING SOON - NOT IMPLEMENTED"
@@ -255,8 +255,10 @@
 	function show_yaml_modal() {
 		console.log("show_yaml_modal();");
 		$('#show_yaml_modal').removeData("bs.modal");
-		$('#show_yaml_modal').modal({remote: "#{show_yaml_rules_rule_path(@rules_rule)}" });
+		var yaml_url = "#{show_yaml_rules_rule_path(@rules_rule)}";
+		$('#show_yaml_modal .modal-content').load(yaml_url);
 		$('#show_yaml_modal').modal('show');
+		return false;
 	};
 
 :javascript
@@ -343,8 +345,9 @@
 		        if (removeConfirm !== undefined) {
 		        	var removeUrl = cellView.model.attr(".removeUrl");
 		        	if (confirm(removeConfirm)) {
-		        		var tempLink = $('<a href="' + removeUrl + '" data-method="delete" />');
-		        		$.rails.handleMethod(tempLink);
+		        		// var tempLink = $('<a href="' + removeUrl + '" data-method="delete" />');
+		        		$.ajax(removeUrl, {'method': 'DELETE'});
+		        		// $.rails.handleMethod(tempLink);
 		        	}
 							// `interactive === false` prevents any action inside joint.dia.Link>>pointerdown().
 							cellView.options.interactive = false;

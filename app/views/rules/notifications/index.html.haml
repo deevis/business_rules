@@ -4,10 +4,10 @@
 - notifications_suffix = " - #{params[:filter].demodulize.titleize.pluralize}" if params[:filter_type] == "type"
 - notifications_suffix = " - #{params[:filter].titleize}" if params[:filter_type] == "predefined" 
 
-.panel.panel-info
-  .panel-heading
-    .panel-title Notifications#{notifications_suffix}
-  .panel-body
+.card.text-white.bg-info
+  .card-header
+    .card-title Notifications#{notifications_suffix}
+  .card-body.text-dark.bg-white
     =link_to "Mark All Seen", mark_all_seen_rules_notifications_path, class:"btn btn-secondary"
     .notifications-list
       = render "notifications_list"

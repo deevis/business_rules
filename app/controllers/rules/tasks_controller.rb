@@ -3,7 +3,9 @@ module Rules
 
     def index
       # Still need to perform the _index work for API access (mobile)
+      params[:type] ||= 'incomplete'
       _index
+      @type ||= params[:type]
       respond_to do |format|
         format.html
         format.json { render status: 200 }
@@ -282,11 +284,12 @@ module Rules
 
           @tasks = @tasks.page(params[:page]).per(params[:limit])
         else
-          if params[:type].present?
-            @tasks_due_today, @tasks_overdue, @future_tasks, @incomplete_tasks, @no_due_date, @completed_incomplete_tasks, @completed_tasks = Rules::Task.view_tasks_by_type(current_user, params[:type])
-          else
-            #@tasks = current_user.tasks.where("calendar_id = 1 and completed_at is null").order(:due_date)
-            @tasks = current_user.tasks.where("completed_at is null").order(:priority)
+          # @tasks_due_today, @tasks_overdue, @future_tasks, @incomplete_tasks, @no_due_date, @completed_incomplete_tasks, @completed_tasks = Rules::Task.view_tasks_by_type(current_user, params[:type])
+          @tasks = case params[:type]
+          when "complete"
+            current_user.tasks.completed
+          when "open", "incomplete"
+            current_user.tasks.open 
           end
         end
       end

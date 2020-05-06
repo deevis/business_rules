@@ -296,7 +296,7 @@ module Rules
 
     
     #
-    # Publish RulesEngine activity to Faye for display on Dashboard
+    # Publish RulesEngine activity to ActionCable for display on Dashboard
     #
     def self.publish_if_enabled(payload, rule = nil)
       if Rules.rule_activity_channel_enabled && Rules.rule_activity_channel 
@@ -305,7 +305,7 @@ module Rules
             payload = payload.merge( {type: "rule", id: rule.id.to_s, name: rule.name, criteria: rule.criteria }) 
           end
           puts "\n\nPublishing to #{Rules.rule_activity_channel} : #{payload}\n\n"
-          PrivatePub.publish_to Rules.rule_activity_channel, payload
+          ActionCable.server.broadcast Rules.rule_activity_channel, payload
         rescue => e 
           puts "Error publishing to #{Rules.rule_activity_channel} : #{e.message}"
           puts e.backtrace
@@ -808,7 +808,7 @@ module Rules
 
       def remove_schedule
         return unless Resque.fetch_schedule(_schedule_name)
-        Rails.logger.info "Removing schedule: #{_schedule_name}: scheduled?[#{scheduled?}]  active?[#{active?}]  _deleted?[#{_deleted?}]"
+        Rails.logger.info "Removing schedule: #{_schedule_name}: scheduled?[#{scheduled?}]  active?[#{active?}]  deleted?[#{deleted?}]"
         Resque.remove_schedule _schedule_name
       rescue => e 
         Rails.logger.error "Error removing schedule for Rule[#{self.id.to_s}]: #{e.message}"        
@@ -819,7 +819,7 @@ module Rules
         config[:description] = self.name 
         every, cron = parse_timer_expression
         config[:every] = every
-        config[:cron] = cron 
+        config[:cron] = cron
         config[:class] = "Rules::Jobs::RunScheduledRule"
         config[:args] = [self.id.to_s] 
         config[:persist] = true
