@@ -198,12 +198,12 @@ module Rules
     def completed_tasks
       @task = Rules::Task.where("id in (?)",params[:id].split(",").map(&:to_i))
       unless @task.nil?
-        flash[:notice] = if(params["type"] == "complete")
+        flash[:notice] = if(params["type"] == "completed")
           "Task has been marked complete"
         else
           "Task has been marked incomplete"
         end
-        value = (params["type"] == "complete") ? Time.now : nil
+        value = (params["type"] == "completed") ? Time.now : nil
         # Calling update_all on a scope will skip the Rules engine
         # Do individual updates, not @task.update_all(completed_at: value)
         @task.each do |t|
@@ -247,7 +247,7 @@ module Rules
         if request.format == :json
           order = params[:order] ||= "ASC"
           @tasks = case params[:type]
-          when "complete"
+          when "completed"
             sort = params[:sort] ||= "completed_at"
             current_user.tasks.completed.order("#{sort} #{order}")
           when "incomplete"
@@ -286,11 +286,12 @@ module Rules
         else
           # @tasks_due_today, @tasks_overdue, @future_tasks, @incomplete_tasks, @no_due_date, @completed_incomplete_tasks, @completed_tasks = Rules::Task.view_tasks_by_type(current_user, params[:type])
           @tasks = case params[:type]
-          when "complete"
+          when "completed"
             current_user.tasks.completed
           when "open", "incomplete"
             current_user.tasks.open 
           end
+          @tasks = @tasks.page(params[:page]).per(15)
         end
       end
   end

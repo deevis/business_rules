@@ -1,7 +1,7 @@
 -if @notifications.blank?
   .alert.alert-warning You Don't Have Any Notifications
-.empty-priority.hide
-  .alert.alert-info You don't have any notifications with this priority
+/ .empty-priority.hide
+/   .alert.alert-info You don't have any notifications with this priority
 
 -@notifications.each do |n|
   %div.notification{class: "seen-#{n.seen?}", data: {id: n.id, type: n.try(:class).try(:to_s)}}

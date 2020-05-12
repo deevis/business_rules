@@ -712,8 +712,17 @@ module Rules
       end
 
       if klazz.respond_to? :fields    # Mongoid
-        fields.each{|k,v| cols[v.name.to_sym] ||= v.options[:type].name.downcase.to_sym }
+        klazz.fields.each{|k,v| cols[v.name.to_sym] ||= v.options[:type].name.downcase.to_sym }
       end
+
+      if klazz.respond_to? :attributes    # Neo4j
+        klazz.attributes.each do |k,v|
+          type = v[:type]&.to_s&.downcase&.to_sym
+          type ||= :string
+          cols[k.to_sym] ||= type
+        end
+      end
+
       cols
     end
 

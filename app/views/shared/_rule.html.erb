@@ -44,10 +44,10 @@
 					<input type="checkbox" name="rules_rule[enable_unique]" value="1" <%= "checked" if unique_enabled %> onclick="toggle_unique_enabled(this);" />
 				</div>
 				<div class="col-md-9 small">
-					<div id="unique_expression_label" style="display:<%= unique_enabled ? 'none' : 'block' %>;">Click to fire only once per User (for example)...
+					<div id="unique_expression_label" style="display:<%= unique_enabled ? 'none' : 'block' %>;">Fire only once per User (for example)...
 					</div>
 					<div id="unique_expression_div" style="display:<%= unique_enabled ? 'block' : 'none' %>;">
-						<input type="text" id="unique_expression" name="rules_rule[unique_expression]" value="<%= @rules_rule.unique_expression %>" placeholder='<%= t "enter_unique_expression" %>   eg: "User_#{trigger.user.id}" '/>
+						<input class="small" type="text" id="unique_expression" name="rules_rule[unique_expression]" value="<%= @rules_rule.unique_expression %>" placeholder='<%= t "unique_expression" %>  "User_#{trigger.user.id}" '/>
 					</div>
 				</div>
 				<div class="col-md-1">

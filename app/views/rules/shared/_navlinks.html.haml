@@ -11,7 +11,8 @@
   %ul.dropdown-menu.dropdown-menu-right
     -if task_list.length == 0
       %li.nav-item.text-sm
-        You have no Tasks
+        %a.nav-link.small.text-dark{href: rules_tasks_path(type: 'completed'), style: "color: rgba(0,0,0,1);"}
+          View Completed Tasks
     -else
       -task_list.each do |task|
         %li.nav-item
@@ -31,12 +32,13 @@
       %span.badge.badge-pill.badge-primary.text-white
         =notification_count 
   %ul.dropdown-menu.dropdown-menu-right.invert.text-center
-    -if notification_list.length == 0
+    -notification_list.each do |notification|
       %li.nav-item.text-sm
-        You have no Notifications
-    -else
-      -notification_list.each do |notification|
-        %li.nav-item.text-sm
-          %a.nav-link.text-sm{href: polymorphic_path(notification)}
-            =notification.message
-        .dropdown-divider
+        -# notification_path = polymorphic_path(notification)
+        -notification_path = rules_notifications_path
+        %a.nav-link.text-sm{href: notification_path}
+          =notification.message
+      .dropdown-divider
+    %li.nav-item.text-sm
+      %a.nav-link.text-sm{href: rules_notifications_path}
+        View Notifications

@@ -3,14 +3,18 @@ module Rules
 
     def index
       @notifications = current_user.notifications
+      params[:filter] ||= 'current'
+      params[:filter_type] ||= 'predefined'
+      @filter = params[:filter]
+      @filter_type = params[:filter_type]
 
-      if params[:filter].present?
-        if params[:filter_type] == "type"
-          @notifications = @notifications.where(item_type: params[:filter])
-        elsif params[:filter_type] == "predefined" && params[:filter] == "dismissed"
+      if @filter.present? && @filter != 'current'
+        if @filter_type == "type"
+          @notifications = @notifications.where(item_type: @filter)
+        elsif @filter_type == "predefined" && @filter == "dismissed"
           @notifications = Rules::Notification.unscoped
                   .where("dismissed is not null and user_id = ?", current_user.id)
-        elsif params[:filter_type] == "predefined" && params[:filter] == "business"
+        elsif @filter_type == "predefined" && @filter == "business"
           @notifications = @notifications.non_messages
         end
       end
@@ -21,7 +25,8 @@ module Rules
                                                 .order("cnt DESC")
 
       @notifications = @notifications.priority(params[:priority]) if params[:priority]
-      @notifications = @notifications.page(params[:page]).per(30)
+      @notifications = @notifications.order("created_at DESC")
+      @notifications = @notifications.page(params[:page]).per(15)
 
       respond_to do |format|
         format.html

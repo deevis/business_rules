@@ -175,12 +175,12 @@ jQuery.fn.sortElements = (function(){
       }
     }
 
-    function remove_action_mapping(action_id, field_name, field_type, mapping) {
+    function remove_action_mapping(action_id, field_name, field_type, mapping, mapping_type) {
       console.log("remove_action_mapping: " + field_name + "|" + field_type + "|" + mapping);
       var url = "/rules/rules/" + rule_id + "/remove_action_mapping.js?action_id=" + 
                   action_id + "&action_field=" + field_name +":=>" + field_type;
       console.log("   - " + url);
-      if (field_type=="class_lookup" || (mapping.indexOf("instance_lookup") > 0) ) {
+      if (field_type=="class_lookup" || mapping_type=="instance_lookup" ) {
           window.location = url;
       } else {
         $.ajax({

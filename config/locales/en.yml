@@ -10,4 +10,4 @@ en:
   rules_configuration: Rules Configuration
   actions: actions
   events: events 
-  enter_unique_expression: Enter Unique Expression
+  unique_expression: Unique Expression

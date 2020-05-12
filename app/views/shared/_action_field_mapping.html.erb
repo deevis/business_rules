@@ -30,7 +30,7 @@
 		<% else %>
 			<span class="source-mapping"><%= "<b>#{mapping[0].to_s}</b>(<i>#{mapping[1]}</i>)".html_safe %></span>
 		<% end %>
-		<span class="delete-source-mapping" onclick="remove_action_mapping('<%= action.id %>','<%= field_name %>', '<%= field_type %>', '<%= mapping %>');"><i class="<%= Rules.delete_icon %>"></i></span>
+		<span class="delete-source-mapping" onclick="remove_action_mapping('<%= action.id %>','<%= field_name %>', '<%= field_type %>', '<%= j mapping[0] %>', '<%= mapping[1] %>');"><i class="<%= Rules.delete_icon %>"></i></span>
 
   <% else %>
     <%= link_to lookup_class_rules_rules_path(action_id: action.id, 

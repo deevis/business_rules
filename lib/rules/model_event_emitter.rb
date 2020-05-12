@@ -33,9 +33,22 @@ module Rules
 			#base.send :extend, ClassMethods
 			#unless ( File.basename($0) == "rake" && ARGV.include?("db:migrate") )
 			#end
-			base.after_update :raise_updated
-			base.after_create :raise_created
-			base.before_destroy :raise_destroyed
+			if base.ancestors.include?(ActiveRecord::Base)
+				Rails.logger.info "Registering buffered ModelEventEmitter[#{base}]"
+				base.after_update :buffer_updated
+				base.after_create :buffer_created
+				# this used to be 'before_destroy' - why?  i dunno...
+				base.after_destroy :buffer_destroyed
+				
+				base.after_commit(:_flush_events) 
+				base.attr_accessor :_buffered_events
+			else
+				Rails.logger.info "Registering un-buffered ModelEventEmitter[#{base}]"
+				base.after_update_commit(:raise_updated) 
+				base.after_create_commit(:raise_created) 
+				base.after_destroy_commit(:raise_destroyed) 
+			end
+
 			@@registered_classes << base if !registered_classes.index(base)
 		end
 
@@ -61,36 +74,61 @@ module Rules
 			# There will ALWAYS be an "updated_at" value that shows the time the before and 
 			#       after values were (previously) set
 			#
-			def raise_updated
+			def raise_updated(buffered: false)
 				# Only raise updated if changes are actually present
 				filtered_changes = Rules.data_filter.filter changes if changes.present?
-				_notify("update", changes: filtered_changes) if filtered_changes.present?
+				_notify("update", buffered: buffered, changes: filtered_changes) if filtered_changes.present?
 			end
 
-			def raise_created
-				_notify("create")
+			def raise_created(buffered: false)
+				_notify("create", buffered: buffered)
 			end
 
-			def raise_destroyed
-				_notify("delete")
+			def raise_destroyed(buffered: false)
+				_notify("delete", buffered: buffered)
 			end
 
-			def _notify(action, extras = {})
+			def buffer_updated
+				raise_updated(buffered: true)
+			end
+
+			def buffer_created
+				raise_created(buffered: true)
+			end
+
+			def buffer_destroyed
+				raise_destroyed(buffered: true)
+			end
+
+			# takes all events encountered during our commit and flushes them all out
+			def _flush_events
+				return if self._buffered_events.blank?
+				while ((event_hash = self._buffered_events.shift) != nil) do 
+					Rules::RulesEngine.raise_event(event_hash)
+				end
+			end
+
+			def _notify(action, buffered: , changes: {})
 				begin
 					return if Rules.disabled? || self.class.name == "ActiveRecord::SchemaMigration"
-					Rails.logger.debug "ModelEventEmitter   action[#{action}]   class[#{self.class.name}]  extras: #{extras}"
-					event_hash = build_event_hash( "ModelEvent", self.class.name, action, extras)
+					Rails.logger.debug "ModelEventEmitter   action[#{action}]   class[#{self.class.name}]  changes: #{changes}"
+					event_hash = build_event_hash( "ModelEvent", self.class.name, action, changes)
 					event_hash[:id] = self.id 
-					Rules::RulesEngine.raise_event(event_hash)
+					if buffered
+						(self._buffered_events ||= []) << event_hash
+					else
+						Rules::RulesEngine.raise_event(event_hash)
+					end
 				rescue => e
 					Rails.logger.error "Unable to raise event for #{self} : #{e.message}"
 				end
 			end
 
-			def build_event_hash(event_type, class_name, action, extras={})
+			def build_event_hash(event_type, class_name, action, changes = {})
 					event_hash = { processing_stack: Rules::Rule.processing_stack, type: event_type, 
 													klazz: self.class.name, action: action, id: self.id, data: self, 
-													user: Rules.current_user.call }.merge(extras)
+													user: Rules.current_user.call }
+					event_hash[:changes] = changes if changes.present?
 					Rules.event_extensions.(event_hash)
 			end
 

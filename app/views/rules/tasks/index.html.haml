@@ -4,15 +4,16 @@
       %h3 
         #{@type.titleize} Tasks
         %small
-          -%w(incomplete complete).each do |type|
+          -%w(incomplete completed).each do |type|
             -next if type == @type 
             %small
-              =link_to type, rules_tasks_path(type: type)
+              =link_to type.titleize, rules_tasks_path(type: type)
   .card-body.text-dark.bg-white
     -if @tasks.blank?
       .alert.alert-warning
-        You have no #{@type} tasks
+        You have no #{@type.titleize} tasks
     -else
+      = paginate @tasks
       %table.table.table-sm.table-bordered
         %thead
           %tr.small
