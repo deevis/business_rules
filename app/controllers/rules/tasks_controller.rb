@@ -287,7 +287,7 @@ module Rules
           # @tasks_due_today, @tasks_overdue, @future_tasks, @incomplete_tasks, @no_due_date, @completed_incomplete_tasks, @completed_tasks = Rules::Task.view_tasks_by_type(current_user, params[:type])
           @tasks = case params[:type]
           when "completed"
-            current_user.tasks.completed
+            current_user.tasks.completed.order("completed_at DESC")
           when "open", "incomplete"
             current_user.tasks.open 
           end

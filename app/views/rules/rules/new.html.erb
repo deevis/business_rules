@@ -8,13 +8,11 @@
     <% end %>
 <% end %>
 
-<div class="rules-widget" style="width:420px;">
-  <h1>
-    <%= @title %>
-    <small><%= link_to "Import from YAML", import_rules_rules_path %></small>
-  </h1>
-  <%= render 'form' %>
-</div>
+<h1>
+  <%= @title %>
+  <small><%= link_to "Import from YAML", import_rules_rules_path %></small>
+</h1>
+<%= render 'form' %>
 
 
 

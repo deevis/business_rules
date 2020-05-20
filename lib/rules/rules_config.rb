@@ -69,7 +69,12 @@ module Rules
     end
 
     def self.delete_rules
-      Rules::Rule.delete_all
+      Rules::DeferredActionChain.delete_all
+      Rules::FutureAction.delete_all
+      Rules::ActionChainStep.delete_all
+      Rules::Action.delete_all
+      Rules::UniqueRuleFiring.delete_all
+      Rules::Rule.unscoped.delete_all
     end
 
     def self.import_rules(overwrite = false)

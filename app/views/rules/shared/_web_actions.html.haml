@@ -37,8 +37,8 @@
           .modal-content
             .modal-body
 
-              .card{class: "panel-#{config[:level].presence || 'info'}"}
-                .card-header
+              .card
+                .card-header{class: "text-white bg-#{config[:level].presence || 'info'}"}
                   .card-title 
                     #{(config[:title].presence || config[:level].try(:titleize) || "Alert").html_safe}
                   .clearfix

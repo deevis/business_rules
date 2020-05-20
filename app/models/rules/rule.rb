@@ -221,7 +221,8 @@ module Rules
         Rules::Rule.publish_if_enabled({rule_context_guid: rule_context_id, status: "starting", 
                 event: "#{event[:klazz]}::#{event[:action]}", processor_id: (extras[:processor_id] || :synchronous), 
                 server_time: Time.now.strftime("%m/%d/%Y %H:%M:%S") }, self)
-        rule_context = check_criteria(event, deferred_action_chain.present?, rule_context_id: rule_context_id) # Will return nil if the criteria evaluates to false, otherwise returns the action_context
+        # Will return nil if the criteria evaluates to false, otherwise returns the action_context
+        rule_context = check_criteria(event, deferred_action_chain.present?, rule_context_id: rule_context_id) 
         crit_time = Time.now
         if ((crit_time - start_time) > 0.25) 
           puts "PERFORMANCE: Rule[#{self.name}] took a while [#{crit_time - start_time} seconds] to evaluate criteria"
@@ -402,10 +403,8 @@ module Rules
     #
     def check_criteria(rule_event, skip_criteria_check = false, extras = {})
       Rules.rule_context_around.(rule_event) do
-        unless skip_criteria_check
-          rule_context = _check_criteria(rule_event, skip_criteria_check, extras)
-          return false unless rule_context
-        end
+        rule_context = _check_criteria(rule_event, skip_criteria_check, extras)
+        return false unless rule_context
         puts "...building rule context..."
         # Check here for unique_rule_firing
         return false if unique_firing_violated?(rule_context)
